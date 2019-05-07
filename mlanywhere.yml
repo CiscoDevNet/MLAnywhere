@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mlanywhere
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mlanywhere
+    spec:
+      containers:
+      - name: mlanywhere
+        image: micdoher/mlanywhere:mlanywhere-v5
+
+        imagePullPolicy: "IfNotPresent"
+
+        # command: [ "/bin/bash", "-c", "--" ]
+        # args: [ "while true; do sleep 30; done;" ]
+
+        ports:
+          - containerPort: 5000
+      #
+      # command: [ "/bin/bash", "-c", "--" ]
+      # args: [ "while true; do sleep 30; done;" ]
