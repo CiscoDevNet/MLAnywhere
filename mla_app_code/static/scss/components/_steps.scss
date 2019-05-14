@@ -1,0 +1,500 @@
+//
+// Step
+//
+// Styleguide Components.Step
+//
+
+
+//
+// State
+//
+// <blockquote>By default each step is considered `inactive`.<br>Add the class `active` to denote the current active step.<br>Add the class `visited` to denote a completed step. Visited steps can show either text or an icon to indicate completion.</blockquote>
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="ui-steps">
+//             <div class="ui-step visited">
+//                 <div class="step__icon">
+//                     <span class="icon-check"></span>
+//                 </div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Components.Step.State
+//
+
+
+//
+// Color
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="subheader text-center">Default</div>
+//         <div class="ui-steps">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="subheader text-center">Indigo</div>
+//         <div class="ui-steps ui-steps--indigo">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="subheader text-center">Success</div>
+//         <div class="ui-steps ui-steps--success">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="subheader text-center">Vibrant Blue</div>
+//         <div class="ui-steps ui-steps--vibblue">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Components.Step.Color
+//
+
+
+//
+// Size
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-3">
+//         <div class="subheader text-center">Tiny</div>
+//         <div class="ui-steps ui-steps--tiny">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader text-center">Small</div>
+//         <div class="ui-steps ui-steps--small">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader text-center">Default</div>
+//         <div class="ui-steps">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader text-center">Large</div>
+//         <div class="ui-steps ui-steps--large">
+//             <div class="ui-step visited">
+//                 <div class="step__icon"><span class="icon-check"></span></div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Components.Step.Size
+//
+
+
+//
+// Orientation
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="subheader text-center">Default</div>
+//         <div class="ui-steps">
+//             <div class="ui-step visited">
+//                 <div class="step__icon">1</div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="subheader text-center">Vertical</div>
+//         <div class="ui-steps ui-steps--vertical">
+//             <div class="ui-step visited">
+//                 <div class="step__icon">1</div>
+//                 <div class="step__label">Visited</div>
+//             </div>
+//             <div class="ui-step active">
+//                 <div class="step__icon">2</div>
+//                 <div class="step__label">Active</div>
+//             </div>
+//             <div class="ui-step">
+//                 <div class="step__icon">3</div>
+//                 <div class="step__label">Inactive</div>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 4
+//
+// Styleguide Components.Step.Orientation
+//
+
+
+//
+// Examples
+//
+// Markup:
+// <h3 class="text-center">Advanced Malware Protection</h3>
+// <div class="ui-steps ui-steps--success">
+//     <div class="ui-step visited">
+//         <div class="step__icon">
+//             <span class="icon-check"></span>
+//         </div>
+//         <div class="step__label">Get Started</div>
+//     </div>
+//     <div class="ui-step visited">
+//         <div class="step__icon">
+//             <span class="icon-check"></span>
+//         </div>
+//         <div class="step__label">Deployment Strategy Guide</div>
+//     </div>
+//     <div class="ui-step active">
+//         <div class="step__icon">3</div>
+//         <div class="step__label">Enroll in AMP training</div>
+//     </div>
+//     <div class="ui-step">
+//         <div class="step__icon">4</div>
+//         <div class="step__label">Enable Threat Analytics</div>
+//     </div>
+//     <div class="ui-step">
+//         <div class="step__icon">5</div>
+//         <div class="step__label">Feature Visibility and Control</div>
+//     </div>
+// </div>
+//
+// Weight: 5
+//
+// Styleguide Components.Step.Examples
+//
+
+@mixin step-color(
+    $background-active:     $base-accent-color,
+    $background-inactive:   $base-border-color,
+    $background-visited:    $white,
+    $border-active:         $base-accent-color,
+    $border-inactive:       $base-border-color,
+    $border-visited:        $base-accent-color,
+    $color-active:          $white,
+    $color-inactive:        $light-gray-compliant,
+    $color-visited:         $base-accent-color,
+    $label-active:          $base-font-color,
+    $label-inactive:        $light-gray-compliant,
+    $label-visited:         $base-accent-color,
+    $line-color-active:     $base-accent-color,
+    $line-color-inactive:   $base-border-color)
+{
+    .ui-step {
+        .step__icon {
+            @include step-icon-color(
+                $background: $background-inactive,
+                $border-color: $border-inactive,
+                $color: $color-inactive
+            );
+        }
+        .step__label {
+            color: $label-inactive;
+        }
+
+        &.active {
+            color: $color-active;
+            .step__icon {
+                @include step-icon-color(
+                    $background: $background-active,
+                    $border-color: $border-active,
+                    $color: $color-active
+                );
+                box-shadow: 0 0 0 1px $background-active;
+                border: 2px solid $white;
+            }
+            .step__label {
+                color: $label-active;
+                font-weight: bold;
+            }
+        }
+
+        &.visited {
+            color: $color-visited;
+            .step__icon {
+                @include step-icon-color(
+                    $background: $background-visited,
+                    $border-color: $border-visited,
+                    $color: $color-visited
+                );
+            }
+            .step__label {
+                color: $label-visited;
+            }
+            &.ui-step--alt .step__icon {
+                background: $alt-background-color;
+            }
+        }
+
+        &.active, &.visited {
+            &:before {
+                background: $line-color-active;
+            }
+        }
+
+        &:before {
+            background: $line-color-inactive;
+        }
+    }
+}
+
+@mixin step-icon-size(
+    $size:          $base-step-size,
+    $font-size:     $base-step-font-size)
+{
+    .ui-step {
+        &:before {
+            top: $size / 2;
+        }
+        .step__icon {
+            width: $size;
+            min-width: $size;
+            max-width: $size;
+            height: $size;
+            line-height: $size;
+            font-size: $font-size;
+        }
+    }
+    &.ui-steps--vertical {
+        .ui-step:before {
+            left: $size / 2;
+        }
+    }
+}
+
+@mixin step-icon-color(
+    $background:    $base-background-color,
+    $color:         $base-step-inactive-color,
+    $border-color:  "",
+    $line-width:    $base-step-line-width)
+{
+    background: $background;
+    color: $color;
+
+    @if $border-color != "" {
+        box-shadow: inset 0 0 0 $line-width $border-color;
+    }
+    @else {
+        box-shadow: inset 0 0 0 $line-width $background;
+    }
+}
+
+.ui-steps {
+    @include list--unstyled;
+
+    display: flex;
+    align-items: top;
+    justify-content: space-around;
+    max-width: 900px; // Will need to be removed in instances of 4+ steps
+    margin: 0 auto $base-spacing auto;
+    padding: $base-spacing 0;
+    text-align: center;
+
+    @each $step-size-obj in $step-sizes {
+        @if map-get($step-size-obj, name) == "default" {
+            @include step-icon-size(map-get($step-size-obj, params)...);
+        } @else {
+            &--#{map-get($step-size-obj, name)} {
+                @include step-icon-size(map-get($step-size-obj, params)...);
+            }
+        }
+    }
+
+    @each $step-color-obj in $step-colors {
+        @if map-get($step-color-obj, name) == "default" {
+            @include step-color(map-get($step-color-obj, params)...);
+        } @else {
+            &--#{map-get($step-color-obj, name)} {
+                @include step-color(map-get($step-color-obj, params)...);
+            }
+        }
+    }
+
+    .ui-step {
+        position: relative;
+        flex: 1;
+
+        .step__icon {
+            margin: 0 auto ($base-spacing * 0.5) auto;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        &:first-child {
+            &:before {
+                display: none;
+            }
+        }
+
+        &:before {
+            display: block;
+            position: absolute;
+            content: '';
+            width: 100%;
+            height: $base-step-line-width;
+            left: -50%;
+            background: $base-border-color;
+        }
+
+        &--alt {
+            .step__icon {
+                background: $alt-background-color;
+            }
+        }
+    }
+
+    &--vertical {
+        display: inline;
+        text-align: left;
+
+        .ui-step {
+            display: flex;
+            margin-bottom: $base-spacing;
+
+            .step__icon {
+                flex: 1;
+                margin: 0;
+            }
+            .step__label {
+                flex: 2;
+                align-self: center;
+                padding-left: $base-spacing;
+                color: $base-font-color;
+            }
+            &:last-child {
+                &:after {
+                    display: none;
+                }
+            }
+            &:before {
+                height: 100%;
+                width: 1px;
+                top: -50%;
+            }
+        }
+    }
+}

@@ -1,0 +1,404 @@
+//
+// Hero
+//
+// Styleguide Components.Hero
+//
+
+//
+// Color
+//
+// Markup:
+// <div class="row no-gutters">
+//     <div class="col-md-4">
+//         <div class="hero hero--ltgray">
+//             <span class="text-uppercase">Light Gray</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--mdgray">
+//             <span class="text-uppercase">Medium Gray</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--dkgray">
+//             <span class="text-uppercase">Dark Gray</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--blue">
+//             <span class="text-uppercase">Blue</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--vibblue">
+//             <span class="text-uppercase">Vibrant Blue</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--indigo">
+//             <span class="text-uppercase">Indigo</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--success">
+//             <span class="text-uppercase">Success</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Components.Hero.Color
+//
+
+
+//
+// Padding
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-4">
+//         <div class="hero hero--blue hero--compressed">
+//             <div class="container">
+//                 <div class="hero__content">
+//                     <h3>Compressed</h3>
+//                 </div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--blue">
+//             <div class="container">
+//                 <div class="hero__content">
+//                     <h3>Regular (default)</h3>
+//                 </div>
+//             </div>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="hero hero--blue hero--loose">
+//             <div class="container">
+//                 <div class="hero__content">
+//                     <h3>Loose</h3>
+//                 </div>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Components.Hero.Padding
+//
+
+
+//
+// Background
+//
+// <blockquote>Use our collection of pre-defined hero background images</blockquote>
+//
+// Markup:
+// <div class="hero">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background Default</h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-1">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background <sup>#1</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-2">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background <sup>#2</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-3">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background <sup>#3</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-4">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background <sup>#4</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-5">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background <sup>#5</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+//
+
+
+//
+// Background Position
+//
+// <blockquote>All background images are centered by default. However, you can also position them 'top' or 'bottom'</blockquote>
+//
+// Markup:
+// <div class="hero hero--background-1 hero--background-top">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background Position <sup>top</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-1 hero--background-bottom">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Background Position <sup>bottom</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 4
+//
+//
+
+
+//
+// Background Filters
+//
+// <blockquote>Add colored filters to your background images</blockquote>
+//
+// Markup:
+// <div class="hero hero--background-3 hero--filter-blue">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Filter <sup>blue</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-3 hero--filter-dkgray">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Filter <sup>dark gray</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-3 hero--filter-dkblue">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Filter <sup>dark blue</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--background-3 hero--filter-smoke">
+//     <div class="container">
+//         <div class="hero__content">
+//             <h1>Filter <sup>smoke</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 5
+//
+//
+
+
+//
+// Split Hero
+//
+// Markup:
+// <div class="hero hero--split">
+//     <div class="hero__content hero--indigo">
+//         <div class="container">
+//             <h1>Split <sup>left</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+//     <div class="hero__marquee hero--background-3 hero--filter-blue"></div>
+// </div>
+// <br>
+// <div class="hero hero--split">
+//     <div class="hero__marquee hero--background-2"></div>
+//     <div class="hero__content hero--indigo">
+//         <div class="container">
+//             <h1>Split <sup>right</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="hero hero--split hero--split-25">
+//     <div class="hero__content hero--indigo">
+//         <div class="container">
+//             <h1>Split <sup>25%</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+//     <div class="hero__marquee hero--background-3"></div>
+// </div>
+// <br>
+// <div class="hero hero--split hero--split-33">
+//     <div class="hero__content hero--indigo">
+//         <div class="container">
+//             <h1>Split <sup>33%</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+//     <div class="hero__marquee hero--background-3"></div>
+// </div>
+// <br>
+// <div class="hero hero--split hero--split-66">
+//     <div class="hero__content hero--indigo">
+//         <div class="container">
+//             <h1>Split <sup>66%</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+//     <div class="hero__marquee hero--background-3"></div>
+// </div>
+// <br>
+// <div class="hero hero--split hero--split-75">
+//     <div class="hero__content hero--indigo">
+//         <div class="container">
+//             <h1>Split <sup>75%</sup></h1>
+//             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+//         </div>
+//     </div>
+//     <div class="hero__marquee hero--background-3"></div>
+// </div>
+//
+// Weight: 6
+//
+//
+
+.hero {
+    color: $white;
+    position: relative;
+    overflow: hidden;
+
+    &__title {
+        font-size: $hero-title-font-size-mobile;
+        @include media-breakpoint-up(md)  { font-size: $hero-title-font-size-small; }
+        @include media-breakpoint-up(lg) { font-size: $hero-title-font-size-medium; }
+        @include media-breakpoint-up(xl)  { font-size: $hero-title-font-size-large; }
+    }
+
+    // Generate hero solid backgrounds (use panels)
+    @include panel();
+    @include panel-padding();
+
+    @each $panel-obj in $panel-colors {
+        &--#{map-get($panel-obj, name)} {
+            @include panel(map-get($panel-obj, params)...);
+        }
+    }
+
+    // Generate hero padding
+    @each $pad-name, $pad-size in $hero-padding {
+        &--#{$pad-name} {
+            .hero__content {
+                @include panel-padding($padding: #{$pad-size});
+            }
+        }
+    }
+
+    &--bordered {
+        border: $base-border;
+    }
+
+    &__content {
+        position: relative;
+        @include panel-padding($padding: $hero-spacing-regular);
+        max-width: 100%;
+    }
+
+    &__toolbar {
+        @include clearfix;
+        position: relative;
+        margin-bottom: $base-spacing;
+
+        @include media-breakpoint-up(lg) {
+            margin-bottom: $base-spacing * 2;
+        }
+
+        .button {
+            margin-right: $base-spacing * 0.5;
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+
+    &__content, &__toolbar {
+        z-index: 1;
+    }
+
+    &--split {
+        display: flex;
+        background: none;
+
+        .hero__content,
+        .hero__marquee {
+            width: 50%;
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        &:after {
+            background: none;
+        }
+    }
+
+    &--split-25 { .hero__content { width: 25%; } .hero__marquee { width: 75%; }}
+    &--split-33 { .hero__content { width: 33%; } .hero__marquee { width: 66%; }}
+    &--split-50 { .hero__content { width: 50%; } .hero__marquee { width: 50%; }}
+    &--split-66 { .hero__content { width: 66%; } .hero__marquee { width: 33%; }}
+    &--split-75 { .hero__content { width: 75%; } .hero__marquee { width: 25%; }}
+
+    @include media-breakpoint-down(sm) {
+        flex-wrap: wrap;
+        .hero__content,
+        .hero__marquee {
+            width: 100%;
+        }
+    }
+}

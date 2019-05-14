@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Add groups</title>
+  
+  
+  <link rel='stylesheet' href='https://abdvl.github.io/src/dist/css/next.css'>
+
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  
+</head>
+
+<body>
+
+  
+<div>
+  	<script src='https://abdvl.github.io/src/dist/js/next.js'></script>
+    <script  src="{{ url_for('static', filename='index.js') }}"></script>
+</div>
+
+
+
+
+</body>
+
+</html>

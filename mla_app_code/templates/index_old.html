@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Add groups</title>
+  
+  
+  <link rel='stylesheet' href='https://abdvl.github.io/src/dist/css/next.css'>
+
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  
+</head>
+
+<body>
+
+<div class="container" >
+<table border="1" class="container">
+
+<tbody>
+  <tr>
+    <td>
+    <h1>Add port to room </h1>
+
+{% if status %}
+{% if status == "PRT" %}
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	  {% if messages %}
+	    <ul id=flashes>
+	    {% for category, message in messages %}
+	      <li class="{{ category }}">{{ message }}</li>
+	    {% endfor %}
+	    </ul>
+	  {% endif %}
+	{% endwith %}
+{% endif %}
+{% endif %}
+<form action="/add_port_to_room" method="POST">
+
+ {{ formport.csrf }}
+  <div>
+<div class="input text">
+    <label for="room">Room:</label>
+
+    {{ formport.room ( id="room") }} 
+</div>
+  </div>
+
+  <div>
+    <label for="port">Port:</label>
+    {{ formport.port (type="text",id="port")}} 
+  </div>
+
+ 
+  <div class="button">
+    <button type="submit">Submit</button>
+  </div>
+</form>
+    </td>
+    <td>
+    <h1>Assigne Vlan to room </h1>
+
+{% if status %}
+{% if status == "VLAN" %}
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	  {% if messages %}
+	    <ul id=flashes>
+	    {% for category, message in messages %}
+	      <li class="{{ category }}">{{ message }}</li>
+	    {% endfor %}
+	    </ul>
+	  {% endif %}
+	{% endwith %}
+{% endif %}
+{% endif %}
+
+<form action="/add_vlan" method="POST">
+
+ {{ formvlan.csrf }}
+  <div>
+<div class="input text">
+    <label for="room">Room:</label>
+
+    {{ formvlan.room (list="rooms", id="room") }}
+</div>
+  </div>
+
+  <div>
+    <label for="port">Vlan:</label>
+    {{ formvlan.vlan (type="text",id="port")}} 
+  </div>
+
+ 
+  <div class="button">
+    <button type="submit">Submit</button>
+  </div>
+</form>
+
+   
+    </td>
+    <td>
+    <div>
+<h1>Details:</h1>
+<p> Siwtch1 = Ports : 0, 1, 2<br />
+ Siwtch2 = Ports : 3, 4, 5</p>
+ <p>
+{% if rooms_details %}
+	{% for room in rooms_details %}
+		
+		 {{room['name']}}   = Ports : {{room['ports']}}  Vlan:{{room['vlan']}} <br />
+
+	{% endfor %}
+{% endif %}
+</p>
+</div>
+    </td>
+</tr>
+
+<tr>
+
+
+
+</tr>
+  <datalist id="rooms">
+    <option value="room1">
+    <option value="room2">
+    <option value="All Rooms">
+  </datalist>   
+</tbody>
+</table>
+
+</div>
+  
+<div>
+  	<script src='https://abdvl.github.io/src/dist/js/next.js'></script>
+    <script  src="{{ url_for('static', filename='index.js') }}"></script>
+</div>
+
+
+
+
+</body>
+
+</html>

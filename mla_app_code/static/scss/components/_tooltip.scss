@@ -1,0 +1,57 @@
+//
+// Tooltip
+//
+// Styleguide Components.Tooltip
+//
+
+
+//
+// Color
+//
+// <blockquote>If you need to add newlines to your tooltip specify the HTML entity `&#10;` and add the attribute `data-balloon-break`.</blockquote>
+//
+// Markup:
+// <br><br>
+// <span tabindex="0" class="label label--large" data-balloon="default" data-balloon-visible data-balloon-pos="up">Lorem Ipsum</span>
+// <span tabindex="0" class="label label--large" data-balloon="success" data-balloon-success data-balloon-visible data-balloon-pos="up">Lorem Ipsum</span>
+// <span tabindex="0" class="label label--large" data-balloon="indigo" data-balloon-indigo data-balloon-visible data-balloon-pos="up">Lorem Ipsum</span>
+// <span tabindex="0" class="label label--large" data-balloon="blue" data-balloon-blue data-balloon-visible data-balloon-pos="up">Lorem Ipsum</span>
+// <span tabindex="0" class="label label--large" data-balloon="with&#10;break" data-balloon-blue data-balloon-break data-balloon-visible data-balloon-pos="up">Lorem Ipsum</span>
+//
+// Weight: 1
+//
+// Styleguide Components.Tooltip.Color
+//
+
+
+//
+// Position
+//
+// Markup:
+// <span tabindex="0" class="label label--large" data-balloon="top" data-balloon-pos="up">Position: Top</span>
+// <span tabindex="0" class="label label--large" data-balloon="right" data-balloon-pos="right">Position: Right</span>
+// <span tabindex="0" class="label label--large" data-balloon="bottom" data-balloon-pos="down">Position: Bottom</span>
+// <span tabindex="0" class="label label--large" data-balloon="left" data-balloon-pos="left">Position: Left</span>
+//
+// Weight: 2
+//
+// Styleguide Components.Tooltip.Position
+//
+
+
+//
+// Size
+//
+// <blockquote>By default, tooltips are limited to single line. However, for larger text you can specify the size of the tooltip container.<br><b>Note:</b> Using extra wide tooltips can overflow off-screen on smaller form factors. Make sure to test and use the appropriate-sized tooltip container.</blockquote>
+//
+// Markup:
+// <span tabindex="0" class="label label--large" data-balloon="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam et nisl sed enim iaculis sollicitudin. Mauris elementum convallis pharetra. Sed ac leo sed sem gravida aliquam. Donec non posuere quam. " data-balloon-pos="up" data-balloon-length="small">Small</span>
+// <span tabindex="0" class="label label--large" data-balloon="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam et nisl sed enim iaculis sollicitudin. Mauris elementum convallis pharetra. Sed ac leo sed sem gravida aliquam. Donec non posuere quam. Curabitur porta molestie velit, sodales cursus nulla interdum at. Nulla accumsan maximus sem quis pretium. In quis commodo erat. " data-balloon-pos="up" data-balloon-length="medium">Medium</span>
+// <span tabindex="0" class="label label--large" data-balloon="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam et nisl sed enim iaculis sollicitudin. Mauris elementum convallis pharetra. Sed ac leo sed sem gravida aliquam. Donec non posuere quam. Curabitur porta molestie velit, sodales cursus nulla interdum at. Nulla accumsan maximus sem quis pretium. In quis commodo erat. " data-balloon-pos="up" data-balloon-length="large">Large</span>
+// <span tabindex="0" class="label label--large" data-balloon="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam et nisl sed enim iaculis sollicitudin. Mauris elementum convallis pharetra. Sed ac leo sed sem gravida aliquam. Donec non posuere quam. Curabitur porta molestie velit, sodales cursus nulla interdum at. Nulla accumsan maximus sem quis pretium. In quis commodo erat. " data-balloon-pos="up" data-balloon-length="xlarge">XLarge</span>
+// <span tabindex="0" class="label label--large" data-balloon="This will fit the text to the width of the element" data-balloon-pos="up" data-balloon-length="fit">Fitted</span>
+//
+// Weight: 3
+//
+// Styleguide Components.Tooltip.Size
+//

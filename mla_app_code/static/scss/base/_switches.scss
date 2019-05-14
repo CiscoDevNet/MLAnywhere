@@ -1,0 +1,1163 @@
+//
+// Switch
+//
+// sketch
+//
+// Styleguide Primitives.Switch
+//
+
+
+//
+// States
+//
+// Markup:
+// <div class="panel">
+//     <div class="container-fluid">
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Primitives.Switch.States
+//
+
+
+//
+// Size
+//
+// Markup:
+// <div class="form-group">
+//     <label class="switch">
+//         <input type="checkbox" checked>
+//         <span class="switch__input"></span>
+//         <span class="switch__label">Default</span>
+//     </label>
+// </div>
+// <div class="form-group">
+//     <label class="switch switch--large">
+//         <input type="checkbox" checked>
+//         <span class="switch__input"></span>
+//         <span class="switch__label">Large</span>
+//     </label>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Primitives.Switch.Size
+//
+
+
+//
+// Layout
+//
+// <blockquote>Switch elements are stacked by default. Add the form modifier <i>form-group--inline</i> to inline them.</blockquote>
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="subheader">Stacked (default)</div>
+//         <div class="form-group">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="subheader">Inline</div>
+//         <div class="form-group form-group--inline">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Primitives.Switch.Layout
+//
+
+
+//
+// Labels
+//
+// <blockquote>Switch Labels can be placed left, right, or on both sides of the switch element.</blockquote>
+//
+// Markup:
+// <div class="form-group form-group--stacked">
+//     <label class="switch">
+//         <input type="checkbox" checked>
+//         <span class="switch__label">Left</span>
+//         <span class="switch__input"></span>
+//     </label>
+// </div>
+// <div class="form-group form-group--stacked">
+//     <label class="switch">
+//         <input type="checkbox" checked>
+//         <span class="switch__input"></span>
+//         <span class="switch__label">Right</span>
+//     </label>
+// </div>
+// <div class="form-group form-group--stacked">
+//     <label class="switch">
+//         <input type="checkbox" checked>
+//         <span class="switch__label">Both</span>
+//         <span class="switch__input"></span>
+//         <span class="switch__label">Both</span>
+//     </label>
+// </div>
+//
+// Weight: 4
+//
+// Styleguide Primitives.Switch.Labels
+//
+
+
+//
+// Icons
+//
+// <blockquote>Due to the new switch style, we were unable to embed icons into the actual switch like the previous version. Instead, we hide the actual switch and only render the icons.</blockquote>
+//
+// Markup:
+// <div class="form-group form-group--stacked">
+//     <label class="switch-icon">
+//         <input type="checkbox" checked>
+//         <span class="switch__input">
+//             <span class="icon-grid-view"></span>
+//             <span class="icon-list-view"></span>
+//         </span>
+//     </label>
+// </div>
+// <div class="form-group form-group--stacked">
+//     <label class="switch-icon">
+//         <input type="checkbox">
+//         <span class="switch__input">
+//             <span class="icon-eye"></span>
+//             <span class="icon-eye-closed"></span>
+//         </span>
+//     </label>
+// </div>
+// <div class="form-group form-group--stacked">
+//     <label class="switch-icon switch-icon--large">
+//         <input type="checkbox">
+//         <span class="switch__input">
+//             <span class="icon-grid-view"></span>
+//             <span class="icon-list-view"></span>
+//         </span>
+//     </label>
+// </div>
+//
+// Weight: 5
+//
+// Styleguide Primitives.Switch.Icons
+//
+
+
+//
+// Spacing
+//
+// <blockquote>Wrap your switch elements in a form-group to control spacing between other form group elements. This applies to both inline and stacked switch elements.</blockquote>
+//
+// Markup:
+// <div class="row no-gutters">
+//     <div class="col-md-3">
+//         <div class="subheader">Compressed</div>
+//         <div class="form-group form-group--compressed">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--compressed">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--compressed">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader">Regular (default)</div>
+//         <div class="form-group">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader">Loose</div>
+//         <div class="form-group form-group--loose">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--loose">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--loose">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader">None</div>
+//         <div class="form-group form-group--nospacing">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--nospacing">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--nospacing">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 6
+//
+// Styleguide Primitives.Switch.Spacing
+//
+
+
+//
+// Allowed Backgrounds
+//
+// <blockquote>Switches are only allowed on the following panels.</blockquote>
+//
+// Markup:
+// <div class="panel panel--loose">
+//     <div class="container-fluid">
+//     <h6>WHITE</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row base-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--loose panel--ltgray">
+//     <div class="container-fluid">
+//     <h6>LIGHT GRAY</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row base-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--loose panel--dkgray">
+//     <div class="container-fluid">
+//     <h6>DARK GRAY</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row base-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--loose panel--indigo">
+//     <div class="container-fluid">
+//     <h6>INDIGO</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row base-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--loose panel--success">
+//     <div class="container-fluid">
+//     <h6>GREEN</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row base-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--loose panel--blue">
+//     <div class="container-fluid">
+//     <h6>BLUE</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row base-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch hover">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch">
+//                 <input type="checkbox" class="focus">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="switch disabled">
+//                 <input type="checkbox">
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+// </div>
+// </div>
+//
+// Weight: 7
+//
+// Styleguide Primitives.Switch.AllowedBackgrounds
+//
+
+@mixin cui-switch(
+    $background-disabled:       "",
+    $background-knob-disabled:  "",
+    $background-knob-on:        "",
+    $background-knob-off:       "",
+    $background-normal-on:      "",
+    $background-normal-off:     "",
+    $background-hover-on:       "",
+    $background-hover-off:      "",
+    $background-focus:          "",
+    $border-knob-on:            "",
+    $border-knob-disabled:      "",
+    $border-hover:              "",
+    $border-focus:              "",
+    $color-disabled:            "",
+    $color-normal:              "",
+    $outline-color:             "")
+{
+    &.disabled,
+    &[disabled] {
+        opacity: 1;
+        input {
+            &:checked {
+                ~ .switch__input {
+                    background: $background-disabled;
+                    &:after {
+                        background: $background-knob-disabled;
+                        border: 1px solid $border-knob-disabled;
+                        box-shadow: none;
+                    }
+                }
+            }
+            ~ .switch__input {
+                background: $background-disabled;
+                &:after {
+                    background: $background-knob-disabled;
+                    border: 1px solid $border-knob-disabled;
+                    box-shadow: none;
+                }
+            }
+        }
+        .switch__label {
+            color: $color-disabled;
+        }
+    }
+    &.hover,
+    &:hover {
+        input:checked {
+            ~ .switch__input:after {
+                border-width: $cui-switch-border-width-hover;
+            }
+        }
+    }
+    input.focus,
+    input:focus {
+        ~ .switch__input {
+            @include focus-outline($color: $outline-color);
+        }
+    }
+    &__label {
+        user-select: none;
+        color: $color-normal;
+    }
+    .switch__input {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $background-normal-off;
+        border-radius: $cui-switch-border-radius;
+
+        &:after {
+            display: block;
+            position: absolute;
+            left: 0;
+            border-radius: $cui-switch-knob-border-radius;
+            content: '';
+            cursor: pointer;
+        }
+    }
+    .switch__label + .switch__input,
+    .switch__input + .switch__label {
+        margin-left: $base-form-label-margin-regular;
+    }
+    input {
+        @include hidden-input;
+        ~ .switch__input {
+            box-shadow: inset 0 0 1px rgba(0,0,0,0.1);
+
+            &:after {
+                background: $background-knob-off;
+                box-shadow: none;
+            }
+        }
+        &:checked {
+            ~ .switch__input {
+                background: $background-normal-on;
+                box-shadow: inset 0 0 1px rgba(0,0,0,0.1);
+
+                &:after {
+                    background: $background-knob-on;
+                    border: 1px solid $border-knob-on;
+                    transform: translateX(100%);
+                    box-shadow: $cui-switch-knob-shadow-active;
+                }
+            }
+        }
+    }
+}
+
+@mixin cui-switch-icon(
+    $color-disabled:    "",
+    $color-normal:      "",
+    $color-normal-on:   "",
+    $outline-color:     ""
+) {
+    input {
+        @include hidden-input;
+
+        ~ .switch__input span:first-child { color: $color-normal-on; }
+        ~ .switch__input span:last-child { color: $color-normal; }
+
+        &:checked {
+            ~ .switch__input span:first-child { color: $color-normal; }
+            ~ .switch__input span:last-child { color: $color-normal-on; }
+        }
+        &.focus,
+        &:focus {
+            ~ .switch__input {
+                @include focus-outline($color: $outline-color);
+            }
+        }
+    }
+    .switch__label {
+        display: none;
+    }
+    span[class^="icon-"]:last-child {
+        margin-left: $base-spacing-qtr;
+    }
+}
+
+@mixin cui-switch-size($size: $cui-switch-size) {
+    height: $size;
+
+    .switch__input {
+        height: $size / 2;
+        &:after {
+            width: $size;
+            height: $size;
+        }
+    }
+    input {
+        ~ .switch__input {
+            width: $size * 2;
+        }
+    }
+}
+
+@mixin cui-switch-icon-size($size: $cui-switch-size, $icon-size: $cui-switch-icon-size) {
+    height: $size;
+    span[class^="icon-"] {
+        font-size: $icon-size;
+    }
+}
+
+.switch,
+.switch-icon {
+    display: flex;
+    position: relative;
+    align-items: center;
+    cursor: pointer;
+}
+
+.switch {
+    @include cui-switch(map-get($cui-switch-light, params)...);
+    @include cui-switch-size();
+
+    &--large {
+        @include cui-switch-size($cui-switch-size-large);
+    }
+}
+
+.switch-icon {
+    @include cui-switch-icon(map-get($cui-switch-icon-light, params)...);
+    @include cui-switch-icon-size();
+
+    &--large {
+        @include cui-switch-icon-size($size: $cui-switch-size-large, $icon-size: $cui-switch-icon-size-large);
+    }
+
+    input:focus ~.switch__input {
+        outline: none;
+    }
+
+}
+
+.panel.panel--dkgray,
+.panel.panel--indigo {
+    .switch {
+        @include cui-switch(map-get($cui-switch-dark, params)...);
+    }
+    .switch-icon {
+        @include cui-switch-icon(map-get($cui-switch-icon-dark, params)...);
+    }
+}
+
+.panel.panel--success,
+.panel.panel--blue {
+    .switch {
+        @include cui-switch(map-get($cui-switch-color, params)...);
+    }
+    .switch-icon {
+        @include cui-switch-icon(map-get($cui-switch-icon-color, params)...);
+    }
+}
+
+// Global Modifiers
+
+&.cui--compressed .switch {
+    .switch__label + .switch__input {
+        margin-left: $base-form-label-margin-compressed;
+    }
+    .switch__input+.switch__label {
+        margin-left: $base-form-label-margin-compressed;
+    }
+}
+
+&.cui--animated .switch {
+    input {
+        ~ .switch__input {
+            transition: background 0.4s ease-out;
+            &:after {
+                transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+            }
+        }
+    }
+}
+&.cui--animated .switch-icon {
+    .switch__input span[class^="icon-"]:active {
+        transition: background 0.25s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+    }
+}

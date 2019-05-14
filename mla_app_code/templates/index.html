@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+        
+
+        <title>Cisco UI Kit Sidebar Page Template</title>
+        <link rel='stylesheet' href='https://abdvl.github.io/src/dist/css/next.css'>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    </head>
+    <body class="cui">
+        <div class="content-fluid">
+            <div class="sidebar sidebar--indigo">
+                <div class="sidebar__header">
+                    <div class="sidebar__header-title">My App</div>
+                </div>
+                <ul>
+                    <li class="sidebar__item"><a>Dashboard</a></li>
+                    <li class="sidebar__item"><a>Monitor</a></li>
+                    <li class="sidebar__drawer">
+                        <a>Configuration</a>
+                        <ul>
+                            <li class="sidebar__item"><a>Open Device Configuration</a></li>
+                            <li class="sidebar__item"><a>Configuration Guides</a></li>
+                        </ul>
+                    </li>
+                    <li class="sidebar__drawer">
+                        <a>Inventory</a>
+                        <ul>
+                            <li class="sidebar__item"><a>Routers</a></li>
+                            <li class="sidebar__item"><a>Switches</a></li>
+                        </ul>
+                    </li>
+                    <li class="sidebar__drawer">
+                        <a>Services</a>
+                        <ul>
+                            <li class="sidebar__item"><a>Network Services</a></li>
+                            <li class="sidebar__item"><a>Mobility Services</a></li>
+                        </ul>
+                    </li>
+                    <li class="sidebar__item"><a>Reports</a></li>
+                </ul>
+            </div>
+            <main>
+                <header class="header header--tall">
+                    <div class="header-bar container">
+
+                        <div class="header-bar__main">
+                            <div class="header-breadcrumbs">
+                                <ul class="breadcrumb">
+                                    <li><a href="file:///Users/agabdelb/Documents/CiscoUI/pattern-library/build/docs/index.html">My App</a></li>
+                                    <li><span>Network Configuration</span></li>
+                                </ul>
+                            </div>
+                            <div class="header-heading">
+                                <img class="thumb thumb--xlarge thumb--square" style="margin-top: 30px; margin-right: 30px;" src="{{ url_for('static', filename='img/MGM.png') }}">
+                                <h1 class="page-title">MGM Conevntion Network</h1>
+                            </div>
+
+                        </div>
+                        <div class="header-toolbar">
+
+                        </div>
+                    </div>
+                </header>
+                <div class="content" style="height:100%">
+                    <div class="container">
+                        <div class="section">
+
+
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card" style="height:100%">
+            <div class="card__header">
+                <h4 class="card__title">Room Port Management</h4>
+                <div class="card__subtitle">Add ports to rooms</div>
+            </div>
+            <div class="card__body">
+{% if status %}
+{% if status == "PRT" %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+            {% if category == "ERROR" %}
+          
+                    <div class="alert alert--warning" style="width:300px">
+                        <div class="alert__icon icon-warning-outline"></div>
+                        <div class="alert__message"><b>Warning!</b> {{ message }}</div>
+                    </div>
+                    <br/>
+                            
+            {% endif %}
+            {% if category == "OK" %}
+          
+                    <div class="alert alert--success" style="width:300px">
+                        <div class="alert__icon icon-check-outline"></div>
+                        <div class="alert__message"><b>Congratulations!</b> {{ message }} </div>
+                    </div> 
+                    <br/>             
+            {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+{% endif %}
+{% endif %}
+<div class="card_form">
+<form action="/add_port_to_room" method="POST">
+ {{ formport.csrf }}
+<div class="input text">
+    <label for="room" style="width:50px">Room:</label>
+    {{ formport.room ( id="room" ,style="width:150px ") }} 
+</div>
+<br/>
+  <div class="input text">
+    <label for="port" style="width:50px ">Port:</label>
+    {{ formport.port (id="port" ,style="width:150px "  )}} 
+  </div>
+
+  <div class="button" style="text-align:center!important">
+    <button class="btn btn--secondary">Submit</button>
+  </div>
+</form>
+</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4" >
+        <div class="card" style="height:100%">
+            <div class="card__header">
+                <h4 class="card__title">Service Level Management</h4>
+                <div class="card__subtitle">Assgine room Vlan</div>
+            </div>
+            <div class="card__body">
+{% if status %}
+{% if status == "VLAN" %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}     
+            {% if category == "ERROR" %}
+          
+                    <div class="alert alert--warning" style="width:300px">
+                        <div class="alert__icon icon-warning-outline"></div>
+                        <div class="alert__message"><b>Warning!</b> {{ message }}</div>
+                    </div>
+                    <br/>
+                            
+            {% endif %}
+            {% if category == "OK" %}
+          
+                    <div class="alert alert--success" style="width:300px">
+                        <div class="alert__icon icon-check-outline"></div>
+                        <div class="alert__message"><b>Congratulations!</b> {{ message }} </div>
+                    </div> 
+                    <br/>             
+            {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+{% endif %}
+{% endif %}
+<div class="card_form">
+<form action="/add_vlan" method="POST">
+ {{ formvlan.csrf }}
+<div class="input text">
+
+    <label for="room">Room:</label>
+    {{ formvlan.room (list="rooms", id="room" ,style="width:150px ") }}
+
+</div>
+
+  <div>
+    <label for="port">Vlan:</label>
+    {{ formvlan.vlan (type="text",id="port",style="width:150px ")}} 
+  </div>
+  <div class="button" style="text-align:center!important">
+    <button class="btn btn--secondary">Submit</button>
+  </div>
+</form>
+</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" >
+        <div class="card card--right" style="height:100%">
+            <div class="card__header">
+                <h4 class="card__title">Details</h4>
+                <div class="card__subtitle">Technical Details</div>
+            </div>
+            <div class="card__body">
+                
+                <div class="responsive-table">
+
+                <table class="table table--bordered table--selectable">
+                    <thead>
+                        <tr>
+                            <td>
+                                Switch:
+                            </td>
+                            <td>
+                                Ports
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Siwtch1</td>
+                            <td>0, 1, 2</td>
+                        </tr>
+                        <tr>
+                            <td>Siwtch2</td>
+                            <td> 3, 4, 5</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </br>
+                <table class="table table--bordered table--selectable">
+                    <thead>
+                       <tr>
+                            <td>
+                                Room   :
+                            </td>
+                            <td>
+                                Ports
+                            </td>
+                            <td>
+                                Vlan
+                            </td>                            
+                        </tr>                        
+                    </thead>
+                    <tbody>
+                        {% if rooms_details %}
+                            {% for room in rooms_details %}
+                                <tr>
+                                    <td>{{room['name']}}</td>   
+                                    <td>{{room['ports']}}  </td>
+                                    <td>{{room['vlan']}} </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                      
+                    </tbody>
+                </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+  <datalist id="rooms">
+    <option value="room1">
+    <option value="room2">
+    <option value="All Rooms">
+  </datalist>  
+   
+
+<iframe name="iframe1" id="iframe1" src="topology" align="center"
+        frameborder="0" border="0" cellspacing="0" style="border-style: none;  height: 550px"> </iframe>
+
+                        </div>
+                    </div>
+                </div>
+                <footer class="footer footer--basic">
+                    <div class="footer__links">
+                        <ul class="list">
+                            <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
+                            <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
+                            <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+                            <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
+                            <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms &amp; Conditions</a></li>
+                            <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a></li>
+                            <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie Policy</a></li>
+                            <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    
+
+</body></html>

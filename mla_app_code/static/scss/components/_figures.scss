@@ -1,0 +1,132 @@
+//
+// Figure
+//
+// Styleguide Components.Figure
+//
+
+
+//
+// Layout
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-4">
+//         <div class="subheader">Vertical</div>
+//         <figure class="figure">
+//             <figcaption>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum eget eros ut rutrum. Proin dignissim neque ac porta sagittis. Aliquam eu sem metus. Fusce nibh diam, faucibus eget pretium vitae, pretium ut eros. Fusce tempus quis orci at gravida. Donec ac lectus faucibus sem volutpat dictum sed id libero. Vestibulum id augue eu eros auctor hendrerit non tincidunt est.</figcaption>
+//             <img src="public/img/figure-example-1.jpg">
+//         </figure>
+//     </div>
+//     <div class="col-md-8">
+//         <div class="subheader">Horizontal</div>
+//         <figure class="figure figure--horizontal">
+//             <img src="public/img/figure-example-2.jpg">
+//             <figcaption>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum eget eros ut rutrum. Proin dignissim neque ac porta sagittis. Aliquam eu sem metus. Fusce nibh diam, faucibus eget pretium vitae, pretium ut eros. Fusce tempus quis orci at gravida. Donec ac lectus faucibus sem volutpat dictum sed id libero. Vestibulum id augue eu eros auctor hendrerit non tincidunt est.</figcaption>
+//         </figure>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Components.Figure.Layout
+//
+
+
+//
+// Spacing
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-4">
+//         <div class="subheader">Compressed</div>
+//         <figure class="figure figure--compressed">
+//             <figcaption>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum eget eros ut rutrum. Proin dignissim neque ac porta sagittis. Aliquam eu sem metus. Fusce nibh diam, faucibus eget pretium vitae, pretium ut eros. Fusce tempus quis orci at gravida.</figcaption>
+//             <img src="public/img/figure-example-3.jpg">
+//         </figure>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="subheader">Default</div>
+//         <figure class="figure">
+//             <figcaption>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum eget eros ut rutrum. Proin dignissim neque ac porta sagittis. Aliquam eu sem metus. Fusce nibh diam, faucibus eget pretium vitae, pretium ut eros. Fusce tempus quis orci at gravida.</figcaption>
+//             <img src="public/img/figure-example-3.jpg">
+//         </figure>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="subheader">Loose</div>
+//         <figure class="figure figure--loose">
+//             <figcaption>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum eget eros ut rutrum. Proin dignissim neque ac porta sagittis. Aliquam eu sem metus. Fusce nibh diam, faucibus eget pretium vitae, pretium ut eros. Fusce tempus quis orci at gravida.</figcaption>
+//             <img src="public/img/figure-example-3.jpg">
+//         </figure>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Components.Figure.Spacing
+//
+
+
+//
+// Highlight
+//
+// <blockquote>Add a `figure--highlight` class to highlight to your caption.</blockquote>
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-4">
+//         <figure class="figure figure--highlight">
+//             <figcaption>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum eget eros ut rutrum. Proin dignissim neque ac porta sagittis. Aliquam eu sem metus. Fusce nibh diam, faucibus eget pretium vitae, pretium ut eros. Fusce tempus quis orci at gravida. Donec ac lectus faucibus sem volutpat dictum sed id libero. Vestibulum id augue eu eros auctor hendrerit non tincidunt est.</figcaption>
+//             <img src="public/img/figure-example-4.jpg">
+//         </figure>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Components.Figure.Highlight
+//
+
+@mixin figure-spacing($spacing: $base-spacing-regular) {
+    margin: 0;
+    padding: 0;
+
+    img + figcaption,
+    figcaption + img {
+        padding: $spacing 0 0 0;
+    }
+
+    &.figure--horizontal {
+        img + figcaption {
+            padding: 0 0 0 $spacing;
+        }
+        figcaption + img {
+            padding: 0 $spacing 0 0;
+        }
+    }
+}
+
+.figure {
+
+    @include figure-spacing();
+
+    &.figure--horizontal {
+        display: flex;
+        flex-direction: row;
+
+        img {
+            max-width: 50%;
+            align-self: flex-start;
+        }
+    }
+
+    &.figure--compressed   { @include figure-spacing($base-spacing-compressed); }
+    &.figure--regular      { @include figure-spacing($base-spacing-regular); }
+    &.figure--loose        { @include figure-spacing($base-spacing-loose); }
+
+    &.figure--highlight {
+        figcaption {
+            padding-left: $base-spacing-half;
+            border-left: $base-figure-highlight-width solid $base-accent-color;
+        }
+    }
+}
