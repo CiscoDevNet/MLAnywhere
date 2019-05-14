@@ -1,2 +1,3 @@
-# hold
-High or Low day main app code
+# MLAnywhere
+
+This is a project to simplify the process of deploying Kubeflow onto Any underlying Kubernetes platform
