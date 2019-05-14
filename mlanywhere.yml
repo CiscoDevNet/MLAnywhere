@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mlanywhere
-        image: micdoher/mlanywhere:mlanywhere-v5
+        image: micdoher/mlanywhere:mlanywhere-v23
 
         imagePullPolicy: "IfNotPresent"
 

@@ -1,0 +1,159 @@
+//
+// Typography
+//
+// Styleguide Design.Typography
+//
+
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: normal;
+  font-weight: 100;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTThin.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTThin.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: oblique;
+  font-weight: 100;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTThinOblique.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTThinOblique.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: normal;
+  font-weight: 200;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTExtraLight.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTExtraLight.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: oblique;
+  font-weight: 200;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTExtraLightOblique.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTExtraLightOblique.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: normal;
+  font-weight: 300;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTLight.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTLight.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: oblique;
+  font-weight: 300;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTLightOblique.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTLightOblique.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTRegular.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTRegular.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: oblique;
+  font-weight: 400;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTRegularOblique.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTRegularOblique.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: bold;
+  font-weight: 700;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTBold.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTBold.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: oblique;
+  font-weight: 700;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTBoldOblique.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTBoldOblique.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: normal;
+  font-weight: 900;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTHeavy.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTHeavy.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'CiscoSans';
+  font-style: oblique;
+  font-weight: 900;
+  src: url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTHeavyOblique.woff2') format('woff2'),
+       url('#{$cui-resource-path}/fonts/CiscoSans/CiscoSansTTHeavyOblique.woff') format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+html {
+    height: 100%;
+    font-size: $html-font-size;
+}
+
+.cui body, body.cui {
+    color: $base-font-color;
+    font-family: $base-font-family;
+    line-height: $base-line-height;
+    font-weight: $base-font-weight;
+    font-size: $base-font-size;
+    position: relative;
+    min-width: $min-page-width;
+    max-width: $max-page-width;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+    direction: ltr;
+    text-align: left;
+
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+//
+// Filenames and URLs
+//
+// <blockquote>Add the class `text-darkgreen` for filenames and URLs (which are not rendered as links).</blockquote>
+//
+// Markup:
+// <div class="section">
+//     <h6>Filenames</h6>
+//     <hr>
+//     <div>
+//         <div>AnyConnect Pre-Deployment Package (Linux 64-bit)</div>
+//         <div class="text-darkgreen text-normal">anyconnect-linux64-4.5.02033-predeploy-k9.tar.gz</div>
+//     </div>
+// </div>
+// <div class="section">
+//     <h6>URLs</h6>
+//     <hr>
+//     <div>
+//         <a href="https://www.cisco.com/c/en/us/support/security/asa-5500-series-next-generation-firewalls/tsd-products-support-series-home.html">Security - Cisco ASA 5500-X Series Firewalls</a>
+//         <div>06 Aug 2016 - Find software and support documentation to design, install and upgrade, configure, and troubleshoot Cisco ASA 5500 Series Adaptive Security Appliances.</div>
+//         <div class="text-darkgreen text-normal">https://www.cisco.com/c/en/us/support/security/asa-5500-series-next-generation-firewalls/tsd-products-support-series-home.html</div>
+//     </div>
+// </div>
+//
+// Weight: 10
+//
+// Styleguide Design.Typography.Filenames
+//

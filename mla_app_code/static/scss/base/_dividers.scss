@@ -1,0 +1,173 @@
+//
+// Divider
+//
+// Styleguide Primitives.Divider
+//
+
+
+//
+// Thickness
+//
+// Markup:
+// <div class="panel">
+//     <h6>Default</h6>
+//     <div class="divider"></div>
+//     <h6>Thick</h6>
+//     <div class="divider divider--thick"></div>
+//     <h6>Thicker</h6>
+//     <div class="divider divider--thicker"></div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Primitives.Divider.Thickness
+//
+
+
+//
+// Spacing
+//
+// Markup:
+// <div class="panel">
+// <div class="row">
+//     <div class="col-md-4">
+//         <p>Compressed</p>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//         <div class="divider divider--compressed"></div>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//         <div class="divider divider--compressed"></div>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//     </div>
+//     <div class="col-md-4">
+//         <p>Regular (default)</p>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//         <div class="divider divider--regular"></div>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//         <div class="divider divider--regular"></div>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//     </div>
+//     <div class="col-md-4">
+//         <p>Loose</p>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//         <div class="divider divider--loose"></div>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//         <div class="divider divider--loose"></div>
+//         <div><img src="public/img/short-paragraph.png"></div>
+//     </div>
+// </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Primitives.Divider.Spacing
+//
+
+
+//
+// Accent
+//
+// Markup:
+// <div class="panel">
+//     <div class="divider divider--accent-blue"></div>
+//     <div class="divider divider--thick divider--accent-blue"></div>
+//     <div class="divider divider--thicker divider--accent-blue"></div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Primitives.Divider.Accent
+//
+
+
+//
+// Accent Color
+//
+// Markup:
+// <div class="panel">
+//     <div class="divider divider--thick divider--accent-blue"></div>
+//     <div class="divider divider--thick divider--accent-indigo"></div>
+//     <div class="divider divider--thick divider--accent-success"></div>
+// </div>
+//
+// Weight: 4
+//
+// Styleguide Primitives.Divider.Accent Color
+//
+
+
+//
+// Examples
+//
+// Markup:
+// <div class="panel panel--bordered panel--loose">
+//     <h2>Cisco Aironet 1540 Series</h2>
+//     <div class="divider divider--accent-success"></div>
+//     <div class="row">
+//         <div class="col-lg-3">
+//             <img src="public/img/wireless-1.jpg">
+//         </div>
+//         <div class="col-lg-9">
+//             <h4> Cisco WAP571E Premium Dual Radio Outdoor Access Point</h4>
+//             <p>Don't let outdoor challenges inhibit your wireless connectivity. The Cisco WAP571E access point is purpose-built to meet the demands of your outdoor spaces. It offers a rugged housing (IP66 rated), and works even in rain, snow, and extreme high and low temperatures.</p>
+//             <div class="section">
+//                 <button class="btn btn--secondary">Learn More</button>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="panel panel--loose panel--dkgray">
+//     <h2>THE NETWORK. <span class="text-blue">INTUITIVE.</span></h2>
+//     <div class="divider divider--thicker divider--accent-blue"></div>
+//     <h6>Powered by intent. Informed by context. Growing more intuitive every day.</h6><br>
+//     <div class="section">
+//         <button class="btn btn--white">Watch Video</button>
+//         <button class="btn btn--white-ghost">Get Resources</button>
+//     </div>
+// </div>
+//
+// Weight: 5
+//
+// Styleguide Primitives.Divider.Examples
+//
+
+.divider {
+
+    position: relative;
+    text-align: center;
+
+    @include divider-horizontal();
+    @include divider-horizontal-spacing();
+
+    @each $divider-name, $divider-height in $divider-sizes {
+        &--#{$divider-name} {
+            @include divider-horizontal($thickness: $divider-height);
+        }
+    };
+
+    @each $accent-name, $accent-color in $divider-accent-colors {
+        &--accent-#{$accent-name} {
+            @include divider-accent($background: $accent-color);
+        }
+    };
+
+    &--compressed       { @include divider-horizontal-spacing($base-spacing-compressed); }
+    &--regular          { @include divider-horizontal-spacing($base-spacing-regular); }
+    &--loose            { @include divider-horizontal-spacing($base-spacing-loose); }
+}
+
+// Accent size adjustment
+@each $divider-name, $divider-height in $divider-sizes {
+    @each $accent-name, $accent-color in $divider-accent-colors {
+        .divider--#{$divider-name}.divider--accent-#{$accent-name}:before {
+            top: -($divider-height);
+            height: $divider-height;
+        }
+    }
+}
+
+// Global Modifiers
+
+&.cui--compressed .divider {
+    @include divider-horizontal-spacing($base-spacing-compressed);
+}

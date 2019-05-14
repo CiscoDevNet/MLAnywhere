@@ -1,0 +1,167 @@
+//
+// Alert
+//
+// Styleguide Components.Alert
+//
+
+
+//
+// Colors
+//
+// Markup:
+// <div class="row">
+//     <div class="col-lg-6 col-xl-3">
+//         <div class="subheader">Default</div>
+//         <div class="alert">
+//             <div class="alert__icon icon-info-outline"></div>
+//             <div class="alert__message"><b>Great Work!</b> Your task is now done so please step aside.</div>
+//         </div>
+//     </div>
+//     <div class="col-lg-6 col-xl-3">
+//         <div class="subheader">Warning</div>
+//         <div class="alert alert--warning">
+//             <div class="alert__icon icon-warning-outline"></div>
+//             <div class="alert__message"><b>Warning!</b> Better check yourself, you're not looking too good.</div>
+//         </div>
+//     </div>
+//     <div class="col-lg-6 col-xl-3">
+//         <div class="subheader">Success</div>
+//         <div class="alert alert--success">
+//             <div class="alert__icon icon-check-outline"></div>
+//             <div class="alert__message"><b>Congratulations!</b> You have successfully read this message.</div>
+//         </div>
+//     </div>
+//     <div class="col-lg-6 col-xl-3">
+//         <div class="subheader">Danger</div>
+//         <div class="alert alert--danger" role="alert">
+//             <div class="alert__icon icon-error-outline"></div>
+//             <div class="alert__message"><b>Oh Snap!</b> Change a few things and try submitting again.</div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Components.Alert.Colors
+//
+
+
+//
+// Dismissable
+//
+// Markup:
+// <div class="row">
+//     <div class="col-xl-6">
+//         <div class="alert">
+//             <div class="alert__icon icon-info-outline"></div>
+//             <div class="alert__message">
+//                 <h4>Alert Title</h4>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas metus nulla, commodo a sodales sed, dignissim pretium nunc. Nam et lacus neque. Ut enim massa, sodales tempor convallis et, iaculis ac massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas metus nulla, commodo a sodales sed, dignissim pretium nunc. Nam et lacus neque. Ut enim massa, sodales tempor convallis et, iaculis ac massa.</div>
+//             </div>
+//             <a href="javascript:;" class="alert__close icon-close"></a>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Components.Alert.Dismissable
+//
+
+
+//
+// Examples
+//
+// Markup:
+// <div class="row">
+//     <div class="col-xl-6">
+//         <div class="alert alert--warning">
+//             <div class="alert__icon icon-warning-outline"></div>
+//             <div class="alert__message">
+//                 <h4>Adobe Flash Player Memory Corruption</h4>
+//                 <div>A vulnerability in Adobe Flash Player could allow an unauthenticated remote attacker to execute arbitrary code.</div>
+//                 <a class="base-margin-top" href="javascript:;">Click for details</a>
+//             </div>
+//             <a href="javascript:;" class="alert__close icon-close"></a>
+//         </div>
+//     </div>
+//     <div class="col-xl-6">
+//         <div class="alert alert--danger" role="alert">
+//             <div class="alert__icon icon-error-outline"></div>
+//             <div class="alert__message">
+//                 <h4>Error Detected</h4>
+//                 <div>Encountered an error connecting to device <b>RF_Gateway_10</b>. Reason: Codec mismatch. Make sure both sides are using the same codec and version.</div>
+//             </div>
+//             <a href="javascript:;" class="alert__close icon-close"></a>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Components.Alert.Examples
+//
+
+.alert {
+
+    @include panel(
+        $background: $base-alert-default-background,
+        $color: $base-alert-default-color,
+        $border-color: $base-alert-default-border-color,
+        $border-left-width: 48px,
+        $icon-color: $base-alert-default-icon-color
+    );
+    @include panel-padding();
+
+    // Generate the alert colors from the global variables
+    @each $alert-obj in $alert-colors {
+        &.alert--#{map-get($alert-obj, name)} {
+            @include panel(map-get($alert-obj, params)...);
+            .alert__icon {
+                @if map-has-nested-keys($alert-obj, 'params', 'icon-color') {
+                    color: map-deep-get($alert-obj, 'params', 'icon-color');
+                }
+            }
+        }
+    }
+
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    width: 100%;
+
+    a.alert__close {
+        color: $base-muted-color;
+        margin-left: $base-spacing-half;
+
+        &:hover {
+            color: $base-link-color;
+            text-decoration: none;
+        }
+    }
+
+    &__icon {
+        color: $white;
+        position: absolute;
+        left: -36px;
+        top: 10px;
+        font-size: $base-alert-icon-size;
+    }
+
+    &__icon,
+    &__close {
+        align-self: flex-start;
+    }
+
+    &__message {
+        @include flex-fluid;
+        @include text-break-word;
+
+        a:hover,
+        a:active,
+        a:focus {
+            color: $hover-link-color;
+        }
+    }
+}

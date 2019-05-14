@@ -1,0 +1,273 @@
+//
+// Rating
+//
+// Styleguide Components.Rating
+//
+
+
+//
+// Color
+//
+// <blockquote>Add the class `active` to each star to enable it.</blockquote>
+//
+// Markup:
+// <div class="subheader">Default</div>
+// <div class="rating">
+//     <div class="rating__stars">
+//         <div class="rating__star active" title="4.5 Stars" tabindex="0">
+//             <span class="icon-star-half"></span>
+//         </div>
+//         <div class="rating__star active" title="4 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="3 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="2 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="1 Star" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="subheader">Alternate</div>
+// <div class="rating rating--alt">
+//     <div class="rating__stars">
+//         <div class="rating__star" title="4 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="4 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="3 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="2 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="1 Star" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Components.Rating.Color
+//
+
+
+//
+// Size
+//
+// <blockquote>Once the user has selected the rating add the class `rated` to disable pointer events.</blockquote>
+//
+// Markup:
+// <div class="subheader">Small</div>
+// <div class="rating rating--small">
+//     <div class="rating__stars">
+//         <div class="rating__star" title="5 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="4 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="3 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="2 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="1 Star" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="subheader">Medium (default)</div>
+// <div class="rating">
+//     <div class="rating__stars">
+//         <div class="rating__star" title="5 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="4 Stars" tabindex="0">
+//             <span class="icon-star-half"></span>
+//         </div>
+//         <div class="rating__star active" title="3 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="2 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="1 Star" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="subheader">Large</div>
+// <div class="rating rating--large rated">
+//     <div class="rating__stars">
+//         <div class="rating__star" title="5 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="4 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="3 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="2 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star active" title="1 Star" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Components.Rating.Size
+//
+
+
+
+//
+// Star Types
+//
+// Markup:
+// <div class="subheader">Default</div>
+// <div class="rating">
+//     <div class="rating__stars">
+//         <div class="rating__star" title="5 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="4 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="3 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="2 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="1 Star" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//     </div>
+// </div>
+// <div class="subheader">Empty</div>
+// <div class="rating">
+//     <div class="rating__stars">
+//         <div class="rating__star" title="5 Stars" tabindex="0">
+//             <span class="icon-star-empty"></span>
+//         </div>
+//         <div class="rating__star" title="4 Stars" tabindex="0">
+//             <span class="icon-star-empty"></span>
+//         </div>
+//         <div class="rating__star" title="3 Stars" tabindex="0">
+//             <span class="icon-star-empty"></span>
+//         </div>
+//         <div class="rating__star" title="2 Stars" tabindex="0">
+//             <span class="icon-star-empty"></span>
+//         </div>
+//         <div class="rating__star" title="1 Star" tabindex="0">
+//             <span class="icon-star-empty"></span>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="subheader">Partial</div>
+// <div class="rating">
+//     <div class="rating__stars">
+//         <div class="rating__star" title="5 Stars" tabindex="0">
+//             <span class="icon-star-half"></span>
+//         </div>
+//         <div class="rating__star" title="4 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="3 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="2 Stars" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//         <div class="rating__star" title="1 Star" tabindex="0">
+//             <span class="icon-star"></span>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Components.Rating.Types
+//
+
+.rating {
+    @include clearfix;
+    margin: 0;
+    font-size: 0;
+    text-align: center;
+
+    &.rated {
+        pointer-events: none;
+    }
+
+    &--alt {
+        .rating__star {
+            &.active,
+            &:hover,
+            &:hover ~ .rating__star, {
+                color: $yellow;
+            }
+        }
+    }
+
+    &--small {
+        .rating__star {
+            font-size: $base-rating-font-size-small;
+        }
+    }
+
+    &--large {
+        .rating__star {
+            font-size: $base-rating-font-size-large;
+        }
+    }
+}
+
+.rating__stars {
+    display: inline-block;
+}
+
+.rating__star {
+    float: right;
+    margin-right: $base-rating-margin;
+    color: $base-disabled-color;
+    cursor: pointer;
+    font-size: $base-rating-font-size;
+    line-height: 1;
+    transition: color 0.2s ease;
+
+    &:first-child {
+        margin-right: 0;
+    }
+
+    &:focus {
+        @include focus-outline;
+    }
+
+    &.active,
+    &:hover,
+    &:hover ~ .rating__star, {
+        color: $base-accent-color;
+        text-decoration: none;
+    }
+
+    &.active {
+        animation: bounce 1s linear;
+    }
+}

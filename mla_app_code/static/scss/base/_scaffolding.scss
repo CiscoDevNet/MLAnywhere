@@ -1,0 +1,402 @@
+//
+// Headings
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="section">
+//             <h1>H1 Heading</h1>
+//             <p>Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque egestas sit amet vel nunc. Nunc lobortis dui neque, quis accumsan dolor. Aenean aliquet dignissim semper.</p>
+//         </div>
+//         <div class="section">
+//             <h2>H2 Heading</h2>
+//             <p>Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque egestas sit amet vel nunc. Nunc lobortis dui neque, quis accumsan dolor. Aenean aliquet dignissim semper.</p>
+//         </div>
+//         <div class="section">
+//             <h3>H3 Heading</h3>
+//             <p>Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque egestas sit amet vel nunc. Nunc lobortis dui neque, quis accumsan dolor. Aenean aliquet dignissim semper.</p>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="section">
+//             <h4>H4 Heading</h4>
+//             <p>Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque egestas sit amet vel nunc. Nunc lobortis dui neque, quis accumsan dolor. Aenean aliquet dignissim semper.</p>
+//         </div>
+//         <div class="section">
+//             <h5>H5 Heading</h5>
+//             <p>Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque egestas sit amet vel nunc. Nunc lobortis dui neque, quis accumsan dolor. Aenean aliquet dignissim semper.</p>
+//         </div>
+//         <div class="section">
+//             <h6>H6 Heading</h6>
+//             <p>Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque egestas sit amet vel nunc. Nunc lobortis dui neque, quis accumsan dolor. Aenean aliquet dignissim semper.</p>
+//         </div>
+//      </div>
+//  </div>
+//
+// Weight: 2
+//
+// Styleguide Design.Typography.Headings
+//
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    margin: 0;
+    font-family: inherit;
+    line-height: $header-line-height;
+
+    small {
+        color: $base-muted-color;
+    }
+}
+
+@each $heading, $heading-size, $heading-weight in $headings {
+    #{$heading}, .#{$heading} {
+        font-size: $heading-size;
+        font-weight: $heading-weight;
+    }
+}
+
+
+//
+// Display Headings
+//
+// Markup:
+// <h1 class="display-0">Display Heading 0</h1>
+// <h1 class="display-1">Display Heading 1</h1>
+// <h1 class="display-2">Display Heading 2</h1>
+// <h1 class="display-3">Display Heading 3</h1>
+// <h1 class="display-4">Display Heading 4</h1>
+//
+// Weight: 3
+//
+// Styleguide Design.Typography.Display Headings
+//
+
+.display-0 { @include display-size-0; }
+.display-1 { @include display-size-1; }
+.display-2 { @include display-size-2; }
+.display-3 { @include display-size-3; }
+.display-4 { @include display-size-4; }
+
+@include media-breakpoint-down(xs) {
+    .display-0-xs { @include display-size-0; }
+    .display-1-xs { @include display-size-1; }
+    .display-2-xs { @include display-size-2; }
+    .display-3-xs { @include display-size-3; }
+    .display-4-xs { @include display-size-4; }
+}
+@include media-breakpoint-down(sm) {
+    .display-0-sm { @include display-size-0; }
+    .display-1-sm { @include display-size-1; }
+    .display-2-sm { @include display-size-2; }
+    .display-3-sm { @include display-size-3; }
+    .display-4-sm { @include display-size-4; }
+}
+@include media-breakpoint-down(md) {
+    .display-0-md { @include display-size-0; }
+    .display-1-md { @include display-size-1; }
+    .display-2-md { @include display-size-2; }
+    .display-3-md { @include display-size-3; }
+    .display-4-md { @include display-size-4; }
+}
+
+
+
+//
+// Subheadings
+//
+// <blockquote>Lighten up your heading text by adding class `subheading` to any heading element.</blockquote>
+//
+// Markup:
+// <h1>Regular Heading</h1>
+// <h2 class="subheading">Subheading</h2>
+// <div class="subheader">Subtitle</div>
+//
+// Weight: 3
+//
+// Styleguide Design.Typography.Subheadings
+//
+
+.subheading {
+    color: $base-muted-color;
+}
+.subheader {
+    text-transform: uppercase;
+    margin-bottom: $base-spacing;
+    font-weight: bold;
+
+    @include media-breakpoint-down(xs) {
+        font-size: $base-font-size-xs !important;
+    }
+}
+.subtitle {
+    font-size: 16px;
+    font-weight: 300;
+}
+
+
+//
+// Paragraphs
+//
+// Markup:
+// <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.</p>
+// <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.</p>
+//
+// Weight: 4
+//
+// Styleguide Design.Typography.Paragraphs
+//
+
+p {
+    margin: $base-spacing 0;
+}
+
+ul, ol {
+    margin: 0;
+    padding: 0 0 0 $base-spacing;
+
+    &.list--unstyled {
+        @include list--unstyled;
+
+        ul, ol {
+            @include list--unstyled;
+        }
+    }
+}
+
+hr {
+    border-bottom: $base-border;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    margin: ($base-spacing * 0.5) 0;
+}
+
+hr.hr--qtr,
+hr.divider-qtr {
+    width: 25%;
+    margin: auto;
+}
+
+hr.divider--skinny {
+    margin: auto auto $base-spacing * 1.25;
+    padding-top: $base-spacing * 1.25;
+}
+
+img,
+picture {
+    margin: 0;
+    border: 0;
+    max-width: 100%;
+}
+
+img.img {
+    &--fluid {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+}
+
+* {
+    box-sizing: inherit;
+    &:before, &:after {
+        box-sizing: inherit;
+    }
+}
+
+.content-body {
+    @include full-page;
+    display: flex;
+    flex-direction: column;
+    background: $base-background-color;
+}
+
+.content-body--alt,
+.content-background--alt {
+    background: $alt-background-color;
+}
+
+.content {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; // Enable momentum scrolling on touch devices
+    background: $base-background-color;
+
+    &.content--alt {
+        background: $alt-background-color;
+    }
+
+    &__main {
+        padding-top: $base-spacing * 0.5;
+        padding-bottom: $base-spacing * 0.5;
+
+        @include media-breakpoint-up(md) {
+            padding-top: $base-spacing;
+            padding-bottom: $base-spacing;
+        }
+
+        @include media-breakpoint-up(lg) {
+            padding-top: $base-spacing * 1.5;
+            padding-bottom: $base-spacing * 1.5;
+        }
+
+        &--alt {
+            background: $alt-background-color;
+        }
+    }
+}
+
+// Sticky Footer
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    background: $base-background-color;
+    height: 100%;
+
+    .content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .footer {
+        flex: none;
+        background-color: $footer-background-color;
+    }
+}
+
+.container,
+.container-fluid {
+    padding-right: $base-spacing;
+    padding-left: $base-spacing;
+}
+
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+input,
+select,
+textarea,
+button {
+    color: $base-font-color;
+    font-size: $base-font-size;
+    font-family: $base-font-family;
+    font-weight: inherit;
+}
+
+iframe {
+  	width: 100%;
+  	height: 100%;
+  	border: 1px solid $base-border-color;
+  	margin: ($base-spacing * 0.5) 0;
+  	display: inline-block;
+}
+
+.content-fluid {
+
+    display: flex;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+
+    main {
+        flex: 1 100%;
+        flex-direction: column;
+        overflow: auto;
+        position: relative;
+        max-width: $max-page-width;
+
+        .footer {
+            flex: none;
+            overflow: hidden;
+            background-color: $footer-background-color;
+        }
+    }
+}
+
+// Global Modifiers
+
+&.cui--wide {
+    .container {
+        max-width: 1600px;
+    }
+}
+
+&.cui--headermargins {
+    h1, h2, h3, h4, h5, h6,
+    .h1, .h2, .h3, .h4, .h5, .h6 {
+        margin: $heading-margin;
+    }
+}
+
+&.cui--sticky {
+    main {
+        display: flex;
+    }
+}
+
+//
+// Globals
+//
+// Styleguide Utilities.Globals
+//
+
+
+//
+// Global Modifiers
+//
+// <blockquote>Global modifiers you add to your body tag to modify behavior or spacing globally.</blockquote>
+//
+// Markup:
+// <div class="responsive-table">
+//     <table class="table table--loose">
+//         <thead>
+//             <tr>
+//                 <th>Class</th>
+//                 <th>Description</th>
+//             </tr>
+//         </thead>
+//         <tbody>
+//             <tr>
+//                 <td>cui--animated</td>
+//                 <td>Toggles global animation on across all patterns</td>
+//             </tr>
+//             <tr>
+//                 <td>cui--compressed</td>
+//                 <td>Toggles compressed view on. Useful for data dense applications. Enables the 'compressed' spacing on all supported patterns.</td>
+//             </tr>
+//             <tr>
+//                 <td>cui--headerMargins</td>
+//                 <td>Toggles h1-h6 header margins (margin bottom). By default, header elements have no margins.</td>
+//             </tr>
+//             <tr>
+//                 <td>cui--wide</td>
+//                 <td>Toggles a wide container page bed (1600px). By default, the page bed is 1440px.</td>
+//             </tr>
+//             <tr>
+//                 <td>cui--sticky</td>
+//                 <td>Toggles whether the header and footer are sticky (affixed to top and bottom of page). By default sticky is disabled.</td>
+//             </tr>
+//         </tbody>
+//     </table>
+// </div>
+//
+// Styleguide Utilities.Globals.Modifiers
+//
+
+
+//
+// Downloads
+//
+// Styleguide Downloads
+//
+
+//
+// Changelog
+//
+// Styleguide Changelog
+//

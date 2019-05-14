@@ -1,0 +1,355 @@
+//
+// Panel
+//
+// Styleguide Primitives.Panel
+//
+
+
+//
+// Color
+//
+// Markup:
+// <div class="row no-gutters">
+//     <div class="col-md-4">
+//         <div class="panel panel--loose panel--bordered">
+//             <span class="text-uppercase">Default</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--ltgray panel--loose">
+//             <span class="text-uppercase">Light Gray</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--mdgray panel--loose">
+//             <span class="text-uppercase">Medium Gray</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--dkgray panel--loose">
+//             <span class="text-uppercase">Dark Gray</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--blue panel--loose">
+//             <span class="text-uppercase">Blue</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--vibblue panel--loose">
+//             <span class="text-uppercase">Vibrant Blue</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--indigo panel--loose">
+//             <span class="text-uppercase">Indigo</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--success panel--loose">
+//             <span class="text-uppercase">Success</span>
+//             <a href="javascript:;">link</a>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Primitives.Panel.Color
+//
+
+
+//
+// Padding
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-4">
+//         <div class="panel panel--compressed panel--bordered">
+//             <div>Compressed</div>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--bordered">
+//             <div>Regular (default)</div>
+//         </div>
+//     </div>
+//     <div class="col-md-4">
+//         <div class="panel panel--loose panel--bordered">
+//             <div>Loose</div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Primitives.Panel.Padding
+//
+
+
+//
+// Spacing
+//
+// <blockquote>See <a href="section-list.html#list">@List</a> pattern for how to manage panel spacing.</blockquote>
+//
+// Weight: 3
+//
+// Styleguide Primitives.Panel.Spacing
+//
+
+
+//
+// Raised
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-3">
+//         <div class="panel panel--blue">
+//             <div>Flat (default)</div>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="panel panel--bordered panel--raised-small">
+//             <div>Raised (small)</div>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="panel panel--bordered panel--raised">
+//             <div>Raised (medium)</div>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="panel panel--bordered panel--raised-large">
+//             <div>Raised (large)</div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 4
+//
+// Styleguide Primitives.Panel.Raised
+//
+
+
+//
+// Bordered
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="panel panel--bordered">
+//             <div>Bordered</div>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="panel panel--bordered-top">
+//             <div>Bordered Top</div>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="panel panel--bordered-right">
+//             <div>Bordered Right</div>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="panel panel--bordered-bottom">
+//             <div>Bordered Bottom</div>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="panel panel--bordered-left">
+//             <div>Bordered Left</div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 5
+//
+// Styleguide Primitives.Panel.Bordered
+//
+
+
+//
+// Well
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="panel panel--ltgray panel--well">
+//             <div>Well</div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 6
+//
+// Styleguide Primitives.Panel.Well
+//
+
+.panel-group { // Deprecated. Wrap panels in unordered list
+    .panel + .panel {
+        margin-top: 2px;
+    }
+    .panel-group__header {
+        margin: 0 ($base-spacing * 0.5);
+    }
+}
+
+.panel {
+    display: block;
+    position: relative;
+    margin: 0;
+    border: 0 none;
+    height: auto;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+    &__header {
+        user-select: none;
+    }
+
+    &__header,
+    &__body,
+    &__footer {
+        @include panel-section();
+    }
+
+    @include panel();
+    @include panel-padding();
+
+    @each $panel-obj in $panel-colors {
+        &--#{map-get($panel-obj, name)} {
+            @include panel(map-get($panel-obj, params)...);
+        }
+    }
+
+    &--raised,
+    &--raised-medium    { box-shadow: $base-box-shadow; }
+    &--raised-small     { box-shadow: $base-box-shadow-small; }
+    &--raised-large     { box-shadow: $base-box-shadow-large; }
+
+    &--nopadding {
+        @include panel-padding($padding: 0);
+    }
+
+    &--content {
+        box-sizing: content-box;
+    }
+
+    &--fill {
+        height: 100%;
+    }
+
+    &--skinny,
+    &--compressed {
+        @include panel-padding($padding: $base-panel-compressed-padding);
+    }
+
+    &--regular {
+        @include panel-padding($padding: $base-panel-regular-padding);
+    }
+
+    &--loose,
+    &--xspace {
+        @include panel-padding($padding: $base-panel-loose-padding);
+    }
+
+    &--toolbar {
+        display: flex;
+        align-items: center;
+    }
+
+    &--bordered         { border: $base-border; }
+    &--bordered-top     { border-top: $base-border; }
+    &--bordered-right   { border-right: $base-border; }
+    &--bordered-bottom  { border-bottom: $base-border; }
+    &--bordered-left    { border-left: $base-border; }
+
+    &--hover {
+        &:hover {
+            background-color: $base-background-color;
+        }
+    }
+
+    &--active {
+        box-shadow: inset 0 0 0 2px $base-accent-color;
+    }
+
+    &--transparency {
+        z-index: 1;
+        color: $white;
+        background-color: rgba($white, .25);
+
+        &:hover {
+            color: $white;
+            background-color: rgba($white, .15);
+        }
+
+        &.panel--blue {
+            background-color: rgba($cisco-blue, .75);
+            &:hover {
+                background-color: rgba($cisco-blue, .5);
+            }
+        }
+        &.panel--warning {
+            background-color: rgba($warning, .50);
+            &:hover {
+                background-color: rgba($warning, .75);
+            }
+        }
+
+        &:hover {
+
+        }
+    }
+
+    &--well {
+        box-shadow: $base-panel-well;
+    }
+
+    &--fluid {
+        height: 100%;
+    }
+}
+
+a.panel {
+    cursor: pointer;
+    @each $panel-obj in $panel-colors {
+        &--#{map-get($panel-obj, name)}:hover,
+        &--#{map-get($panel-obj, name)}:focus,
+        &--#{map-get($panel-obj, name)}:active {
+            @include panel-hover(
+                $link-color: map-deep-get($panel-obj, 'params', 'link-color'),
+                $background: map-deep-get($panel-obj, 'params', 'background'),
+                $embellish: map-deep-get($panel-obj, 'params', 'embellish')
+            );
+        }
+    }
+}
+
+.panels {
+    @include panel-margin();
+
+    &--striping {
+        > .panel:nth-child(odd) {
+            background: $white;
+        }
+
+        > .panel:nth-child(even) {
+            background: $off-white;
+        }
+    }
+
+    &--compressed   { @include panel-margin($base-spacing-compressed 0); }
+    &--regular      { @include panel-margin($base-spacing-regular 0); }
+    &--loose        { @include panel-margin($base-spacing-loose 0); }
+}

@@ -1,0 +1,258 @@
+//
+// Timeline
+//
+// Styleguide Components.Timeline
+//
+
+
+//
+// Color
+//
+// Markup:
+// <div class="timeline">
+//     <div class="timeline__list">
+//         <div class="timeline__item">
+//             <div class="timeline__icon"></div>
+//             <div class="timeline__time">6 hours ago</div>
+//             <div class="timeline__content">
+//                 <div class="text-bold">Default</div>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar accumsan leo, quis egestas quam luctus non. Donec tortor risus, finibus non porta ut, fringilla sed neque. Morbi scelerisque sem magna, nec scelerisque nisl egestas nec. Vestibulum a tellus eget erat dapibus interdum vel varius sapien. Suspendisse bibendum imperdiet lectus at efficitur. Donec fermentum justo id tortor maximus, id feugiat dui accumsan. Donec tellus est, maximus in enim id, porttitor blandit eros. Maecenas vel neque vitae felis cursus congue. Aenean vulputate ullamcorper velit eu hendrerit</div>
+//                 <div>Software Upgrade Recommended</div>
+//                 <a>link</a>
+//             </div>
+//         </div>
+//         <div class="timeline__item">
+//             <div class="timeline__icon timeline--success"></div>
+//             <div class="timeline__time">Feb 3, 2017</div>
+//             <div class="timeline__content">
+//                 <div class="text-bold text-success">Success</div>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar accumsan leo, quis egestas quam luctus non. Donec tortor risus, finibus non porta ut, fringilla sed neque. Morbi scelerisque sem magna, nec scelerisque nisl egestas nec. Vestibulum a tellus eget erat dapibus interdum vel varius sapien. Suspendisse bibendum imperdiet lectus at efficitur. Donec fermentum justo id tortor maximus, id feugiat dui accumsan. Donec tellus est, maximus in enim id, porttitor blandit eros. Maecenas vel neque vitae felis cursus congue. Aenean vulputate ullamcorper velit eu hendrerit</div>
+//                 <a>link</a>
+//             </div>
+//         </div>
+//         <div class="timeline__item">
+//             <div class="timeline__icon timeline--info"></div>
+//             <div class="timeline__time">2 years ago</div>
+//             <div class="timeline__content">
+//                 <div class="text-bold text-blue">Info</div>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar accumsan leo, quis egestas quam luctus non. Donec tortor risus, finibus non porta ut, fringilla sed neque. Morbi scelerisque sem magna, nec scelerisque nisl egestas nec. Vestibulum a tellus eget erat dapibus interdum vel varius sapien. Suspendisse bibendum imperdiet lectus at efficitur. Donec fermentum justo id tortor maximus, id feugiat dui accumsan. Donec tellus est, maximus in enim id, porttitor blandit eros. Maecenas vel neque vitae felis cursus congue. Aenean vulputate ullamcorper velit eu hendrerit</div>
+//                 <a>link</a>
+//             </div>
+//         </div>
+//         <div class="timeline__item">
+//             <div class="timeline__icon timeline--warning"></div>
+//             <div class="timeline__time">10/22/2017 03:16:00</div>
+//             <div class="timeline__content">
+//                 <div class="text-bold text-warning">Warning</div>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar accumsan leo, quis egestas quam luctus non. Donec tortor risus, finibus non porta ut, fringilla sed neque. Morbi scelerisque sem magna, nec scelerisque nisl egestas nec. Vestibulum a tellus eget erat dapibus interdum vel varius sapien. Suspendisse bibendum imperdiet lectus at efficitur. Donec fermentum justo id tortor maximus, id feugiat dui accumsan. Donec tellus est, maximus in enim id, porttitor blandit eros. Maecenas vel neque vitae felis cursus congue. Aenean vulputate ullamcorper velit eu hendrerit</div>
+//                 <a>link</a>
+//             </div>
+//         </div>
+//         <div class="timeline__item">
+//             <div class="timeline__icon timeline--danger"></div>
+//             <div class="timeline__time">2 months ago</div>
+//             <div class="timeline__content">
+//                 <div class="text-bold text-danger">Danger</div>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar accumsan leo, quis egestas quam luctus non. Donec tortor risus, finibus non porta ut, fringilla sed neque. Morbi scelerisque sem magna, nec scelerisque nisl egestas nec. Vestibulum a tellus eget erat dapibus interdum vel varius sapien. Suspendisse bibendum imperdiet lectus at efficitur. Donec fermentum justo id tortor maximus, id feugiat dui accumsan. Donec tellus est, maximus in enim id, porttitor blandit eros. Maecenas vel neque vitae felis cursus congue. Aenean vulputate ullamcorper velit eu hendrerit</div>
+//                 <a>link</a>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Components.Timeline.Color
+//
+
+
+//
+// Alignment
+//
+// <blockquote>You can align your timeline items top (default) or centered.</blockquote>
+//
+// Markup:
+// <div class="timeline">
+//     <div class="timeline__list">
+//         <div class="timeline__item">
+//             <div class="timeline__icon"></div>
+//             <div class="timeline__time">6 hours ago</div>
+//             <div class="timeline__content">
+//                 <div class="text-bold">Alignment: Top (default)</div>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar accumsan leo, quis egestas quam luctus non. Donec tortor risus, finibus non porta ut, fringilla sed neque. Morbi scelerisque sem magna, nec scelerisque nisl egestas nec. Vestibulum a tellus eget erat dapibus interdum vel varius sapien. Suspendisse bibendum imperdiet lectus at efficitur. Donec fermentum justo id tortor maximus, id feugiat dui accumsan. Donec tellus est, maximus in enim id, porttitor blandit eros. Maecenas vel neque vitae felis cursus congue. Aenean vulputate ullamcorper velit eu hendrerit</div>
+//                 <div>Software Upgrade Recommended</div>
+//                 <a>link</a>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="timeline timeline--centered">
+//     <div class="timeline__list">
+//         <div class="timeline__item">
+//             <div class="timeline__icon"></div>
+//             <div class="timeline__time">6 hours ago</div>
+//             <div class="timeline__content">
+//                 <div class="text-bold">Alignment: Centered</div>
+//                 <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pulvinar accumsan leo, quis egestas quam luctus non. Donec tortor risus, finibus non porta ut, fringilla sed neque. Morbi scelerisque sem magna, nec scelerisque nisl egestas nec. Vestibulum a tellus eget erat dapibus interdum vel varius sapien. Suspendisse bibendum imperdiet lectus at efficitur. Donec fermentum justo id tortor maximus, id feugiat dui accumsan. Donec tellus est, maximus in enim id, porttitor blandit eros. Maecenas vel neque vitae felis cursus congue. Aenean vulputate ullamcorper velit eu hendrerit</div>
+//                 <div>Software Upgrade Recommended</div>
+//                 <a>link</a>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Components.Timeline.Alignment
+//
+
+
+//
+// Display
+//
+// <blockquote>By default the timeline items are displayed as inline elements. You can force the items to be full width block-level elements by specifying the `timeline--block modifier`</blockquote>
+//
+// Markup:
+// <div class="timeline">
+//     <div class="timeline__list">
+//         <div class="timeline__item">
+//             <div class="timeline__icon"></div>
+//             <div class="timeline__time">6 hours ago</div>
+//             <div class="timeline__content">
+//                 <div class="panel panel--bordered">
+//                     <div class="text-bold">Display: Inline (default)</div>
+//                     <div>Software Upgrade Recommended</div>
+//                     <a>link</a>
+//                 </div>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+// <br>
+// <div class="timeline timeline--block">
+//     <div class="timeline__list">
+//         <div class="timeline__item">
+//             <div class="timeline__icon"></div>
+//             <div class="timeline__time">6 hours ago</div>
+//             <div class="timeline__content">
+//                 <div class="panel panel--bordered">
+//                     <div class="text-bold">Display: Block</div>
+//                     <div>Software Upgrade Recommended</div>
+//                     <a>link</a>
+//                 </div>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Components.Timeline.Display
+//
+
+.timeline {
+    position: relative;
+
+    &__item {
+        display: inline-flex;
+        align-items: flex-start;
+        position: relative;
+        margin: $base-spacing auto;
+        padding: $base-spacing * 0.5;
+        width: 100%;
+
+        &:hover, &:focus, &:active {
+            cursor: default;
+            background-color: $base-hover-color;
+            transition: background-color .5s;
+        }
+    }
+
+    &--centered {
+        .timeline__item {
+            align-items: center;
+        }
+    }
+
+    &--block {
+        .timeline__content {
+            width: 100%;
+        }
+    }
+
+    &__icon {
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        left: 139px;
+        z-index: 2;
+        border: 5px solid $base-background-color;
+        background-color: $base-font-color;
+    }
+
+    &__time {
+        float: left;
+        width: 125px;
+        min-width: 125px;
+        text-align: right;
+        font-style: italic;
+        padding-right: $base-spacing-half;
+    }
+
+    &__content {
+        margin-left: 50px;
+    }
+
+    &:after {
+        background-color: $cui-timeline-line-color;
+        content: ' ';
+        position: absolute;
+        display: block;
+        width: $cui-timeline-line-width;
+        top: 0;
+        left: 150px;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    @include media-breakpoint-down(sm) {
+        &__time {
+            font-size: $small-font-size;
+        }
+    }
+}
+
+.timeline__icon.timeline--success   { background-color: $success; }
+.timeline__icon.timeline--info      { background-color: $base-accent-color; }
+.timeline__icon.timeline--warning   { background-color: $warning; }
+.timeline__icon.timeline--danger    { background-color: $danger; }
+
+// Global Modifiers
+
+&--animated .timeline,
+.timeline.timeline--animation {
+    .timeline__item {
+        &:hover, &:focus, &:active {
+            cursor: default;
+            transition: background-color .5s;
+
+            .timeline__icon {
+                animation: pulseShadow 2s infinite;
+            }
+            .timeline__icon.timeline--info {
+                animation: pulseShadowInfo 2s infinite;
+            }
+            .timeline__icon.timeline--success {
+                animation: pulseShadowSuccess 2s infinite;
+            }
+            .timeline__icon.timeline--warning {
+                animation: pulseShadowWarning 2s infinite;
+            }
+            .timeline__icon.timeline--danger {
+                animation: pulseShadowDanger 2s infinite;
+            }
+        }
+    }
+}

@@ -1,0 +1,1282 @@
+//
+// Checkbox
+//
+// sketch
+//
+// Styleguide Primitives.Checkbox
+//
+
+
+//
+// States
+//
+// Markup:
+// <div class="panel">
+//     <div class="container-fluid">
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Pressed</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Primitives.Checkbox.States
+//
+
+
+//
+// Layout
+//
+// <blockquote>Checkbox elements are stacked by default. Add the form group modifier <i>form-group--inline</i> to align them horizontally.</blockquote>
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <div class="subheader">Stacked (default)</div>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                <span class="checkbox__label hidden-xs">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <div class="subheader">Inline</div>
+//         <div class="form-group form-group--inline">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Three</span>
+//             </label>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Primitives.Checkbox.Layout
+//
+
+
+//
+// Spacing
+//
+// <blockquote>Wrap your checkbox elements in a form-group to control spacing. This applies to both inline and stacked checkbox elements.</blockquote>
+//
+// Markup:
+// <div class="row no-gutters">
+//     <div class="col-md-3">
+//         <div class="subheader">Compressed</div>
+//         <div class="form-group form-group--inline form-group--compressed">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline form-group--compressed">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline form-group--compressed">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//         <hr>
+//         <div class="form-group form-group--compressed">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--compressed">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--compressed">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader">Regular (default)</div>
+//         <div class="form-group form-group--inline">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//         <hr>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader">Loose</div>
+//         <div class="form-group form-group--inline form-group--loose">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline form-group--loose">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline form-group--loose">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//         <hr>
+//         <div class="form-group form-group--loose">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--loose">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--loose">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-3">
+//         <div class="subheader">None</div>
+//         <div class="form-group form-group--inline form-group--nospacing">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline form-group--nospacing">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--inline form-group--nospacing">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//         <hr>
+//         <div class="form-group form-group--nospacing">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">One</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--nospacing">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Two</span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--nospacing">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Three</span>
+//             </label>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Primitives.Checkbox.Spacing
+//
+
+
+//
+// Allowed Backgrounds
+//
+// <blockquote>Checkboxes are only allowed on the following panels.</blockquote>
+//
+// Markup:
+// <div class="panel">
+//     <div class="container-fluid">
+//     <h6>WHITE</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Pressed</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--ltgray">
+//     <div class="container-fluid">
+//     <h6>LIGHT GRAY</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Pressed</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--dkgray">
+//     <div class="container-fluid">
+//     <h6>DARK GRAY</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Pressed</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--indigo">
+//     <div class="container-fluid">
+//     <h6>INDIGO</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Pressed</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--success">
+//     <div class="container-fluid">
+//     <h6>GREEN</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Pressed</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+// <div class="panel panel--blue">
+//     <div class="container-fluid">
+//     <h6>BLUE</h6>
+//     <div class="row">
+//         <div class="col-2">
+//             <div>&nbsp;</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Normal</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Hover</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Pressed</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Focus</div>
+//         </div>
+//         <div class="col-2">
+//             <div class="subheader">Disabled</div>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">ON</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="row half-margin-bottom">
+//         <div class="col-2">
+//             <div class="text-right">OFF</div>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="active hover">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox">
+//                 <input type="checkbox" class="focus">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//         <div class="col-2">
+//             <label class="checkbox disabled">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label hidden-xs">Label</span>
+//             </label>
+//         </div>
+//     </div>
+//     </div>
+// </div>
+//
+// Weight: 4
+//
+// Styleguide Primitives.Checkbox.AllowedBackgrounds
+//
+
+
+//
+// Examples
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-6">
+//         <h2 class="section">Be Positive</h2>
+//         <blockquote class="base-margin-bottom">Use positive and active wording for checkbox labels, so that it’s perfectly clear what will happen if the user turns on the checkbox. Avoid negations such as “Don’t send me notifications” which would mean that the user would have to check the box in order for something not to happen.</blockquote>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Enable IP Routing</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Activate Feature</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Install License</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <h2 class="section">Label Wrapping</h2>
+//         <blockquote class="base-margin-bottom">By default, checkbox labels are wrapped. You can prevent wrapping by adding the modifier <i>checkbox--nowrap</i>. We recommend that you set the checkbox title attribute to the full label text when wrapping is disabled.</blockquote>
+//         <div class="form-group">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Wrapped. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum leo turpis, lacinia et sem sed, luctus molestie nisi. Vestibulum dignissim scelerisque scelerisque. Nunc sagittis felis sem. Curabitur scelerisque erat eget fermentum suscipit. Phasellus venenatis sed leo ut luctus. Fusce sagittis risus et eleifend eleifend. Quisque vitae enim fermentum mauris interdum maximus. Vestibulum hendrerit augue eget mattis semper. Aliquam laoreet sem quis felis aliquam luctus. Phasellus congue, tellus ornare iaculis viverra, quam diam fringilla lacus, non finibus turpis metus eu risus.</span>
+//             </label>
+//         </div>
+//         <div class="form-group">
+//             <label class="checkbox checkbox--nowrap" title="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum leo turpis, lacinia et sem sed, luctus molestie nisi. Vestibulum dignissim scelerisque scelerisque. Nunc sagittis felis sem. Curabitur scelerisque erat eget fermentum suscipit. Phasellus venenatis sed leo ut luctus. Fusce sagittis risus et eleifend eleifend. Quisque vitae enim fermentum mauris interdum maximus. Vestibulum hendrerit augue eget mattis semper. Aliquam laoreet sem quis felis aliquam luctus. Phasellus congue, tellus ornare iaculis viverra, quam diam fringilla lacus, non finibus turpis metus eu risus.">
+//                 <input type="checkbox">
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">Unwrapped. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum leo turpis, lacinia et sem sed, luctus molestie nisi. Vestibulum dignissim scelerisque scelerisque. Nunc sagittis felis sem. Curabitur scelerisque erat eget fermentum suscipit. Phasellus venenatis sed leo ut luctus. Fusce sagittis risus et eleifend eleifend. Quisque vitae enim fermentum mauris interdum maximus. Vestibulum hendrerit augue eget mattis semper. Aliquam laoreet sem quis felis aliquam luctus. Phasellus congue, tellus ornare iaculis viverra, quam diam fringilla lacus, non finibus turpis metus eu risus.</span>
+//             </label>
+//         </div>
+//     </div>
+//     <div class="col-md-6">
+//         <h2 class="section">Switch versus Checkbox</h2>
+//         <blockquote class="base-margin-bottom">For a binary choice, the main difference between a switch and a checkbox is that the checkbox is for status and the switch is for action.<br><br>In the example below, the use of a switch is more clear than the use of a checkbox to turn the WiFi on.</blockquote>
+//         <div class="form-group form-group--loose">
+//             <div>WiFi</div>
+//             <label class="switch switch--small">
+//                 <input type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">On</span>
+//                 <span class="base-margin-left">
+//                     <span class="icon-arrow-left-tail half-margin-right"></span>
+//                     <span>More clear</span>
+//                 </span>
+//             </label>
+//         </div>
+//         <div class="form-group form-group--loose">
+//             <label class="checkbox">
+//                 <input type="checkbox" checked>
+//                 <span class="checkbox__input"></span>
+//                 <span class="checkbox__label">WiFi On</span>
+//                 <span class="text-danger base-margin-left">
+//                     <span class="icon-arrow-left-tail half-margin-right"></span>
+//                     <span>Less clear</span>
+//                 </span>
+//             </label>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 5
+//
+// Styleguide Primitives.Checkbox.Examples
+//
+
+@mixin cui-checkbox(
+    $background-disabled:       "",
+    $background-normal-on:      "",
+    $background-normal-off:     "",
+    $background-hover-on:       "",
+    $background-hover-off:      "",
+    $background-pressed:        "",
+    $background-focus:          "",
+    $border-disabled:           "",
+    $border-hover:              "",
+    $border-focus:              "",
+    $checkmark-disabled:        "",
+    $color-disabled:            "",
+    $color-normal:              "",
+    $outline-color:             "")
+{
+    &.disabled,
+    &[disabled] {
+        opacity: 1;
+        input {
+            &:checked {
+                ~ .checkbox__input:before {
+                    background-color: $background-disabled;
+                    box-shadow: inset 0 0 0 $cui-checkbox-border-width $border-disabled;
+                }
+                ~ .checkbox__input:after {
+                    color: $checkmark-disabled;
+                }
+            }
+            ~ .checkbox__input:before {
+                background-color: $background-disabled;
+                box-shadow: inset 0 0 0 $cui-checkbox-border-width $border-disabled;
+            }
+        }
+    }
+    input {
+        @include hidden-input;
+        display: block;
+        position: absolute;
+        width: $cui-checkbox-size;
+        height: $cui-checkbox-size;
+        margin: 0;
+
+        &.hover, &:hover {
+            ~ .checkbox__input:before {
+                box-shadow: inset 0 0 0 $cui-checkbox-border-width-hover $border-hover;
+            }
+        }
+        &.checked, &:checked {
+            ~ .checkbox__label {
+                color: $color-normal;
+            }
+            &.hover, &:hover {
+                ~ .checkbox__input {
+                    &:before {
+                        background-color: $background-hover-on;
+                    }
+                    &:after {
+                        color: $white;
+                    }
+                }
+            }
+            ~ .checkbox__input:before {
+                box-shadow: inset 0 0 0 $cui-checkbox-border-width $background-normal-on;
+                background-color: $background-normal-on;
+            }
+            ~ .checkbox__input:after {
+                color: $white;
+                font-size: $cui-checkbox-icon-size;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        &.focus, &:focus {
+            ~ .checkbox__input:before {
+                @include focus-outline($color: $outline-color);
+                box-shadow: inset 0 0 0 $cui-checkbox-border-width $border-focus;
+            }
+        }
+        &.active, &:active {
+            ~ .checkbox__input:before {
+                box-shadow: none;
+                background-color: $background-pressed;
+            }
+        }
+    }
+    .checkbox__input {
+        position: relative;
+        display: inline-flex;
+        width: $cui-checkbox-size;
+        min-width: $cui-checkbox-size;
+        height: $cui-checkbox-size;
+
+        &:before,
+        &:after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: $cui-checkbox-size;
+            height: $cui-checkbox-size;
+            content: '';
+        }
+        &:before {
+            border-radius: $cui-checkbox-border-radius;
+            background-color: $white;
+            box-shadow: inset 0 0 0 $cui-checkbox-border-width $base-muted-color;
+        }
+        &:after {
+            @include icon-check;
+            display: none;
+            color: $white;
+            font-weight: bold;
+            line-height: 1;
+        }
+    }
+    .checkbox__label {
+        color: $color-normal;
+        margin-left: $base-form-label-margin-regular;
+        user-select: none;
+    }
+}
+
+.checkbox {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    @include cui-checkbox(map-get($cui-checkbox-light, params)...);
+
+    margin-right: $base-form-label-margin-regular;
+    &:last-of-type {
+        margin-right: 0;
+    }
+
+    &--nowrap {
+        .checkbox__label {
+            @include text-ellipsis;
+        }
+    }
+}
+
+.panel.panel--dkgray,
+.panel.panel--indigo {
+    .checkbox {
+        @include cui-checkbox(map-get($cui-checkbox-dark, params)...);
+    }
+}
+
+.panel.panel--success,
+.panel.panel--blue {
+    .checkbox {
+        @include cui-checkbox(map-get($cui-checkbox-color, params)...);
+    }
+}
+
+// Global Modifiers
+
+&.cui--animated .checkbox {
+    input {
+        ~ .checkbox__input:before {
+            transition: all .1s ease-out;
+        }
+    }
+    input:hover {
+        ~ .checkbox__input:before {
+            transition: all .1s ease-in;
+        }
+    }
+}

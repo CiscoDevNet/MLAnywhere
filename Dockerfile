@@ -1,5 +1,8 @@
 # Use an official Python runtime as a parent image
-FROM python:3-alpine
+FROM python:2.7-alpine
+
+# Set ENV VARS
+ENV FLASK_ENV=development
 
 # Set the working directory to /app
 WORKDIR /app
@@ -10,11 +13,5 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-# Make port 80 available to the world outside this container
-EXPOSE 5000
-
-# Define environment variable
-ENV NAME World
-
 # Run app.py when the container launches
-CMD python app.py runserver -h 0.0.0.0
+CMD python "./mla_app_code/mla_app.py" runserver -h 0.0.0.0

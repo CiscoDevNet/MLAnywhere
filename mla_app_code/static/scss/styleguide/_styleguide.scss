@@ -1,0 +1,32 @@
+.styleguide {
+
+    .content .sidebar {
+        position: relative;
+        transform: none;
+    }
+
+    .subheader {
+        font-weight: normal;
+        color: $base-muted-color;
+    }
+
+    pre {
+        white-space: pre-wrap;
+        code {
+            font-size: $base-font-size;
+        }
+    }
+
+    .markup {
+        a.markup-toggle:hover {
+            text-decoration: none;
+        }
+        &-toggle:after {
+            @include drawer-closed;
+            transition: all .2s;
+        }
+        &.active .markup-toggle:after {
+            @include drawer-opened;
+        }
+    }
+}

@@ -1,0 +1,298 @@
+//
+// Modal
+//
+// For best results, add your modal markup to the end of the body tag after the modal backdrop element.
+//
+// Styleguide Components.Modal
+//
+
+
+//
+// Backdrop
+//
+// <blockquote>Add a backdrop for your modals. You only need one and it should be added to the end of the body tag on your page.</blockquote>
+//
+// Markup:
+// <div class="modal-backdrop hide"></div>
+//
+// Weight: 1
+//
+// Styleguide Components.Modal.Backdrop
+//
+
+
+//
+// Size
+//
+// Markup:
+// <button class="btn btn--secondary" onclick="openModal('modal-small')">Small Modal</button>
+// <button class="btn btn--secondary" onclick="openModal('modal-large')">Large Modal</button>
+// <br>
+// <div class="modal modal--small hide" id="modal-small">
+//     <div class="modal__dialog">
+//         <div class="modal__content">
+//             <a class="modal__close" onclick="closeModal('modal-small')"><span class="icon-close"></span></a>
+//             <div class="modal__header">
+//                 <h1 class="modal__title">Small Modal</h1>
+//             </div>
+//             <div class="modal__body">
+//                <p class="subtitle">This is a small width modal</p>
+//             </div>
+//             <div class="modal__footer">
+//                 <button class="btn" onclick="closeModal('modal-small')">Ok</button>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+// <div class="modal modal--large hide" id="modal-large">
+//     <div class="modal__dialog">
+//         <div class="modal__content">
+//             <a class="modal__close" onclick="closeModal('modal-large')"><span class="icon-close"></span></a>
+//             <div class="modal__header">
+//                 <h1 class="modal__title">Large Modal</h1>
+//             </div>
+//             <div class="modal__body">
+//                <p class="subtitle">This is a large width modal</p>
+//             </div>
+//             <div class="modal__footer">
+//                 <button class="btn" onclick="closeModal('modal-large')">Ok</button>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Components.Modal.Size
+//
+
+
+//
+// Feedback Example
+//
+// Markup:
+// <button class="btn btn--secondary" onclick="openModal('modal-feedback')">Open Feedback</button>
+// <br>
+// <div class="modal hide" id="modal-feedback">
+//     <div class="modal__dialog">
+//         <div class="modal__content">
+//             <a class="modal__close" onclick="closeModal('modal-feedback')"><span class="icon-close"></span></a>
+//             <div class="modal__header">
+//                 <h1 class="modal__title">Feedback</h1>
+//                 <p class="subtitle">Tell us what you think...</p>
+//             </div>
+//             <div class="modal__body">
+//                 <div class="rating rating--large rating--alt">
+//                     <div class="rating__stars">
+//                        <div class="rating__star" title="5 Stars">
+//                            <span class="icon-star"></span>
+//                        </div>
+//                        <div class="rating__star" title="4 Stars">
+//                            <span class="icon-star"></span>
+//                        </div>
+//                        <div class="rating__star" title="3 Stars">
+//                            <span class="icon-star"></span>
+//                        </div>
+//                        <div class="rating__star" title="2 Stars">
+//                            <span class="icon-star"></span>
+//                        </div>
+//                        <div class="rating__star" title="1 Star">
+//                            <span class="icon-star"></span>
+//                        </div>
+//                    </div>
+//                </div>
+//                <br>
+//                <div class="form-group label--floated">
+//                    <div class="form-group__text">
+//                        <textarea class="textarea" rows="3" required></textarea>
+//                        <label>Comments</label>
+//                    </div>
+//                </div>
+//             </div>
+//             <div class="modal__footer">
+//                 <button class="btn" onclick="closeModal('modal-feedback')">Cancel</button>
+//                 <button class="btn btn--primary" onclick="closeModal('modal-feedback')">Submit</button>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 3
+//
+// Styleguide Components.Modal.Feedback Example
+//
+
+
+//
+// Login Example
+//
+// Markup:
+// <button class="btn btn--secondary" onclick="openModal('modal-login')">Open Login</button>
+// <br>
+// <div class="modal modal--animated modal--large hide" id="modal-login">
+//     <div class="modal__dialog">
+//         <div class="modal__content">
+//             <a class="modal__close" onclick="closeModal('modal-login')"><span class="icon-close"></span></a>
+//             <div class="modal__header">
+//                 <div class="icon-cisco text-blue text-huge half-margin-bottom"></div>
+//                 <h1 class="modal__title">Network Transport Receiver</h1>
+//                 <p class="subtitle">Version E3.25B3.1</p>
+//             </div>
+//             <div class="modal__body">
+//                <form>
+//                    <div class="row">
+//                        <div class="col-md-6 offset-md-3">
+//                            <div class="form-group">
+//                                <div class="form-group__text">
+//                                    <input type="text" value="dadams@cisco.com" required>
+//                                    <label>User ID</label>
+//                                </div>
+//                            </div>
+//                        </div>
+//                    </div>
+//                    <div class="row">
+//                        <div class="col-md-6 offset-md-3">
+//                            <div class="form-group">
+//                                <div class="form-group__text">
+//                                    <input type="password" value="hitchhiker" required>
+//                                    <label>Password</label>
+//                                </div>
+//                            </div>
+//                            <div class="form-group">
+//                                <label class="checkbox">
+//                                    <input type="checkbox" checked>
+//                                    <span class="checkbox__input"></span>
+//                                    <span class="checkbox__label">Remember me</span>
+//                                </label>
+//                            </div>
+//                        </div>
+//                    </div>
+//                </form>
+//             </div>
+//             <div class="modal__footer">
+//                 <button class="btn btn--primary" onclick="closeModal('modal-login')">Log In</button>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 4
+//
+// Styleguide Components.Modal.Login Example
+//
+
+.modal-backdrop {
+    position: fixed;
+    overflow: hidden;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $base-backdrop-background;
+    opacity: $base-backdrop-opacity;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: $base-backdrop-zindex;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    pointer-events: none;
+    z-index: $base-modal-zindex;
+    pointer-events: auto;
+
+    &.show {
+        .modal__dialog,
+        .modal-dialog {
+            opacity: 1;
+        }
+    }
+    &.fade {
+        .modal__dialog,
+        .modal-dialog {
+            transform: scale3d(1,1,1);
+        }
+    }
+    .modal__dialog,
+    .modal-dialog {
+        width: 100%;
+        max-width: $base-modal-maxwidth;
+        margin: auto;
+        padding: $base-spacing;
+
+        @include media-breakpoint-down(sm) {
+            padding: 0;
+        }
+    }
+    .modal__content,
+    .modal-content {
+        position: relative;
+        display: block;
+        text-align: center;
+        padding: ($base-spacing * 3) ($base-spacing * 2);
+        background-color: $white;
+        color: $base-font-color;
+        border-radius: $base-border-radius;
+        border: 0 none;
+        box-shadow: 0 10px 24px -6px rgba(0,0,0,0.25);
+
+        @include media-breakpoint-down(sm) {
+            padding: $base-spacing;
+        }
+
+        .modal__close {
+            font-size: $base-modal-close-size;
+            line-height: $base-modal-close-size;
+            position: absolute;
+            right: $base-spacing;
+            top: $base-spacing;
+            color: $base-muted-color;
+
+            &:hover {
+                color: $base-link-color;
+                text-decoration: none;
+            }
+        }
+
+        .modal__header {
+            margin-bottom: $base-spacing * 1.5;
+
+            .modal__title {
+                font-size: $base-modal-title-size;
+                font-weight: $base-modal-title-weight;
+
+                @include media-breakpoint-down(sm) {
+                    font-size: 32px;
+                }
+            }
+        }
+        .modal__footer {
+            margin-top: $base-spacing * 2;
+        }
+    }
+
+    &--small {
+        .modal__dialog,
+        .modal-dialog {
+            max-width: $small-modal-maxwidth;
+        }
+    }
+    &--large {
+        .modal__dialog,
+        .modal-dialog {
+            max-width: $large-modal-maxwidth;
+        }
+    }
+}
+
+// Global Modifiers
+
+&--animated .modal {
+    animation: blowup .5s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards, fade-in .25s 1 linear;
+}

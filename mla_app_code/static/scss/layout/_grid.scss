@@ -1,0 +1,267 @@
+//
+// Grid
+//
+// Styleguide Layout.Grid
+//
+
+
+//
+// Info
+//
+// Markup:
+// <div class="row">
+//     <div class="col-md-3">
+//         <div class="panel">
+//             <img src="public/img/CiscoUIMainLogo-2.png">
+//         </div>
+//     </div>
+//     <div class="col-md-9">
+//         <h4 class="base-margin-top">Built With Bootstrap 4</h4>
+//         <p class="subtitle">Bootstrap is made to not only look and behave great in the latest desktop browsers, but in tablet and smartphone browsers too. The UI kit makes use of one of Bootstrap's best features - the 12 column responsive mobile-first grid.</p>
+//         <div>See <a href="https://getbootstrap.com/docs/4.1/layout/grid/" target="_blank">Bootstrap Grid</a> for more details.</div>
+//     </div>
+// </div>
+// <div class="base-margin-top">
+//     <div class="responsive-table">
+//         <table class="table table--bordered">
+//             <thead>
+//                 <tr>
+//                     <th></th>
+//                     <th>
+//                         <div>Extra small</div>
+//                         <div class="text-normal">Phones (<576px)</div>
+//                     </th>
+//                     <th>
+//                         <div>Small</div>
+//                             <div class="text-normal">Phones / Tablets (&#8805;576px)</div>
+//                         </th>
+//                         <th>
+//                             <div>Medium</div>
+//                             <div class="text-normal">Tablets / Desktops (&#8805;768px)</div>
+//                         </th>
+//                         <th>
+//                             <div>Large</div>
+//                             <div class="text-normal">Desktops (&#8805;992px)</div>
+//                         </th>
+//                         <th>
+//                             <div>Extra large</div>
+//                             <div class="text-normal">Desktops (&#8805;1200px)</div>
+//                         </th>
+//                     </tr>
+//                 </thead>
+//                 <tbody>
+//                     <tr>
+//                         <td class="text-bold">Grid Behavior</td>
+//                         <td>Horizontal at all times</td>
+//                         <td colspan="4">Collapsed to start, horizontal above breakpoints</td>
+//                     </tr>
+//                     <tr>
+//                         <td class="text-bold">Max container width</td>
+//                         <td>None (auto)</td>
+//                         <td>540px</td>
+//                         <td>720px</td>
+//                         <td>992px</td>
+//                         <td>1440px</td>
+//                     </tr>
+//                     <tr>
+//                         <td class="text-bold">Class prefix</td>
+//                         <td>.col-</td>
+//                         <td>.col-sm-</td>
+//                         <td>.col-md-</td>
+//                         <td>.col-lg-</td>
+//                         <td>.col-xl-</td>
+//                     </tr>
+//                     <tr>
+//                         <td class="text-bold"># of columns</td>
+//                         <td colspan="5">12</td>
+//                     </tr>
+//                     <tr>
+//                         <td class="text-bold">Gutter width</td>
+//                         <td colspan="5">20px (10px on each side of a column)</td>
+//                     </tr>
+//                     <tr>
+//                         <td class="text-bold">Nestable</td>
+//                         <td colspan="5">Yes</td>
+//                     </tr>
+//                     <tr>
+//                         <td class="text-bold">Offsets</td>
+//                         <td colspan="5">Yes</td>
+//                     </tr>
+//                     <tr>
+//                         <td class="text-bold">Column ordering</td>
+//                         <td colspan="5">Yes</td>
+//                     </tr>
+//                 </tbody>
+//             </table>
+//         </div>
+// </div>
+//
+// Weight: 1
+//
+// Styleguide Layout.Grid.Info
+//
+
+
+//
+// Advanced Grid
+//
+// <blockquote>The advanced grid is a specialized container which provides more control over gutters and element selection.</blockquote>
+//
+// Markup:
+// <div class="row base-margin-bottom">
+//     <div class="col-xl-6 flex-center-vertical">
+//         <div class="btn-group btn-group--square">
+//             <button id="grid-group" class="btn btn--gray-ghost">3up</button>
+//             <button id="grid-group" class="btn btn--gray-ghost">4up</button>
+//             <button id="grid-group" class="btn btn--gray-ghost selected">5up</button>
+//         </div>
+//     </div>
+//     <div class="col-xl-6 flex-center-vertical flex-right">
+//         <div class="form-group form-group--inline">
+//             <label class="switch">
+//                 <input id="grid-selectable" type="checkbox" checked>
+//                 <span class="switch__input"></span>
+//                 <span class="switch__label">Selectable</span>
+//             </label>
+//         </div>
+//         <div class="base-margin-left form-group form-group--inline label--inline">
+//             <div class="form-group__text">
+//                 <input id="grid-gutters" type="number" value="10">
+//                 <label for="grid-gutters">Gutters</label>
+//             </div>
+//         </div>
+//     </div>
+// </div>
+// <div id="grid" class="grid grid--selectable grid--5up">
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 1</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 2</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 3</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 4</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 5</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 6</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 7</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 8</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 9</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 10</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 11</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 12</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 13</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 14</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 15</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 14</div>
+//         </div>
+//     </div>
+//     <div class="card">
+//         <div class="card__body">
+//             <div class="absolute-center text-uppercase">Card 15</div>
+//         </div>
+//     </div>
+// </div>
+//
+// Weight: 2
+//
+// Styleguide Layout.Grid.Dynamo
+//
+
+// 5 up (250px)
+// (250 * 5) + 40 - 1440
+
+// 4 up (300px)
+// (300 * 4) + 30 - 1440
+
+// 3 up (350px)
+// (350 * 3) + 20 - 1440
+
+// 2 up (500px)
+// (400 * 2) + 10
+
+.grid {
+
+    display: grid;
+    width: 100%;
+    margin: 0 auto;
+
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-rows: auto;
+    grid-gap: $cui-grid-gutter;
+
+    @each $grid-class, $grid-cols, $card-width in $cui-grid-card-sizes {
+        &.grid--#{$grid-class} {
+            grid-template-columns: repeat(auto-fill, minmax($card-width, 1fr));
+        }
+    }
+
+    &.grid--selectable {
+        > *:hover {
+            border: 1px solid $base-accent-color;
+            cursor: pointer;
+        }
+    }
+
+    &.grid--spacing-qtr     { grid-gap: $base-spacing-qtr; }
+    &.grid--spacing-half    { grid-gap: $base-spacing-half; }
+    &.grid--spacing-base    { grid-gap: $base-spacing; }
+    &.grid--spacing-dbl     { grid-gap: $base-spacing-dbl; }
+}
