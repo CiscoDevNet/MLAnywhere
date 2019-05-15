@@ -34,7 +34,6 @@ def run_stage2():
 			password=request.form['Password']
 			url = "https://" + ipadd
 			#url = "https://10.10.20.110"
-			#username =
 			headers = {
 				'content-type': 'application/json',
 			}
@@ -160,10 +159,6 @@ if __name__ == "__main__":
 #     result = request.form
 #     return render_template("result.html",result = result)
 
-
-# if __name__ == '__main__':
-
-#   app.run(port=5000)
 
 #example to save it in a file
 # def f_add_vlan(form_vlan,form_room):
