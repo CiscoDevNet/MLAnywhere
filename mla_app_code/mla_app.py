@@ -137,35 +137,3 @@ def run_stage4():
 
 if __name__ == "__main__":
 	 app.run(host='0.0.0.0', port=5000)
-
-
-
-# @app.route("/download")
-# def run_installation_script():
-#	os.system("./bash_scripts/testinstall.sh")
-#	os.system("./bash_scripts/kfinstallv1.sh")
-#	os.system("./bash_scripts/kfinstallv2.sh {} {} {} {} {}".format(GITHUB_TOKEN, PLATFORM, KS_VERSION, KF_VERSION, KFAPP))
-#	return render_template('download.html')
-
-
-# @app.route('/result')
-# def stage1Data():
-#   return render_template('stage1.html')
-
-
-# @app.route('/result',methods = ['POST', 'GET'])
-# def result():
-#   if request.method == 'POST':
-#     result = request.form
-#     return render_template("result.html",result = result)
-
-
-#example to save it in a file
-# def f_add_vlan(form_vlan,form_room):
-#   rooms_data = json.loads(open('js/rooms.js').read())
-#   for room in rooms_data['rooms']:
-#     if room['id'] == form_room and form_vlan != room['vlan']:
-#       room['vlan'] = form_vlan
-#       update_room_vlan_dnac(room,ports_data)
-#       with open('js/rooms.js', 'w') as jsonfile:
-#         json.dump(rooms_data,jsonfile,indent=4)
