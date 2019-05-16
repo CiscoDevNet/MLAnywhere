@@ -25,11 +25,11 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class CCP:
-    def __init__(self, url, username,password):
+    def __init__(self, url=None, username=None,password=None,cookie=None):
         self.url = url
         self.username = username
         self.password = password
-        self.cookie = None
+        self.cookie = cookie
 
     def login(self):
 
@@ -57,20 +57,18 @@ class CCP:
 
         return response
     
-    def deployNewCluster(self, newClusterDetails):
-
-        data = json.loads(newClusterDetails) 
+    def deployCluster(self, newClusterDetails):
 
         headers = {
             'content-type': 'application/json',
         }
 
-        response = requests.request("POST", self.url + "/2/clusters", json=data,cookies=self.cookie, headers=headers, verify=False)
+        response = requests.request("POST", self.url + "/2/clusters", json=newClusterDetails,cookies=self.cookie, headers=headers, verify=False)
 
         return response
 
 
-    def deployNewClusterFromFile(self, newClusterDetails):
+    def deployClusterFromFile(self, newClusterDetails):
 
         try:
             with open(newClusterDetails) as json_data:
