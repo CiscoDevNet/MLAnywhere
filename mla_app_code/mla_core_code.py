@@ -64,5 +64,5 @@ def run_stage4():
 if __name__ == "__main__":
 	print (config.DEBUG_VERIFY)
 	app.secret_key = "4qDID0dZoQfZOdVh5BzG"
-	app.run()
+	app.run(port=5000)
 
