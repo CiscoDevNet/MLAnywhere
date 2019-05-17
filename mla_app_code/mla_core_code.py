@@ -130,7 +130,7 @@ def run_stage3():
 	getYaml = ccp.getConfig(uuid)
 	print("getYaml text  =  " + getYaml.text)
 	# create .kube directory to use kubectl
-	saveConfig = open("kubeconfig.yaml","w+")
+	#saveConfig = open("kubeconfig.yaml","w+")
 	saveConfig = open("config","w+")
 	os.system('mkdir ~/.kube')
 	os.system('mv config ~/.kube')
@@ -141,7 +141,7 @@ def run_stage3():
 
 @app.route("/stage4")
 def run_stage4():
-	os.system("./kfinstallv2.sh {} {} {} {} {}".format(GITHUB_TOKEN, PLATFORM, KS_VERSION, KF_VERSION, KFAPP))
+	os.system("./kfinstall.sh {} {} {} {} {}".format(GITHUB_TOKEN, PLATFORM, KS_VERSION, KF_VERSION, KFAPP))
 	return render_template('stage4.html',)
 
 
