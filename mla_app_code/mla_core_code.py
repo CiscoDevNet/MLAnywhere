@@ -6,7 +6,7 @@ import os
 import requests
 
 GITHUB_TOKEN = 'REDACTED'
-PLATFORM = 'darwin'
+PLATFORM = 'linux'
 KS_VERSION = '0.13.1'
 KF_VERSION = '0.5.0'
 KFAPP = 'kfapp'
