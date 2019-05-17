@@ -13,5 +13,5 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-# Run app.py when the container launches
-CMD python "./mla_app_code/mla_app.py" runserver -h 0.0.0.0
+# Run amla_core_code.py when the container launches
+CMD python "./mla_app_code/mla_core_code.py" runserver -h 0.0.0.0
