@@ -123,7 +123,7 @@ def run_stage3():
 	# oldCluster = ccp.getClusters()
 
 
-	newCluster = ccp.deployNewClusterFromFile(data)
+	newCluster = ccp.deployNewCluster(data)
 
 	uuid = newCluster.json()["uuid"]
 	# uuid = "b925e0ba-733b-4d5b-a7f5-ff807fc5b82c"
