@@ -59,13 +59,13 @@ class CCP:
     
     def deployNewCluster(self, newClusterDetails):
 
-        data = json.loads(newClusterDetails) 
+        # data = json.loads(newClusterDetails) 
 
         headers = {
             'content-type': 'application/json',
         }
 
-        response = requests.request("POST", self.url + "/2/clusters", json=data,cookies=self.cookie, headers=headers, verify=False)
+        response = requests.request("POST", self.url + "/2/clusters", json=newClusterDetails,cookies=self.cookie, headers=headers, verify=False)
 
         return response
 
