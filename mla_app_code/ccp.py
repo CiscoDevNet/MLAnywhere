@@ -43,6 +43,13 @@ class CCP:
             self.cookie = response.cookies
 
         return response
+     
+    def getConfig(self, uuid):
+
+        response = requests.request("GET", self.url + "/2/clusters/" + uuid + "/env", cookies=self.cookie, headers=headers, verify=False)
+        print( self.url + "/2/clusters/" + uuid + "/env")
+        
+        return response
 
     def getClusters(self):
 
