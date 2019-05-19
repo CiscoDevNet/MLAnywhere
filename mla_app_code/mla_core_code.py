@@ -17,7 +17,7 @@ def run_stage1():
 def run_stage2():
 
 		if request.method == 'POST':
-			
+		
 			ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
 			
 			login = ccp.login()
