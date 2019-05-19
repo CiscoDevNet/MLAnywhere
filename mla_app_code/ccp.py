@@ -57,6 +57,72 @@ class CCP:
 
         return response
     
+    def getProviderVsphereDatacenters(self,providerClientUUID):
+
+        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter",cookies=self.cookie, verify=False)
+
+        response = response.json()
+
+        if "Datacenters" in response:
+            return response["Datacenters"]
+        else:
+            return response
+
+    def getProviderVsphereClusters(self,providerClientUUID,datacenterName):
+
+        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/cluster",cookies=self.cookie, verify=False)
+
+        response = response.json()
+
+        if "Clusters" in response:
+            return response["Clusters"]
+        else:
+            return response
+    
+    def getProviderVsphereNetworks(self,providerClientUUID,datacenterName):
+
+        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/network",cookies=self.cookie, verify=False)
+
+        response = response.json()
+
+        if "Networks" in response:
+            return response["Networks"]
+        else:
+            return response
+    
+    def getProviderVsphereVMs(self,providerClientUUID,datacenterName):
+
+        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/vm",cookies=self.cookie, verify=False)
+
+        response = response.json()
+
+        if "VMs" in response:
+            return response["VMs"]
+        else:
+            return response
+
+    def getProviderVsphereDatastores(self,providerClientUUID,datacenterName):
+
+        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/datastore",cookies=self.cookie, verify=False)
+
+        response = response.json()
+
+        if "Datastores" in response:
+            return response["Datastores"]
+        else:
+            return response
+
+    def getProviderVsphereResourcePools(self,providerClientUUID,datacenterName,clusterName):
+
+        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/cluster/" + clusterName + "/pool",cookies=self.cookie, verify=False)
+
+        response = response.json()
+
+        if "Pools" in response:
+            return response["Pools"]
+        else:
+            return response
+    
     def deployCluster(self, newClusterDetails):
 
         headers = {
