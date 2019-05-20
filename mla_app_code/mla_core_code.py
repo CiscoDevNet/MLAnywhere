@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+from flask import Flask, render_template, request, session
+=======
 
 '''
 Copyright (c) 2019 Cisco and/or its affiliates.
@@ -17,12 +20,17 @@ or implied.
 '''
 
 from flask import Flask, render_template, request
+>>>>>>> 23eeda67421c3f0924a9a4986f4fa2987fc5b8d4
 from flask import jsonify
 from flask import json
 from ccp import CCP
 import os
 import requests
 
+<<<<<<< HEAD
+from mlaConfig import config
+
+=======
 GITHUB_TOKEN = '9a2c8254bbb5807ddd14d29babe4ccf8b5bd0acb'
 PLATFORM = 'linux'
 KS_VERSION = '0.13.1'
@@ -32,18 +40,28 @@ cookie = ''
 headers = {
 			'content-type': 'application/json',
 		}
+>>>>>>> 23eeda67421c3f0924a9a4986f4fa2987fc5b8d4
 app = Flask(__name__)
-ccp=CCP("","","")
 
 @app.route("/stage1")
 def run_stage1():
+<<<<<<< HEAD
+	return render_template('stage1.html')
+=======
 		return render_template('stage1.html')
 
+>>>>>>> 23eeda67421c3f0924a9a4986f4fa2987fc5b8d4
 
 @app.route("/stage2", methods = ['POST', 'GET'])
 def run_stage2():
 
 		if request.method == 'POST':
+<<<<<<< HEAD
+		
+			ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
+			
+			login = ccp.login()
+=======
 			global ccp
 
 			ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
@@ -54,12 +72,25 @@ def run_stage2():
 			ccp.cookie = login.cookies
 			print(login.text)
 		return render_template('stage2.html',cookies=cookie)
+>>>>>>> 23eeda67421c3f0924a9a4986f4fa2987fc5b8d4
 
+			if not login:
+				print ("There was an issue with login: " + login.text)
+				return render_template('stage1.html')
+			else:
+				session['ccpURL'] = "https://" + request.form['IP Address']
+				session['ccpToken'] = login.cookies.get_dict()
+
+		return render_template('stage2.html')
 
 @app.route("/stage3", methods = ['POST', 'GET'])
 def run_stage3():
 
 	if request.method == 'POST':
+<<<<<<< HEAD
+
+		ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+=======
 		clusterName = request.form['Cluster Name']
 		# workerNodes = 1
 		# workerVcpus = 2
@@ -147,16 +178,38 @@ def run_stage4():
 
 if __name__ == "__main__":
 	 app.run(host='0.0.0.0', port=5000)
+>>>>>>> 23eeda67421c3f0924a9a4986f4fa2987fc5b8d4
+
+		clusterName = request.form['Cluster Name']
+
+		try:
+			with open("ccpRequest.json") as json_data:
+				clusterData = json.load(json_data)
+				clusterData["name"] = clusterName
+
+				response = ccp.deployCluster(clusterData)
+
+				print(response.text)
+
+<<<<<<< HEAD
+		except IOError as e:
+			return "I/O error({0}): {1}".format(e.errno, e.strerror)
+
+	return render_template('stage3.html')
 
 
-
-# @app.route("/download")
-# def run_installation_script():
-#	os.system("./bash_scripts/testinstall.sh")
-#	os.system("./bash_scripts/kfinstallv1.sh")
-#	os.system("./bash_scripts/kfinstallv2.sh {} {} {} {} {}".format(GITHUB_TOKEN, PLATFORM, KS_VERSION, KF_VERSION, KFAPP))
-#	return render_template('download.html')
+@app.route("/stage4")
+def run_stage4():
+	os.system("./kfinstall.sh {} {} {} {} {}".format(config.GITHUB_TOKEN, config.PLATFORM, config.KS_VERSION, config.KF_VERSION, config.KFAPP))
+	return render_template('stage4.html')
 
 
+if __name__ == "__main__":
+	print (config.DEBUG_VERIFY)
+	app.secret_key = "4qDID0dZoQfZOdVh5BzG"
+	app.run(port=5000)
+
+=======
 
 # if __name__ == '__main__':
+>>>>>>> 23eeda67421c3f0924a9a4986f4fa2987fc5b8d4
