@@ -52,6 +52,17 @@ def run_stage3():
 		except IOError as e:
 			return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
+		uuid = newCluster.json()["uuid"]
+		
+		getYaml = ccp.getConfig(uuid)
+		print("getYaml text  =  " + getYaml.text)
+		# create .kube directory to use kubectl
+		#saveConfig = open("kubeconfig.yaml","w+")
+		saveConfig = open("config","w+")
+		os.system('mkdir ~/.kube')
+		os.system('mv config ~/.kube')
+		saveConfig.write(getYaml.text)
+
 	return render_template('stage3.html')
 
 
