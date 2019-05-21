@@ -1,131 +1,145 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="locale" content="US">
-        <meta name="language" content="en">
-        <meta name="country" content="US">
-        <meta name="HandheldFriendly" content="True">
-        <meta name="MobileOptimized" content="320">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>ML Anywhere Deployment</title>
-        <!--<link rel="stylesheet" href="css/cui-standard.min.css">-->
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <link rel="icon" type="image/vnd.microsoft.icon" href="//www.cisco.com/favicon.ico">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="///www.cisco.com/favicon.ico">
-    </head>
-    <body class="cui">
-        <div class="content-fluid">
-            <main>
-                <header class="header header--tall">
-                    <div class="header-bar container">
-                        <a href="javascript:;" class="header-bar__logo">
-                            <span class="icon-cisco"></span>
-                        </a>
-                        <div class="header-bar__main">
-                            <!--
-                            <div class="header-breadcrumbs">
-                                <ul class="breadcrumb">
-                                    <li><a href="../index.html">UI kit</a></li>
-                                    <li><span>Standard Page Template</span></li>
-                                </ul>
-                            </div>
-                            -->
-                            <div class="header-heading">
-                                <h1 class="page-title">ML Anywhere Deployment</h1>
-                            </div>
-                            <!--
-                            <div class="header-menus">
-                                <ul class="nav nav-tabs">
-                                    <li class="tab">
-                                        <a href="basic.html"><div class="tab__heading" title="Basic">Basic</div></a>
-                                    </li>
-                                    <li class="tab active">
-                                        <a href="standard.html"><div class="tab__heading" title="Standard">Standard</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="wide.html"><div class="tab__heading" title="Wide">Wide</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="sidebar.html"><div class="tab__heading" title="Sidebar">Sidebar</div></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="locale" content="US">
+    <meta name="language" content="en">
+    <meta name="country" content="US">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ML Anywhere Deployment</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+
+
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"> </script>
+    <script src="{{ url_for('static', filename='js/testConnection.js') }}"> </script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"> </script>
+    <script src="{{ url_for('static', filename='js/styleguide.js') }}"> </script>
+
+</head>
+
+<body class="cui">
+    <div class="content-fluid">
+        <main>
+            <header class="header header--tall">
+                <div class="header-bar container">
+                    <a href="javascript:;" class="header-bar__logo">
+                        <span class="icon-cisco"></span>
+                    </a>
+                    <div class="header-bar__main">
+                
+                        <div class="header-heading">
+                            <h1 class="page-title">ML Anywhere Deployment</h1>
                         </div>
-                        <div class="header-toolbar">
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-search"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-alert"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-cog"></span>
-                            </a>
-                        </div>
+
                     </div>
-                </header>
-                <div class="content">
-                    <div class="container">
-                        <div class="section">
-                            <div class="text-center">
+                    <div class="header-toolbar">
+                        <a href="javascript:;" class="btn btn--icon">
+                            <span class="icon-search"></span>
+                        </a>
+                        <a href="javascript:;" class="btn btn--icon">
+                            <span class="icon-alert"></span>
+                        </a>
+                        <a href="javascript:;" class="btn btn--icon">
+                            <span class="icon-cog"></span>
+                        </a>
+                    </div>
+                </div>
+            </header>
+            <div class="content">
+                <div class="container">
+                    <div class="section">
+                        <div class="text-center">
 
-                                <h2>Stage 1 - Capture CCP Login Info</h2>
+                            <div class="row">
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="ui-steps">
-                                            <div class="ui-step active">
-                                                <div class="step__icon">1</div>
+                                <div class="col-md-12">
+                                    <div class="ui-steps">
+                                        <div class="ui-step active">
+                                            <div class="step__icon">1</div>
 
-                                                <div class="step__label">Capture CCP Info</div>
-                                             </div>
-                                            <div class="ui-step">
-                                                <div class="step__icon">2</div>
-                                                <div class="step__label">Launch K8 Cluster</div>
-                                            </div>
-                                            <div class="ui-step">
-                                                <div class="step__icon">3</div>
-                                                <div class="step__label">Deploy KubeFlow</div>
-                                            </div>
-                                            <div class="ui-step">
-                                                <div class="step__icon">4</div>
-                                                <div class="step__label">Done!</div>
-                                            </div>
+                                            <div class="step__label">Capture CCP Info</div>
+                                        </div>
+                                        <div class="ui-step">
+                                            <div class="step__icon">2</div>
+                                            <div class="step__label">Launch K8 Cluster</div>
+                                        </div>
+                                        <div class="ui-step">
+                                            <div class="step__icon">3</div>
+                                            <div class="step__label">Deploy KubeFlow</div>
+                                        </div>
+                                        <div class="ui-step">
+                                            <div class="step__icon">4</div>
+                                            <div class="step__label">Done!</div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
-                            <form action = "stage2" method = "POST">
-                                <p>IP Address <input type = "text" name = "IP Address" /></p>
-                                <p>Username <input type = "text" name = "Username" /></p>
-                                <p>Password <input type = "password" name = "Password" /></p>
-                                <p><input type = "submit" value = "submit" /></p>
-                            </form>
-
-
-
                         </div>
+                        <div id="alertBox"></div>
+                        
+
+                        <form id="ccpForm" >
+                            <div class="col-md-12">
+                                <div class="section row">
+                                    <div class="form-group col-4">
+                                        <div class="form-group__text">
+                                            <input name="ipAddress" id="ipAddress" type="text" required>
+                                            <label  for="ipAddress">CCP IP Address</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section row">
+                                    <div class="form-group col-4">
+                                        <div class="form-group__text">
+                                            <input name="username" id="username" type="text" required >
+                                            <label for="username">Username</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section row">
+                                    <div class="form-group col-4">
+                                        <div class="form-group__text">
+                                            <input name="password" id="password" type="password" required>
+                                            <label for="password">Password</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section row"> 
+                                    <div class="form-group col-2" >
+                                        <input id="connect" type="submit" class="btn btn--primary" value="Connect">
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                        </form>
+
                     </div>
                 </div>
-                <footer class="footer footer--basic">
-                    <div class="footer__links">
-                        <ul class="list">
-                            <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
-                            <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
-                            <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms & Conditions</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie Policy</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
-                        </ul>
-                    </div>
-                </footer>
-            </main>
-        </div>
-    </body>
+            </div>
+            <footer class="footer footer--basic">
+                <div class="footer__links">
+                    <ul class="list">
+                        <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
+                        <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+                        <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms & Conditions</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie Policy</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
+                    </ul>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+
 </html>

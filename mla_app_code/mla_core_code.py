@@ -13,9 +13,8 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 '''
 
-from flask import Flask, render_template, request, session
-from flask import jsonify
-from flask import json
+from flask import Flask, json, render_template, request, session, Response, jsonify
+
 from ccp import CCP
 import os
 import requests
@@ -24,6 +23,26 @@ from mlaConfig import config
 
 app = Flask(__name__)
 
+@app.route("/testConnection", methods = ['POST', 'GET'])
+def run_testConnection():
+    
+    if request.method == 'POST':
+
+        jsonData = request.get_json()
+        
+        ccp = CCP("https://" + jsonData['ipAddress'],jsonData['username'],jsonData['password'])
+                
+        login = ccp.login()
+
+        if not login:
+            return json.dumps({'success':False}), 401, {'ContentType':'application/json'} 
+        else:
+            session['ccpURL'] = "https://" + jsonData['ipAddress']
+            session['ccpToken'] = login.cookies.get_dict()
+            return json.dumps({'success':True,'redirectURL':'/stage2'}), 200, {'ContentType':'application/json'} 
+    
+    return render_template('stage1.html')
+        
 @app.route("/stage1")
 def run_stage1():
     return render_template('stage1.html')
@@ -32,9 +51,8 @@ def run_stage1():
 def run_stage2():
 
         if request.method == 'POST':
-        
             ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
-            
+                
             login = ccp.login()
 
             if not login:
@@ -44,8 +62,11 @@ def run_stage2():
                 session['ccpURL'] = "https://" + request.form['IP Address']
                 session['ccpToken'] = login.cookies.get_dict()
 
-        return render_template('stage2.html')
-
+        elif request.method == 'GET':
+            if session['ccpToken']:
+                    return render_template('stage2.html')
+            else:
+                return render_template('stage1.html')
 @app.route("/stage3", methods = ['POST', 'GET'])
 def run_stage3():
 
@@ -96,7 +117,6 @@ def run_stage4():
 
 
 if __name__ == "__main__":
-    print (config.DEBUG_VERIFY)
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
     app.run(port=5000)
 
