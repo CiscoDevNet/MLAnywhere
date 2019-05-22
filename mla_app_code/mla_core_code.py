@@ -115,6 +115,139 @@ def run_stage4():
     os.system("./kfinstall.sh {} {} {} {} {}".format(config.GITHUB_TOKEN, config.PLATFORM, config.KS_VERSION, config.KF_VERSION, config.KFAPP))
     return render_template('stage4.html')
 
+@app.route("/vsphereProviders", methods = ['POST', 'GET'])
+def run_vsphereProviders():
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        response = ccp.getProviderClientConfigs()
+
+        if response:
+            return response.text
+        else:
+            return []
+
+@app.route("/vsphereDatacenters", methods = ['POST', 'GET'])
+def run_vsphereDatacenters():
+    
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        jsonData = request.args.to_dict()
+        print(jsonData)
+        response = ccp.getProviderVsphereDatacenters(jsonData["vsphereProviderUUID"])
+
+        if response:
+            return jsonify(response)
+        else:
+            return []
+
+@app.route("/vsphereClusters", methods = ['POST', 'GET'])
+def run_vsphereClusters():
+    
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        jsonData = request.args.to_dict()
+        print(jsonData)
+        response = ccp.getProviderVsphereClusters(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+        if response:
+            return jsonify(response)
+        else:
+            return []
+
+@app.route("/vsphereResourcePools", methods = ['POST', 'GET'])
+def run_vsphereResourcePools():
+    
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        jsonData = request.args.to_dict()
+        print(jsonData)
+        response = ccp.getProviderVsphereResourcePools(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"],jsonData["vsphereProviderCluster"])
+
+        if response:
+            return jsonify(response)
+        else:
+            return []
+
+@app.route("/vsphereNetworks", methods = ['POST', 'GET'])
+def run_vsphereNetworks():
+    
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        jsonData = request.args.to_dict()
+        print(jsonData)
+        response = ccp.getProviderVsphereNetworks(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+        if response:
+            return jsonify(response)
+        else:
+            return []
+
+@app.route("/vsphereDatastores", methods = ['POST', 'GET'])
+def run_vsphereDatastores():
+    
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        jsonData = request.args.to_dict()
+        print(jsonData)
+        response = ccp.getProviderVsphereDatastores(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+        if response:
+            return jsonify(response)
+        else:
+            return []
+
+@app.route("/vsphereVMs", methods = ['POST', 'GET'])
+def run_vsphereVMs():
+    
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        jsonData = request.args.to_dict()
+        print(jsonData)
+        response = ccp.getProviderVsphereVMs(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+        if response:
+            return jsonify(response)
+        else:
+            return []
+
+@app.route("/vipPools", methods = ['POST', 'GET'])
+def run_vipPools():
+    
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        jsonData = request.args.to_dict()
+        print(jsonData)
+        response = ccp.getVIPPools()
+
+        if response:
+            return jsonify(response)
+        else:
+            return []
+
 
 if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
