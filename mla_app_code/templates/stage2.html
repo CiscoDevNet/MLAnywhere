@@ -1,137 +1,227 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="locale" content="US">
-        <meta name="language" content="en">
-        <meta name="country" content="US">
-        <meta name="HandheldFriendly" content="True">
-        <meta name="MobileOptimized" content="320">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>ML Anywhere Deployment</title>
-        <!--<link rel="stylesheet" href="css/cui-standard.min.css">-->
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <link rel="icon" type="image/vnd.microsoft.icon" href="//www.cisco.com/favicon.ico">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="///www.cisco.com/favicon.ico">
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<head>
+    <meta charset="utf-8">
+    <meta name="locale" content="US">
+    <meta name="language" content="en">
+    <meta name="country" content="US">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ML Anywhere Deployment</title>
 
-    </head>
-    <body class="cui">
-        <div class="content-fluid">
-            <main>
-                <header class="header header--tall">
-                    <div class="header-bar container">
-                        <a href="javascript:;" class="header-bar__logo">
-                            <span class="icon-cisco"></span>
-                        </a>
-                        <div class="header-bar__main">
-                            <!--
-                            <div class="header-breadcrumbs">
-                                <ul class="breadcrumb">
-                                    <li><a href="../index.html">UI kit</a></li>
-                                    <li><span>Standard Page Template</span></li>
-                                </ul>
-                            </div>
-                            -->
-                            <div class="header-heading">
-                                <h1 class="page-title">ML Anywhere Deployment</h1>
-                            </div>
-                            <!--
-                            <div class="header-menus">
-                                <ul class="nav nav-tabs">
-                                    <li class="tab">
-                                        <a href="basic.html"><div class="tab__heading" title="Basic">Basic</div></a>
-                                    </li>
-                                    <li class="tab active">
-                                        <a href="standard.html"><div class="tab__heading" title="Standard">Standard</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="wide.html"><div class="tab__heading" title="Wide">Wide</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="sidebar.html"><div class="tab__heading" title="Sidebar">Sidebar</div></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/populateClusterDropdowns.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/styleguide.js') }}">
+    </script>
+</head>
+
+<body class="cui">
+    <div class="content-fluid">
+        <main>
+            <header class="header header--tall">
+                <div class="header-bar container">
+                    <a href="javascript:;" class="header-bar__logo">
+                        <span class="icon-cisco"></span>
+                    </a>
+                    <div class="header-bar__main">
+                        <div class="header-heading">
+                            <h1 class="page-title">ML Anywhere Deployment</h1>
                         </div>
-                        <div class="header-toolbar">
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-search"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-alert"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-cog"></span>
-                            </a>
-                        </div>
+
                     </div>
-                </header>
-                <div class="content">
-                    <div class="container">
-                        <div class="section">
-                            <div class="text-center">
-                                
-                                <h2>Stage 2 - Launch K8 Cluster</h2>
+                    <div class="header-toolbar">
+                        <a href="javascript:;" class="btn btn--icon">
+                            <span class="icon-search"></span>
+                        </a>
+                        <a href="javascript:;" class="btn btn--icon">
+                            <span class="icon-alert"></span>
+                        </a>
+                        <a href="javascript:;" class="btn btn--icon">
+                            <span class="icon-cog"></span>
+                        </a>
+                    </div>
+                </div>
+            </header>
+            <div class="content">
+                <div class="container">
+                    <div class="section">
+                        <div class="text-center">
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="ui-steps">
-                                            <div class="ui-step">
-                                                <div class="step__icon">1</div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="ui-steps">
+                                        <div class="ui-step">
+                                            <div class="step__icon">1</div>
 
-                                                <div class="step__label">Capture CCP Info</div>
-                                             </div>
-                                            <div class="ui-step active">
-                                                <div class="step__icon">2</div>
-                                                <div class="step__label">Launch K8 Cluster</div>
+                                            <div class="step__label">Capture CCP Info</div>
+                                        </div>
+                                        <div class="ui-step active">
+                                            <div class="step__icon">2</div>
+                                            <div class="step__label">Launch K8 Cluster</div>
+                                        </div>
+                                        <div class="ui-step">
+                                            <div class="step__icon">3</div>
+                                            <div class="step__label">Deploy KubeFlow</div>
+                                        </div>
+                                        <div class="ui-step">
+                                            <div class="step__icon">4</div>
+                                            <div class="step__label">Done!</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <form id="ccpClusterForm">
+                            <div class="col-md-12">
+                                <div class="section row">
+                                    <div class="col mx-auto ">
+
+                                        <div class="form-group col-6 ">
+                                            <div class="form-group__text ">
+                                                <input name="clusterName" id="clusterName" type="text" required>
+                                                <label for="clusterName">Cluster Name</label>
                                             </div>
-                                            <div class="ui-step">
-                                                <div class="step__icon">3</div>
-                                                <div class="step__label">Deploy KubeFlow</div>
+                                        </div>
+
+                                        <div class="form-group col-6 ">
+                                            <div class="form-group__text select">
+                                                    <select id="vsphereProviders">
+                                                    </select>
+                                                    <label for="vsphereProviders">vSphere Provider</label>
                                             </div>
-                                            <div class="ui-step">
-                                                <div class="step__icon">4</div>
-                                                <div class="step__label">Done!</div>
+                                        </div>
+                
+                                        <div class="form-group col-6">
+                                            <div class="form-group__text select">
+                                                <select id="vsphereDatacenters">
+                                                </select>
+                                                <label for="vsphereDatacenters">vSphere Datacenter</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-6 mx-auto">
+                                                <div class="form-group__text select">
+                                                    <select id="vsphereClusters">
+                                                    </select>
+                                                    <label for="vsphereClusters">vSphere Cluster</label>
+                                                </div>
+                                        </div>
+
+                                        <div class="form-group col-6">
+                                            <div class="form-group__text select">
+                                                <select id="vsphereResourcePools">
+                                                </select>
+                                                <label for="vsphereResourcePools">vSphere Resource Pool</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-6">
+                                            <div class="form-group__text select">
+                                                <select id="vsphereNetworks">
+                                                </select>
+                                                <label for="vsphereNetworks">vSphere Network</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-6">
+                                            <div class="form-group__text select">
+                                                <select id="vsphereDatastores">
+                                                </select>
+                                                <label for="vsphereDatastores">vSphere Datastore</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-6">
+                                                <div class="form-group__text select">
+                                                    <select id="tenantImageTemplate">
+                                                    </select>
+                                                    <label for="tenantImageTemplate">CCP Tenant Image Template</label>
+                                                </div>
+                                            </div>
+
+                                        <div class="form-group col-6 mx-auto">
+                                            <div class="form-group__text select">
+                                                <select id="vipPools">
+                                                </select>
+                                                <label for="vipPools">VIP Pool</label>
+                                            </div>
+                                        </div>
+
+                                        
+                                        
+
+                                        <div class="form-group col-6 mx-auto">
+                                            <div class="form-group__text">
+                                                <input name="sshKey" id="sshKey" type="text" required>
+                                                <label for="sshKey">SSH Key</label>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group col-6 mx-auto">
+                                                <label class="switch" >
+                                                        <label for="proxy">Proxy&nbsp;&nbsp;</label>
+                                                        <input type="checkbox" id="proxySwitch">
+                                                        <span class="switch__input"></span>
+                                                </label>
+                                                <div class="form-group__text">
+                                                    <input disabled name="proxyInput" id="proxyInput" type="text">
+                                                </div>
+                                        </div>
+
+                                        <div class="section row">
+                                            <div class="form-group col-2">
+                                                <input id="deployCluster" type="submit" class="btn btn--primary" value="Deploy">
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
 
                             </div>
 
-                            <form action = "stage3" method = "POST">
-                                <p>Cluster Name <input type = "text" name = "Cluster Name" /></p>
-                                <p><input type = "submit" value = "Launch Cluster" /></p>
-                            </form>
+                    </div>
+                    </form>
 
-                            <textarea readonly  style="resize: none" rows="10" cols="200" id="loggingArea">
-                                Deploying CCP
-                            </textarea>
-                            
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="form-group__text">
+                                <textarea id="consoleLog" rows="50" readonly></textarea>
+                            </div>
                         </div>
                     </div>
+
                 </div>
-                <footer class="footer footer--basic">
-                    <div class="footer__links">
-                        <ul class="list">
-                            <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
-                            <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
-                            <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms & Conditions</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie Policy</a></li>
-                            <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
-                        </ul>
-                    </div>
-                </footer>
-            </main>
+            </div>
+    </div>
+    <footer class="footer footer--basic">
+        <div class="footer__links">
+            <ul class="list">
+                <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
+                <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
+                <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+                <li><a href="http://www.cisco.com/c/en/us/about/sitemap.html" target="_blank">Site Map</a></li>
+                <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms & Conditions</a></li>
+                <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a></li>
+                <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie Policy</a></li>
+                <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
+            </ul>
         </div>
-    </body>
+    </footer>
+    </main>
+    </div>
+</body>
+
 </html>

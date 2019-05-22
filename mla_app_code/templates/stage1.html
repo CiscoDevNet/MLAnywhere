@@ -15,11 +15,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
 
-
-    <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"> </script>
-    <script src="{{ url_for('static', filename='js/testConnection.js') }}"> </script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"> </script>
-    <script src="{{ url_for('static', filename='js/styleguide.js') }}"> </script>
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/testConnection.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/styleguide.js') }}">
+    </script>
 
 </head>
 
@@ -32,7 +35,7 @@
                         <span class="icon-cisco"></span>
                     </a>
                     <div class="header-bar__main">
-                
+
                         <div class="header-heading">
                             <h1 class="page-title">ML Anywhere Deployment</h1>
                         </div>
@@ -83,22 +86,21 @@
 
                         </div>
                         <div id="alertBox"></div>
-                        
 
-                        <form id="ccpForm" >
+                        <form id="ccpLoginForm">
                             <div class="col-md-12">
                                 <div class="section row">
                                     <div class="form-group col-4">
                                         <div class="form-group__text">
                                             <input name="ipAddress" id="ipAddress" type="text" required>
-                                            <label  for="ipAddress">CCP IP Address</label>
+                                            <label for="ipAddress">CCP IP Address</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="section row">
                                     <div class="form-group col-4">
                                         <div class="form-group__text">
-                                            <input name="username" id="username" type="text" required >
+                                            <input name="username" id="username" type="text" required>
                                             <label for="username">Username</label>
                                         </div>
                                     </div>
@@ -111,13 +113,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="section row"> 
-                                    <div class="form-group col-2" >
+                                <div class="section row">
+                                    <div class="form-group col-2">
                                         <input id="connect" type="submit" class="btn btn--primary" value="Connect">
                                     </div>
                                 </div>
 
-                                
                             </div>
                         </form>
 
