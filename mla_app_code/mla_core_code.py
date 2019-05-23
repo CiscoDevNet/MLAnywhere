@@ -51,6 +51,7 @@ def run_stage1():
 def run_stage2():
 
         if request.method == 'POST':
+
             ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
                 
             login = ccp.login()
@@ -67,6 +68,7 @@ def run_stage2():
                     return render_template('stage2.html')
             else:
                 return render_template('stage1.html')
+
 @app.route("/stage3", methods = ['POST', 'GET'])
 def run_stage3():
 
@@ -76,16 +78,38 @@ def run_stage3():
 
         ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
 
-        clusterName = request.form['Cluster Name']
+        formData = request.get_json()
         
         try:
             with open("ccpRequest.json") as json_data:
+                
                 clusterData = json.load(json_data)
-                clusterData["name"] = clusterName
 
-                #response = ccp.deployCluster(clusterData)
+                clusterData["name"] = formData["clusterName"]
+                clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
+                clusterData["name"] = formData["clusterName"]
+                clusterData["datacenter"] = formData["vsphereDatacenters"]
+                clusterData["cluster"] = formData["vsphereClusters"]
+                clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
+                clusterData["datastore"] = formData["vsphereDatastores"] 
+                clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
+                clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
+                clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
+                clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
+                clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
+                clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
+                clusterData["ssh_key"] = formData["sshKey"] 
+                clusterData["networks"] = formData["vsphereNetworks"] 
 
-                #uuid = response.json()["uuid"]
+                print(json.dumps(clusterData))
+
+                response = ccp.deployCluster(json.dumps(clusterData))
+
+                print(response.text)
+                
+                uuid = response.json()["uuid"]
 
                 print(uuid)
 
@@ -247,6 +271,21 @@ def run_vipPools():
             return jsonify(response)
         else:
             return []
+
+@app.route("/clusterConfigTemplate", methods = ['POST', 'GET'])
+def run_clusterConfigTemplate():
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+    
+        try:
+            with open("ccpRequest.json") as json_data:
+                clusterData = json.load(json_data)
+                return jsonify(clusterData)
+
+        except IOError as e:
+            return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
 
 if __name__ == "__main__":

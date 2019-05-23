@@ -17,11 +17,13 @@
 
     <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}">
     </script>
-    <script src="{{ url_for('static', filename='js/populateClusterDropdowns.js') }}">
-    </script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">
     </script>
     <script src="{{ url_for('static', filename='js/styleguide.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/populateClusterDropdowns.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/clusterCreation.js') }}">
     </script>
 </head>
 
@@ -54,6 +56,7 @@
             </header>
             <div class="content">
                 <div class="container">
+                       
                     <div class="section">
                         <div class="text-center">
 
@@ -83,6 +86,7 @@
 
                         </div>
 
+                        
                         <form id="ccpClusterForm">
                             <div class="col-md-12">
                                 <div class="section row">
@@ -97,7 +101,7 @@
 
                                         <div class="form-group col-6 ">
                                             <div class="form-group__text select">
-                                                    <select id="vsphereProviders">
+                                                    <select name="vsphereProviders" id="vsphereProviders">
                                                     </select>
                                                     <label for="vsphereProviders">vSphere Provider</label>
                                             </div>
@@ -105,7 +109,7 @@
                 
                                         <div class="form-group col-6">
                                             <div class="form-group__text select">
-                                                <select id="vsphereDatacenters">
+                                                <select name="vsphereDatacenters" id="vsphereDatacenters">
                                                 </select>
                                                 <label for="vsphereDatacenters">vSphere Datacenter</label>
                                             </div>
@@ -113,7 +117,7 @@
 
                                         <div class="form-group col-6 mx-auto">
                                                 <div class="form-group__text select">
-                                                    <select id="vsphereClusters">
+                                                    <select name="vsphereClusters" id="vsphereClusters">
                                                     </select>
                                                     <label for="vsphereClusters">vSphere Cluster</label>
                                                 </div>
@@ -121,7 +125,7 @@
 
                                         <div class="form-group col-6">
                                             <div class="form-group__text select">
-                                                <select id="vsphereResourcePools">
+                                                <select name="vsphereResourcePools" id="vsphereResourcePools" >
                                                 </select>
                                                 <label for="vsphereResourcePools">vSphere Resource Pool</label>
                                             </div>
@@ -129,7 +133,7 @@
 
                                         <div class="form-group col-6">
                                             <div class="form-group__text select">
-                                                <select id="vsphereNetworks">
+                                                <select name="vsphereNetworks" id="vsphereNetworks">
                                                 </select>
                                                 <label for="vsphereNetworks">vSphere Network</label>
                                             </div>
@@ -137,7 +141,7 @@
 
                                         <div class="form-group col-6">
                                             <div class="form-group__text select">
-                                                <select id="vsphereDatastores">
+                                                <select name="vsphereDatastores" id="vsphereDatastores">
                                                 </select>
                                                 <label for="vsphereDatastores">vSphere Datastore</label>
                                             </div>
@@ -145,7 +149,7 @@
 
                                         <div class="form-group col-6">
                                                 <div class="form-group__text select">
-                                                    <select id="tenantImageTemplate">
+                                                    <select name="tenantImageTemplate" id="tenantImageTemplate">
                                                     </select>
                                                     <label for="tenantImageTemplate">CCP Tenant Image Template</label>
                                                 </div>
@@ -153,7 +157,7 @@
 
                                         <div class="form-group col-6 mx-auto">
                                             <div class="form-group__text select">
-                                                <select id="vipPools">
+                                                <select name="vipPools" id="vipPools">
                                                 </select>
                                                 <label for="vipPools">VIP Pool</label>
                                             </div>
@@ -182,8 +186,9 @@
                                         </div>
 
                                         <div class="section row">
-                                            <div class="form-group col-2">
+                                            <div class="mx-auto">
                                                 <input id="deployCluster" type="submit" class="btn btn--primary" value="Deploy">
+                                                <input id="displayJSON" type="submit" class="btn btn--primary " value="Display JSON">
                                             </div>
                                         </div>
                                     </div>
@@ -222,6 +227,23 @@
     </footer>
     </main>
     </div>
+
+    <div id="jsonModal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog" >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cluster Configuration</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 </body>
 
 </html>
