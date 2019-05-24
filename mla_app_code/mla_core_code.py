@@ -112,7 +112,7 @@ def run_stage3():
 
 @app.route("/stage4")
 def run_stage4():
-    os.system("./kfinstall.sh {} {} {} {} {}".format(config.GITHUB_TOKEN, config.PLATFORM, config.KS_VERSION, config.KF_VERSION, config.KFAPP))
+    os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
     return render_template('stage4.html')
 
 
