@@ -112,7 +112,18 @@ def run_stage3():
 
 @app.route("/stage4")
 def run_stage4():
-    os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
+
+    # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
+    #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
+    os.system("export GITHUBTOKEN={}".format(GITHUB_TOKEN))
+	os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
+    os.system("export KFAPP={}".format(KFAPP))
+	os.system("mkdir {}".format(KFAPP))
+	os.system("kfctl init {}".format(KFAPP))
+	os.system("cd {}".format(KFAPP))
+	os.system("kfctl generate all -V")
+	os.system("kfctl generate apply -V")
+
     return render_template('stage4.html')
 
 
