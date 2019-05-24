@@ -47,6 +47,7 @@ $(document).ready(function(){
 
     
     $('#deployCluster').on('click', function(event) {
+        
         event.preventDefault();
         form = $("#ccpClusterForm").serializeArray();
         formData = {};
@@ -55,14 +56,17 @@ $(document).ready(function(){
             formData[field.name] = field.value;
         });
 
-        console.log(formData)
+        $("#ccpClusterForm :input").prop("disabled", true);
+
+        
         $.ajax({
-            url: "/stage3",
+            url: "/stage2",
             type : "POST",
             contentType: 'application/json',
             dataType : 'json',
             data : JSON.stringify(formData),
             success: function(response) {
+                $("#ccpClusterForm :input").prop("disabled", false);
                 if (response.redirectURL !== undefined) {
                     window.location.replace(response.redirectURL);
                 } else {
@@ -70,11 +74,12 @@ $(document).ready(function(){
                 }
             },
             error: function(error) {
+                $("#ccpClusterForm :input").prop("disabled", false);
                 $("#alertBox").html(
                     `
                     <div class="alert alert--danger alert-dismissible fade in ">
                         <div class="alert__icon icon-error-outline"></div>
-                        <strong>Login unsuccessful. Please try again. </strong>
+                        <strong>Cluster creation failed</strong>
                         <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
                     </div>
                     `

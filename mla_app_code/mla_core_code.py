@@ -45,6 +45,21 @@ def run_testConnection():
         
 @app.route("/stage1")
 def run_stage1():
+
+    if request.method == 'POST':
+
+        ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
+                
+        login = ccp.login()
+
+        if not login:
+            print ("There was an issue with login: " + login.text)
+            return render_template('stage1.html')
+        else:
+            session['ccpURL'] = "https://" + request.form['IP Address']
+            session['ccpToken'] = login.cookies.get_dict()
+            return render_template('stage2.html')
+
     return render_template('stage1.html')
 
 @app.route("/stage2", methods = ['POST', 'GET'])
@@ -52,86 +67,78 @@ def run_stage2():
 
         if request.method == 'POST':
 
-            ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
-                
-            login = ccp.login()
+            uuid = ""
 
-            if not login:
-                print ("There was an issue with login: " + login.text)
-                return render_template('stage1.html')
-            else:
-                session['ccpURL'] = "https://" + request.form['IP Address']
-                session['ccpToken'] = login.cookies.get_dict()
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+
+            formData = request.get_json()
+            
+            try:
+                with open("ccpRequest.json") as json_data:
+                    
+                    clusterData = json.load(json_data)
+
+                    clusterData["name"] = formData["clusterName"]
+                    clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
+                    clusterData["name"] = formData["clusterName"]
+                    clusterData["datacenter"] = formData["vsphereDatacenters"]
+                    clusterData["cluster"] = formData["vsphereClusters"]
+                    clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
+                    clusterData["datastore"] = formData["vsphereDatastores"] 
+                    clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
+                    clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
+                    clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
+                    clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
+                    clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
+                    clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                    clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                    clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
+                    clusterData["ssh_key"] = formData["sshKey"] 
+                    clusterData["networks"] = [formData["vsphereNetworks"] ]
+
+                    response = ccp.deployCluster(clusterData)
+
+                    print(response.text)
+                    
+                    uuid = response.json()["uuid"]
+
+                    print(uuid)
+
+                    kubeConfig = ccp.getConfig(uuid)
+
+                    print (kubeConfig.text)
+
+                    if not os.path.exists(config.KUBE_CONFIG_DIR):
+                        try:
+                            os.makedirs(config.KUBE_CONFIG_DIR)
+                        except OSError as e:
+                            if e.errno != errno.EEXIST:
+                                raise
+                    ls
+                    with open(config.KUBE_CONFIG_DIR + "/config", "w") as f:
+                        f.write(kubeConfig.text)
+
+                    return json.dumps({'success':True,'redirectURL':'/stage3'}), 200, {'ContentType':'application/json'} 
+
+            except IOError as e:
+                return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
         elif request.method == 'GET':
             if session['ccpToken']:
-                    return render_template('stage2.html')
+                return render_template('stage2.html')
             else:
                 return render_template('stage1.html')
 
 @app.route("/stage3", methods = ['POST', 'GET'])
 def run_stage3():
 
-    uuid = ""
-
-    if request.method == 'POST':
-
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-
-        formData = request.get_json()
-        
-        try:
-            with open("ccpRequest.json") as json_data:
-                
-                clusterData = json.load(json_data)
-
-                clusterData["name"] = formData["clusterName"]
-                clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
-                clusterData["name"] = formData["clusterName"]
-                clusterData["datacenter"] = formData["vsphereDatacenters"]
-                clusterData["cluster"] = formData["vsphereClusters"]
-                clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
-                clusterData["datastore"] = formData["vsphereDatastores"] 
-                clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
-                clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
-                clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
-                clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
-                clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
-                clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
-                clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
-                clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
-                clusterData["ssh_key"] = formData["sshKey"] 
-                clusterData["networks"] = formData["vsphereNetworks"] 
-
-                print(json.dumps(clusterData))
-
-                response = ccp.deployCluster(json.dumps(clusterData))
-
-                print(response.text)
-                
-                uuid = response.json()["uuid"]
-
-                print(uuid)
-
-                uuid ="6de40233-738e-4e7f-bbf8-b6ca99a7d53c"
-                kubeConfig = ccp.getConfig(uuid)
-
-                print (kubeConfig.text)
-
-                if not os.path.exists(config.KUBE_CONFIG_DIR):
-                    try:
-                        os.makedirs(config.KUBE_CONFIG_DIR)
-                    except OSError as e:
-                        if e.errno != errno.EEXIST:
-                            raise
-                
-                with open(config.KUBE_CONFIG_DIR + "/config", "w") as f:
-                    f.write(kubeConfig.text)
-
-        except IOError as e:
-            return "I/O error({0}): {1}".format(e.errno, e.strerror)
-
-    return render_template('stage3.html')
+    
+    if request.method == 'GET':
+        if session['ccpToken']:
+            return render_template('stage3.html')
+        else:
+            return render_template('stage1.html')
+    
 
 
 @app.route("/stage4")
