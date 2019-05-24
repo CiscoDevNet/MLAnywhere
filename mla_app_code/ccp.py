@@ -130,6 +130,17 @@ class CCP:
         else:
             return response
     
+    def getVIPPools(self):
+
+        response = requests.request("GET", self.url + "/2/network_service/subnets",cookies=self.cookie, verify=False)
+
+        response = response.json()
+
+        if "Pools" in response:
+            return response["Pools"]
+        else:
+            return response
+    
     def deployCluster(self, newClusterDetails):
 
         headers = {

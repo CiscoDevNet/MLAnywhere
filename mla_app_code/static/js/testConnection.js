@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-        $('#ccpForm').on('submit', function(event) {
+        $('#ccpLoginForm').on('submit', function(event) {
             var data = {"ipAddress":$('#ipAddress').val(),"username":$('#username').val(),"password":$('#password').val()};
             
             $.ajax({
