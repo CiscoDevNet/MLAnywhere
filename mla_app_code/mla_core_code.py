@@ -143,8 +143,21 @@ def run_stage3():
 
 @app.route("/stage4")
 def run_stage4():
-    os.system("./kfinstall.sh {} {} {} {} {}".format(config.GITHUB_TOKEN, config.PLATFORM, config.KS_VERSION, config.KF_VERSION, config.KFAPP))
+
+    # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
+    #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
+    os.system("export GITHUBTOKEN={}".format(GITHUB_TOKEN))
+	os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
+    os.system("export KFAPP={}".format(KFAPP))
+	os.system("mkdir {}".format(KFAPP))
+	os.system("kfctl init {}".format(KFAPP))
+	os.system("cd {}".format(KFAPP))
+	os.system("kfctl generate all -V")
+	os.system("kfctl generate apply -V")
+
     return render_template('stage4.html')
+
+    
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
 def run_vsphereProviders():
@@ -217,7 +230,6 @@ def run_vsphereNetworks():
     
     if request.method == 'GET':
 
-<<<<<<< HEAD
         ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
     
         jsonData = request.args.to_dict()
@@ -294,23 +306,7 @@ def run_clusterConfigTemplate():
 
         except IOError as e:
             return "I/O error({0}): {1}".format(e.errno, e.strerror)
-=======
-@app.route("/stage4")
-def run_stage4():
 
-    # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
-    #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
-    os.system("export GITHUBTOKEN={}".format(GITHUB_TOKEN))
-	os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
-    os.system("export KFAPP={}".format(KFAPP))
-	os.system("mkdir {}".format(KFAPP))
-	os.system("kfctl init {}".format(KFAPP))
-	os.system("cd {}".format(KFAPP))
-	os.system("kfctl generate all -V")
-	os.system("kfctl generate apply -V")
-
-    return render_template('stage4.html')
->>>>>>> a0b1e6abc77632e33c289e5a4c826cb510992a92
 
 
 if __name__ == "__main__":
