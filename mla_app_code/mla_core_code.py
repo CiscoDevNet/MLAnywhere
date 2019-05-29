@@ -16,6 +16,7 @@ or implied.
 from flask import Flask, json, render_template, request, session, Response, jsonify
 
 from ccp import CCP
+import proxy 
 import os
 import requests
 
@@ -78,6 +79,28 @@ def run_stage2():
                     
                     clusterData = json.load(json_data)
 
+                    # if a proxy is required then we need to insert this once the worker nodes have been deployed
+                    # we will generate new SSH keys which will be provided to CCP as the initial keys
+                    # once the proxy has been updated we will insert the 
+
+                    if "proxyInput" in formData:
+                        # create a  directory to add temporary keys - will be deleted once the proxy has been configured
+                        if not os.path.exists("./tmp-keys/"):
+                            try:
+                                os.makedirs("./tmp-keys/")
+                            except OSError as e:
+                                if e.errno != errno.EEXIST:
+                                    raise
+
+                        proxy.generateTemporaryKeys("./tmp-keys/")
+                        
+                        with open("./tmp-keys/id_ed25519.pub") as f:
+                            publicKey = f.readlines()
+                        clusterData["ssh_key"] = publicKey[0]
+                        
+                    else:
+                        clusterData["ssh_key"] = formData["sshKey"] 
+                    
                     clusterData["name"] = formData["clusterName"]
                     clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
                     clusterData["name"] = formData["clusterName"]
@@ -93,30 +116,56 @@ def run_stage2():
                     clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
                     clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
                     clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
-                    clusterData["ssh_key"] = formData["sshKey"] 
+                    
                     clusterData["networks"] = [formData["vsphereNetworks"] ]
 
+                    print (clusterData)
                     response = ccp.deployCluster(clusterData)
 
-                    print(response.text)
+                    #print(response.text)
                     
                     uuid = response.json()["uuid"]
 
-                    print(uuid)
+                    #uuid = "51a0390c-5a9b-408a-8258-acc803cef4d5"
 
                     kubeConfig = ccp.getConfig(uuid)
 
-                    print (kubeConfig.text)
+                    if "apiVersion" in kubeConfig.text:
 
-                    if not os.path.exists(config.KUBE_CONFIG_DIR):
-                        try:
-                            os.makedirs(config.KUBE_CONFIG_DIR)
-                        except OSError as e:
-                            if e.errno != errno.EEXIST:
-                                raise
-                    ls
-                    with open(config.KUBE_CONFIG_DIR + "/config", "w") as f:
-                        f.write(kubeConfig.text)
+                        if not os.path.exists(config.KUBE_CONFIG_DIR):
+                            try:
+                                os.makedirs(config.KUBE_CONFIG_DIR)
+                            except OSError as e:
+                                if e.errno != errno.EEXIST:
+                                    raise
+
+                        with open(config.KUBE_CONFIG_DIR + "/config", "w") as f:
+                            f.write(kubeConfig.text)
+                    else:
+                        #TODO SEND ERROR MESSAGE TO LOGGING
+                        print("UUID NOT FOUND")
+
+                    # if a proxy is required then we need to insert his once the worker nodes have been deployed
+
+                    if "proxyInput" in formData:
+                        cluster = ccp.getCluster(clusterData["name"])
+                        if "uuid" in cluster.text:
+                            cluster = cluster.json()
+                            nodes = cluster["nodes"]
+                            privateKey = "./tmp-keys/id_ed25519"
+                            publicKey = "./tmp-keys/id_ed25519.pub"
+                            
+                            if os.path.isfile(privateKey) and os.path.isfile(publicKey):
+                                for node in nodes:
+                                    proxy.sendCommand(node["public_ip"],'ccpuser','./tmp-keys/id_ed25519',formData["sshKey"],'configure_proxy.sh',formData["proxyInput"] )
+                            else:
+                                #TODO SEND ERROR MESSAGE TO LOGGING
+                                print("ERROR CONFIGURING PROXY")
+                            
+                            proxy.deleteTemporaryKeys("./tmp-keys/")
+                        else:
+                            #TODO SEND ERROR MESSAGE TO LOGGING
+                            print("WRONG NAME")
 
                     return json.dumps({'success':True,'redirectURL':'/stage3'}), 200, {'ContentType':'application/json'} 
 
@@ -140,24 +189,24 @@ def run_stage3():
             return render_template('stage1.html')
     
 
-
+    
 @app.route("/stage4")
 def run_stage4():
 
     # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
     #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
     os.system("export GITHUBTOKEN={}".format(GITHUB_TOKEN))
-	os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
+    os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
     os.system("export KFAPP={}".format(KFAPP))
-	os.system("mkdir {}".format(KFAPP))
-	os.system("kfctl init {}".format(KFAPP))
-	os.system("cd {}".format(KFAPP))
-	os.system("kfctl generate all -V")
-	os.system("kfctl generate apply -V")
+    os.system("mkdir {}".format(KFAPP))
+    os.system("kfctl init {}".format(KFAPP))
+    os.system("cd {}".format(KFAPP))
+    os.system("kfctl generate all -V")
+    os.system("kfctl generate apply -V")
 
     return render_template('stage4.html')
 
-    
+
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
 def run_vsphereProviders():
