@@ -56,6 +56,12 @@ class CCP:
         response = requests.request("GET", self.url + "/2/clusters",cookies=self.cookie, verify=False)
 
         return response
+    
+    def getCluster(self,name):
+
+        response = requests.request("GET", self.url + "/2/clusters/"+name,cookies=self.cookie, verify=False)
+
+        return response
 
     
     def getProviderClientConfigs(self):
