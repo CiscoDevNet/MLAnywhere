@@ -22,6 +22,7 @@ warnings.filterwarnings("ignore")
 import os
 import paramiko
 from subprocess import Popen, PIPE
+from flask_socketio import SocketIO, emit
 
 
 def generateTemporaryKeys(dir=""):
