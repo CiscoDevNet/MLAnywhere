@@ -15,16 +15,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
 
-    <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}">
-    </script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}">
-    </script>
-    <script src="{{ url_for('static', filename='js/styleguide.js') }}">
-    </script>
-    <script src="{{ url_for('static', filename='js/populateClusterDropdowns.js') }}">
-    </script>
-    <script src="{{ url_for('static', filename='js/clusterCreation.js') }}">
-    </script>
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/populateClusterDropdowns.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/clusterCreation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+
+
 </head>
 
 <body class="cui">
@@ -42,16 +42,20 @@
 
                     </div>
                     <div class="header-toolbar">
-                        <a href="javascript:;" class="btn btn--icon">
-                            <span class="icon-search"></span>
-                        </a>
-                        <a href="javascript:;" class="btn btn--icon">
-                            <span class="icon-alert"></span>
-                        </a>
-                        <a href="javascript:;" class="btn btn--icon">
-                            <span class="icon-cog"></span>
-                        </a>
-                    </div>
+
+                            <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"  data-toggle="dropdown">
+                                            <span>Logging</span>
+                                    </button>
+                                    <div class="dropdown__menu dropdown__menu--openleft" style="width: 600px ;height: 620px;left: 50%  ;transform: translateX(-50%) ">
+                                        <div class="form-group"  style="width: 600px ;height: 620px;border:">
+                                            <div class="form-group__text"  style="width: 600px ;height: 620px;border:">
+                                                <textarea id="consoleLog" rows="39"  style="width: 600px ;height: 620px;border: none;overflow: auto;outline: none;resize:none;" readonly></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
                 </div>
             </header>
             <div class="content">
@@ -92,14 +96,14 @@
                                 <div class="section row">
                                     <div class="col mx-auto ">
 
-                                        <div class="form-group col-6 ">
+                                        <div class="form-group col-10">
                                             <div class="form-group__text ">
                                                 <input name="clusterName" id="clusterName" type="text" required>
                                                 <label for="clusterName">Cluster Name</label>
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-6 ">
+                                        <div class="form-group col-10">
                                             <div class="form-group__text select">
                                                     <select name="vsphereProviders" id="vsphereProviders">
                                                     </select>
@@ -107,7 +111,7 @@
                                             </div>
                                         </div>
                 
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-10">
                                             <div class="form-group__text select">
                                                 <select name="vsphereDatacenters" id="vsphereDatacenters">
                                                 </select>
@@ -115,7 +119,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-6 mx-auto">
+                                        <div class="form-group col-10 mx-auto">
                                                 <div class="form-group__text select">
                                                     <select name="vsphereClusters" id="vsphereClusters">
                                                     </select>
@@ -123,7 +127,7 @@
                                                 </div>
                                         </div>
 
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-10">
                                             <div class="form-group__text select">
                                                 <select name="vsphereResourcePools" id="vsphereResourcePools" >
                                                 </select>
@@ -131,7 +135,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-10">
                                             <div class="form-group__text select">
                                                 <select name="vsphereNetworks" id="vsphereNetworks">
                                                 </select>
@@ -139,7 +143,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-10">
                                             <div class="form-group__text select">
                                                 <select name="vsphereDatastores" id="vsphereDatastores">
                                                 </select>
@@ -147,7 +151,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-10">
                                                 <div class="form-group__text select">
                                                     <select name="tenantImageTemplate" id="tenantImageTemplate">
                                                     </select>
@@ -155,7 +159,7 @@
                                                 </div>
                                             </div>
 
-                                        <div class="form-group col-6 mx-auto">
+                                        <div class="form-group col-10 mx-auto">
                                             <div class="form-group__text select">
                                                 <select name="vipPools" id="vipPools">
                                                 </select>
@@ -163,10 +167,7 @@
                                             </div>
                                         </div>
 
-                                        
-                                        
-
-                                        <div class="form-group col-6 mx-auto">
+                                        <div class="form-group col-10 mx-auto">
                                             <div class="form-group__text">
                                                 <input name="sshKey" id="sshKey" type="text" required>
                                                 <label for="sshKey">SSH Key</label>
@@ -174,7 +175,7 @@
                                         </div>
 
 
-                                        <div class="form-group col-6 mx-auto">
+                                        <div class="form-group col-10 mx-auto">
                                                 <label class="switch" >
                                                         <label for="proxy">Proxy&nbsp;&nbsp;</label>
                                                         <input type="checkbox" id="proxySwitch">
@@ -192,6 +193,14 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col mx-auto ">
+                                        <div class="form-group">
+                                            <div class="form-group__text">
+                                                <textarea id="consoleLog" rows="39"  style="overflow-y: scroll;" readonly></textarea>
+                                                <label for="consoleLog"><BR></label>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
 
@@ -199,14 +208,6 @@
 
                     </div>
                     </form>
-
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="form-group__text">
-                                <textarea id="consoleLog" rows="50" readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
             </div>
