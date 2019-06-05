@@ -15,6 +15,7 @@ or implied.
 
 from flask import Flask, json, render_template, request, session, Response, jsonify
 
+
 from ccp import CCP
 import proxy 
 import os
@@ -132,14 +133,12 @@ def run_stage2():
                     socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
                     response = ccp.deployCluster(clusterData)
 
-                    print(response.text)
-                    #if response.status_code == 200:
-                    #    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
-                    #else:
-                    #    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                    if response.status_code == 200:
+                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
+                    
 
                     uuid = response.json()["uuid"]
-
+                    
                     #uuid = "51a0390c-5a9b-408a-8258-acc803cef4d5"
 
                     kubeConfig = ccp.getConfig(uuid)
@@ -390,9 +389,19 @@ def run_clusterConfigTemplate():
         except IOError as e:
             return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
+@app.route("/consoleLog", methods = ['POST', 'GET'])
+def run_consoleLog():
+    
+    if request.method == 'GET':
+
+        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+
+
+
 @socketio.on('connect')
 def test_connect():
     print("Connected to socketIO")
+
 
 if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
