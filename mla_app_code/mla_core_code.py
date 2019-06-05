@@ -360,5 +360,5 @@ def run_clusterConfigTemplate():
 
 if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
 
