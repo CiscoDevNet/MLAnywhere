@@ -30,4 +30,4 @@ class MLAConfiguration(object):
             self.__dict__.update(parser.items(name)) 
 
 
-config = MLAConfiguration('config.cfg' )
+config = MLAConfiguration('config.cfg')
