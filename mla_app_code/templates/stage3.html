@@ -8,64 +8,53 @@
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>CML Anywhere Deployment</title>
-        <!--<link rel="stylesheet" href="css/cui-standard.min.css">-->
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <link rel="icon" type="image/vnd.microsoft.icon" href="//www.cisco.com/favicon.ico">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="///www.cisco.com/favicon.ico">
+        <title>ML Anywhere Deployment</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+
+        <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+
+
     </head>
     <body class="cui">
         <div class="content-fluid">
             <main>
-                <header class="header header--tall">
-                    <div class="header-bar container">
-                        <a href="javascript:;" class="header-bar__logo">
-                            <span class="icon-cisco"></span>
-                        </a>
-                        <div class="header-bar__main">
-                            <!--
-                            <div class="header-breadcrumbs">
-                                <ul class="breadcrumb">
-                                    <li><a href="../index.html">UI kit</a></li>
-                                    <li><span>Standard Page Template</span></li>
-                                </ul>
+                    <header class="header header--tall">
+                            <div class="header-bar container">
+                                <a href="javascript:;" class="header-bar__logo">
+                                    <span class="icon-cisco"></span>
+                                </a>
+                                <div class="header-bar__main">
+                                    <div class="header-heading">
+                                        <h1 class="page-title">ML Anywhere Deployment</h1>
+                                    </div>
+            
+                                </div>
+                                <div class="header-toolbar">
+            
+                                        <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"  data-toggle="dropdown">
+                                                        <span>Logging</span>
+                                                </button>
+                                                <div class="dropdown__menu dropdown__menu--openleft" style="width: 600px ;height: 620px;left: 50%  ;transform: translateX(-50%) ">
+                                                    <div class="form-group"  style="width: 600px ;height: 620px;border:">
+                                                        <div class="form-group__text"  style="width: 600px ;height: 620px;border:">
+                                                            <textarea id="consoleLog" rows="39"  style="width: 600px ;height: 620px;border: none;overflow: auto;outline: none;resize:none;" readonly></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
                             </div>
-                            -->
-                            <div class="header-heading">
-                                <h1 class="page-title">ML Anywhere Deployment</h1>
-                            </div>
-                            <!--
-                            <div class="header-menus">
-                                <ul class="nav nav-tabs">
-                                    <li class="tab">
-                                        <a href="basic.html"><div class="tab__heading" title="Basic">Basic</div></a>
-                                    </li>
-                                    <li class="tab active">
-                                        <a href="standard.html"><div class="tab__heading" title="Standard">Standard</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="wide.html"><div class="tab__heading" title="Wide">Wide</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="sidebar.html"><div class="tab__heading" title="Sidebar">Sidebar</div></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            -->
-                        </div>
-                        <div class="header-toolbar">
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-search"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-alert"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-cog"></span>
-                            </a>
-                        </div>
-                    </div>
-                </header>
+                        </header>
                 <div class="content">
                     <div class="container">
                         <div class="section">
