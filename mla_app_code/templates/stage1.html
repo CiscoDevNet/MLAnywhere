@@ -42,16 +42,21 @@
 
                     </div>
                     <div class="header-toolbar">
-                        <a href="javascript:;" class="btn btn--icon">
-                            <span class="icon-search"></span>
-                        </a>
-                        <a href="javascript:;" class="btn btn--icon">
-                            <span class="icon-alert"></span>
-                        </a>
-                        <a href="javascript:;" class="btn btn--icon">
-                            <span class="icon-cog"></span>
-                        </a>
-                    </div>
+
+                            <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"  data-toggle="dropdown">
+                                            <span>Logging</span>
+                                    </button>
+                                    <div class="dropdown__menu dropdown__menu--openleft" style="width: 600px ;height: 620px;left: 50%  ;transform: translateX(-50%) ">
+                                        <div class="form-group"  style="width: 600px ;height: 620px;border:">
+                                            <div class="form-group__text"  style="width: 600px ;height: 620px;border:">
+                                                <textarea id="consoleLog" rows="39"  style="width: 600px ;height: 620px;border: none;overflow: auto;outline: none;resize:none;" readonly></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        
                 </div>
             </header>
             <div class="content">
