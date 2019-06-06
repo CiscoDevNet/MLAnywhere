@@ -3,3 +3,4 @@ Flask-WTF
 requests
 configparser
 paramiko
+flask-socketio
