@@ -218,7 +218,7 @@ def run_stage4():
 
     # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
     #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
-    os.system("export GITHUBTOKEN={}".format(GITHUB_TOKEN))
+
     os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
     os.system("export KFAPP={}".format(KFAPP))
     os.system("mkdir {}".format(KFAPP))
@@ -405,6 +405,6 @@ def test_connect():
 
 if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
     socketio.run(app)
 
