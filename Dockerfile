@@ -22,6 +22,8 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 RUN apt-get update
 RUN apt-get -y install openssh-client
 
+RUN apt-get install -y wget
+
 # Install needed executables
 RUN wget https://storage.googleapis.com/kubernetes-release/release/v${K8SVERSION}/bin/${PLATFORM}/amd64/kubectl
 RUN chmod +x ./kubectl
