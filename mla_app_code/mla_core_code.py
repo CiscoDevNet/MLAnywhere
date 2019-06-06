@@ -21,7 +21,7 @@ import proxy
 import os
 import requests
 from flask_socketio import SocketIO, emit
-
+import subprocess
 
 from mlaConfig import config
 
@@ -147,14 +147,18 @@ def run_stage2():
 
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
 
-                        if not os.path.exists(config.KUBE_CONFIG_DIR):
+                        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+                        print(kubeConfigDir)
+                        if not os.path.exists(kubeConfigDir):
                             try:
-                                os.makedirs(config.KUBE_CONFIG_DIR)
+                                print("doesnt exist")
+                                os.makedirs(kubeConfigDir)
                             except OSError as e:
                                 if e.errno != errno.EEXIST:
                                     raise
 
-                        with open(config.KUBE_CONFIG_DIR + "/config", "w") as f:
+                        print ("{}/config".format(kubeConfigDir))
+                        with open("{}/config".format(kubeConfigDir), "w") as f:
                             f.write(kubeConfig.text)
                     else:
                         #TODO SEND ERROR MESSAGE TO LOGGING
@@ -219,14 +223,89 @@ def run_stage4():
     # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
     #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
 
-    os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
-    os.system("export KFAPP={}".format(KFAPP))
-    os.system("mkdir {}".format(KFAPP))
-    os.system("kfctl init {}".format(KFAPP))
-    os.system("cd {}".format(KFAPP))
-    os.system("kfctl generate all -V")
-    os.system("kfctl generate apply -V")
+    #os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
 
+    proc = subprocess.Popen(["kubectl","create","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NVIDIA_YAML,stderr.decode("utf-8") )})
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
+
+    #os.system("export KFAPP={}".format(config.KFAPP))
+
+    proc = subprocess.Popen(["export","KFAPP=","{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_EXPORT_KFAPP,stderr.decode("utf-8") )})
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_EXPORT_KFAPP)})
+
+    #os.system("mkdir {}".format(config.KFAPP))
+    #os.system("kfctl init {}".format(config.KFAPP))
+    #os.chdir("{}".format(config.KFAPP))
+    #os.system("kfctl generate all -V")
+    #os.system("kfctl apply all -V")
+
+    #os.system("mkdir {}".format(config.KFAPP))
+
+    proc = subprocess.Popen(["mkdir", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MKDIR_KFAPP,stderr.decode("utf-8") )})
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MKDIR_KFAPP)})
+
+    #os.system("kfctl init {}".format(config.KFAPP))
+
+    proc = subprocess.Popen(["kfctl","init", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_INIT,stderr.decode("utf-8") )})
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_INIT)})
+
+
+    #os.system("cd {}".format(config.KFAPP))
+
+    '''proc = subprocess.Popen(["cd", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CD_KFAPP,stderr.decode("utf-8") )})
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_CD_KFAPP)})
+    '''
+    #os.system("kfctl generate all -V")
+
+    proc = subprocess.Popen(["kfctl","generate","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP))
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_GENERATE_ALL,stderr.decode("utf-8") )})
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_GENERATE_ALL)})
+
+    proc = subprocess.Popen(["kfctl","apply","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP))
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_APPLY_ALL,stderr.decode("utf-8") )})
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_APPLY_ALL)})
+    
     return render_template('stage4.html')
 
 
