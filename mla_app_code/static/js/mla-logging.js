@@ -6,6 +6,12 @@ $(document).ready(function(){
         
         $('#consoleLog').append(" - " + msg["loggingType"] + ": " + msg["loggingMessage"]);
         $('#consoleLog').append("\n");
+
+        $('#consoleLog').trigger('change');
+    });
+
+    $('#consoleLog').on('change', function(){
+        $('#consoleLogButton').delay(100).fadeOut().fadeIn('slow')
     });
 
 })

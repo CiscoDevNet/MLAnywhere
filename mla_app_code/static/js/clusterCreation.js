@@ -1,13 +1,17 @@
 $(document).ready(function(){
 
+    $('#consoleLog').append(localStorage.getItem('consoleLog'));
+
     $('#displayJSON').on('click', function(event) {
-        event.preventDefault();
+        event.preventDefault();      
+
+
         $.ajax({
             type: "GET",
             url:"/clusterConfigTemplate",
             dataType: "json",
             success: function (data) {
-                
+
                 $("#jsonModal").modal('show');
 
                 jsonToDisplay = data
@@ -49,6 +53,7 @@ $(document).ready(function(){
     $('#deployCluster').on('click', function(event) {
         
         event.preventDefault();
+
         form = $("#ccpClusterForm").serializeArray();
         formData = {};
 
@@ -66,8 +71,13 @@ $(document).ready(function(){
             dataType : 'json',
             data : JSON.stringify(formData),
             success: function(response) {
+
+                consoleLog = localStorage.getItem('consoleLog');
+                consoleLog += $('#consoleLog').val()
+                localStorage.setItem('consoleLog', consoleLog);
+
                 $("#ccpClusterForm :input").prop("disabled", false);
-                if (response.redirectURL !== undefined) {
+                if (response.redirectURL) {
                     window.location.replace(response.redirectURL);
                 } else {
                     window.location.reload(true);

@@ -1,27 +1,35 @@
 $(document).ready(function(){
-
-   
     
+    $('#consoleLog').append(localStorage.getItem('consoleLog'));
+
     $('#deployKubeflow').on('click', function(event) {
         
+        $("#deployKubeflow").prop("disabled", true);
+
         event.preventDefault();
         
         $.ajax({
-            url: "/stage4",
-            type : "GET",
+            url: "/stage3",
+            type : "POST",
             contentType: 'application/json',
     
             success: function(response) {
                 
-                response = JSON.parse(response)
+                consoleLog = localStorage.getItem('consoleLog');
+                consoleLog += $('#consoleLog').val()
+                localStorage.setItem('consoleLog', consoleLog);
 
-                if (response["redirectURL"] !== undefined) {
+                $("#deployKubeflow").prop("disabled", false);
+                
+
+                if (response.redirectURL) {
                     window.location.replace(response.redirectURL);
                 } else {
                     window.location.reload(true);
                 }
             },
             error: function(error) {
+                $("#deployKubeflow").prop("disabled", false);
                 $("#alertBox").html(
                     `
                     <div class="alert alert--danger alert-dismissible fade in ">
@@ -43,4 +51,4 @@ $(document).ready(function(){
          
 
 
-})
+});
