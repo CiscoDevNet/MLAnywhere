@@ -17,11 +17,14 @@
             <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"></script>
             <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
             <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
-
-            <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
-        
             <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
         
+            
+            <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/downloadKubeconfig.js') }}"></script>
+            
+
+            
     </head>
     <body class="cui">
         <div class="content-fluid">
@@ -32,90 +35,73 @@
                             <span class="icon-cisco"></span>
                         </a>
                         <div class="header-bar__main">
-                            <!--
-                            <div class="header-breadcrumbs">
-                                <ul class="breadcrumb">
-                                    <li><a href="../index.html">UI kit</a></li>
-                                    <li><span>Standard Page Template</span></li>
-                                </ul>
-                            </div>
-                            -->
-                            <div class="header-heading">
-                                <h1 class="page-title">ML Anywhere Deployment</h1>
-                            </div>
-                            <!--
-                            <div class="header-menus">
-                                <ul class="nav nav-tabs">
-                                    <li class="tab">
-                                        <a href="basic.html"><div class="tab__heading" title="Basic">Basic</div></a>
-                                    </li>
-                                    <li class="tab active">
-                                        <a href="standard.html"><div class="tab__heading" title="Standard">Standard</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="wide.html"><div class="tab__heading" title="Wide">Wide</div></a>
-                                    </li>
-                                    <li class="tab">
-                                        <a href="sidebar.html"><div class="tab__heading" title="Sidebar">Sidebar</div></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            -->
+                            
                         </div>
                         <div class="header-toolbar">
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-search"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-alert"></span>
-                            </a>
-                            <a href="javascript:;" class="btn btn--icon">
-                                <span class="icon-cog"></span>
-                            </a>
-                        </div>
-                    </div>
-                </header>
-                <div class="content">
-                    <div class="container">
-                        <div class="section">
-                            <div class="text-center">
-                                
-                                <h2>Stage 4 - Done!</h2>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="ui-steps">
-                                            <div class="ui-step">
-                                                <div class="step__icon">1</div>
-
-                                                <div class="step__label">Capture CCP Info</div>
-                                             </div>
-                                            <div class="ui-step">
-                                                <div class="step__icon">2</div>
-                                                <div class="step__label">Launch K8 Cluster</div>
-                                            </div>
-                                            <div class="ui-step">
-                                                <div class="step__icon">3</div>
-                                                <div class="step__label">Deploy KubeFlow</div>
-                                            </div>
-                                            <div class="ui-step active">
-                                                <div class="step__icon">4</div>
-                                                <div class="step__label">Done!</div>
+            
+                                <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"  data-toggle="dropdown">
+                                                <span>Logging</span>
+                                        </button>
+                                        <div class="dropdown__menu dropdown__menu--openleft" style="width: 600px ;height: 620px;left: 50%  ;transform: translateX(-50%) ">
+                                            <div class="form-group"  style="width: 600px ;height: 620px;border:">
+                                                <div class="form-group__text"  style="width: 600px ;height: 620px;border:">
+                                                    <textarea id="consoleLog" rows="39"  style="width: 600px ;height: 620px;border: none;overflow: auto;outline: none;resize:none;" readonly></textarea>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                            </div>
-                            <!--
-                            <form action = "result" method = "POST">
-                                <p>Cluster Name <input type = "text" name = "Cluster Name" /></p>
-                            </form>
-                            <button> <a href="/finish">Deploy Tensorflow</a></button>
-                            -->
                         </div>
                     </div>
-                </div>
+                </header>
+
+                <div class="content">
+                        <div class="container">
+        
+                            <div class="section">
+                                <div class="text-center">
+        
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="ui-steps">
+                                                <div class="ui-step">
+                                                    <div class="step__icon">1</div>
+        
+                                                    <div class="step__label">Capture CCP Info</div>
+                                                </div>
+                                                <div class="ui-step ">
+                                                    <div class="step__icon">2</div>
+                                                    <div class="step__label">Launch K8 Cluster</div>
+                                                </div>
+                                                <div class="ui-step ">
+                                                    <div class="step__icon">3</div>
+                                                    <div class="step__label">Deploy KubeFlow</div>
+                                                </div>
+                                                <div class="ui-step active">
+                                                    <div class="step__icon">4</div>
+                                                       <div class="step__label">Done!</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+            
+                                        <BR>
+                                            <h2>Kubeflow deployed</h2>
+                                        <BR>
+                                            <h3>Download your Kubeconfig file to get started ... </h3>
+                                        <BR>
+                          
+                                    <input id="downloadKubeconfig" type="submit" class="btn btn--primary" value="Download Kubeconfig File">
+        
+                                </div>
+        
+                            </div>
+        
+                        </div>
+                    </div>
+
+
                 <footer class="footer footer--basic">
                     <div class="footer__links">
                         <ul class="list">
