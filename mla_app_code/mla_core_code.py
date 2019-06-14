@@ -13,17 +13,21 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 '''
 
-from flask import Flask, json, render_template, request, session, Response, jsonify
+from flask import Flask, json, render_template, request, session, Response, jsonify, send_file
 
 
 from ccp import CCP
+from mlaConfig import config
 import proxy 
+
 import os
 import requests
 from flask_socketio import SocketIO, emit
 import subprocess
+from datetime import timedelta
 
-from mlaConfig import config
+import uuid
+import secrets
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -41,11 +45,15 @@ def run_testConnection():
         login = ccp.login()
 
         if not login:
+            socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_CCP_LOGIN })
             return json.dumps({'success':False}), 401, {'ContentType':'application/json'} 
         else:
             session['ccpURL'] = "https://" + jsonData['ipAddress']
             session['ccpToken'] = login.cookies.get_dict()
-            return json.dumps({'success':True,'redirectURL':'/stage2'}), 200, {'ContentType':'application/json'} 
+            session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CCP_LOGIN })
+            return jsonify(dict(redirectURL='/stage2'))
     
     return render_template('stage1.html')
         
@@ -131,6 +139,7 @@ def run_stage2():
                     clusterData["networks"] = [formData["vsphereNetworks"] ]
 
                     socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
+                    
                     response = ccp.deployCluster(clusterData)
 
                     if response.status_code == 200:
@@ -139,8 +148,6 @@ def run_stage2():
 
                     uuid = response.json()["uuid"]
                     
-                    #uuid = "51a0390c-5a9b-408a-8258-acc803cef4d5"
-
                     kubeConfig = ccp.getConfig(uuid)
 
                     if "apiVersion" in kubeConfig.text:
@@ -148,17 +155,16 @@ def run_stage2():
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
 
                         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-                        print(kubeConfigDir)
                         if not os.path.exists(kubeConfigDir):
                             try:
-                                print("doesnt exist")
                                 os.makedirs(kubeConfigDir)
                             except OSError as e:
                                 if e.errno != errno.EEXIST:
                                     raise
 
-                        print ("{}/config".format(kubeConfigDir))
-                        with open("{}/config".format(kubeConfigDir), "w") as f:
+                        #print ("{}/config".format(kubeConfigDir))
+                        #with open("{}/config".format(kubeConfigDir), "w") as f:
+                        with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
                             f.write(kubeConfig.text)
                     else:
                         #TODO SEND ERROR MESSAGE TO LOGGING
@@ -193,14 +199,14 @@ def run_stage2():
 
                     socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE})
 
-                    return json.dumps({'success':True,'redirectURL':'/stage3'}), 200, {'ContentType':'application/json'} 
+                    return jsonify(dict(redirectURL='/stage3'))
 
             except IOError as e:
                 return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
         elif request.method == 'GET':
 
-            if session['ccpToken']:
+            if "ccpToken" in session:
                 return render_template('stage2.html')
             else:
                 return render_template('stage1.html')
@@ -209,104 +215,109 @@ def run_stage2():
 def run_stage3():
 
     
-    if request.method == 'GET':
-        if session['ccpToken']:
-            return render_template('stage3.html')
+    if request.method == 'POST':
+        if "ccpToken" in session:
+
+            
+            # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
+            #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
+
+            #os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
+
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
+
+            print (kubeSessionEnv)
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
+
+            proc = subprocess.Popen(["kubectl","create","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NVIDIA_YAML,stderr.decode("utf-8") )})
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
+
+
+
+            proc = subprocess.Popen(["export","KFAPP=","{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True, env=kubeSessionEnv)
+
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_EXPORT_KFAPP,stderr.decode("utf-8") )})
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_EXPORT_KFAPP)})
+
+
+
+            proc = subprocess.Popen(["mkdir {}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MKDIR_KFAPP,stderr.decode("utf-8") )})
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MKDIR_KFAPP)})
+
+
+
+            proc = subprocess.Popen(["kfctl","init", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_INIT,stderr.decode("utf-8") )})
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_INIT)})
+
+
+
+            proc = subprocess.Popen(["kfctl","generate","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP), env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_GENERATE_ALL,stderr.decode("utf-8") )})
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_GENERATE_ALL)})
+
+
+
+            proc = subprocess.Popen(["kfctl","apply","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP), env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_APPLY_ALL,stderr.decode("utf-8") )})
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_APPLY_ALL)})
+            
+
+            
+            return jsonify(dict(redirectURL='/stage4'))
         else:
-            return render_template('stage1.html')
+            return jsonify(dict(redirectURL='/stage1'))
     
+    elif request.method == 'GET':
+
+            if "ccpToken" in session:
+                return render_template('stage3.html')
+            else:
+                return render_template('stage1.html')
 
     
 @app.route("/stage4")
 def run_stage4():
 
-    # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
-    #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
+    if request.method == 'GET':
 
-    #os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
-
-    proc = subprocess.Popen(["kubectl","create","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    proc.wait()
-    (stdout, stderr) = proc.communicate()
-
-    if proc.returncode != 0:
-        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NVIDIA_YAML,stderr.decode("utf-8") )})
-    else:
-        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
-
-    #os.system("export KFAPP={}".format(config.KFAPP))
-
-    proc = subprocess.Popen(["export","KFAPP=","{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-
-    proc.wait()
-    (stdout, stderr) = proc.communicate()
-
-    if proc.returncode != 0:
-        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_EXPORT_KFAPP,stderr.decode("utf-8") )})
-    else:
-        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_EXPORT_KFAPP)})
-
-    #os.system("mkdir {}".format(config.KFAPP))
-    #os.system("kfctl init {}".format(config.KFAPP))
-    #os.chdir("{}".format(config.KFAPP))
-    #os.system("kfctl generate all -V")
-    #os.system("kfctl apply all -V")
-
-    #os.system("mkdir {}".format(config.KFAPP))
-
-    proc = subprocess.Popen(["mkdir", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    proc.wait()
-    (stdout, stderr) = proc.communicate()
-
-    if proc.returncode != 0:
-        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MKDIR_KFAPP,stderr.decode("utf-8") )})
-    else:
-        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MKDIR_KFAPP)})
-
-    #os.system("kfctl init {}".format(config.KFAPP))
-
-    proc = subprocess.Popen(["kfctl","init", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    proc.wait()
-    (stdout, stderr) = proc.communicate()
-
-    if proc.returncode != 0:
-        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_INIT,stderr.decode("utf-8") )})
-    else:
-        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_INIT)})
-
-
-    #os.system("cd {}".format(config.KFAPP))
-
-    '''proc = subprocess.Popen(["cd", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-    proc.wait()
-    (stdout, stderr) = proc.communicate()
-
-    if proc.returncode != 0:
-        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CD_KFAPP,stderr.decode("utf-8") )})
-    else:
-        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_CD_KFAPP)})
-    '''
-    #os.system("kfctl generate all -V")
-
-    proc = subprocess.Popen(["kfctl","generate","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP))
-    proc.wait()
-    (stdout, stderr) = proc.communicate()
-
-    if proc.returncode != 0:
-        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_GENERATE_ALL,stderr.decode("utf-8") )})
-    else:
-        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_GENERATE_ALL)})
-
-    proc = subprocess.Popen(["kfctl","apply","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP))
-    proc.wait()
-    (stdout, stderr) = proc.communicate()
-
-    if proc.returncode != 0:
-        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_APPLY_ALL,stderr.decode("utf-8") )})
-    else:
-        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_APPLY_ALL)})
-    
-    return render_template('stage4.html')
+        if "ccpToken" in session:
+            return render_template('stage4.html')
+        else:
+            return render_template('stage1.html')
 
 
 
@@ -315,17 +326,19 @@ def run_vsphereProviders():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-        response = ccp.getProviderClientConfigs()
-        
-        #if "access denied" in response.text:
-        #    return render_template('stage1.html')
+        if "ccpToken" in session:
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_PROVIDERS })
-            return response.text
-        else:
-            return [config.ERROR_VSPHERE_PROVIDERS]
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+            response = ccp.getProviderClientConfigs()
+            
+            #if "access denied" in response.text:
+            #    return render_template('stage1.html')
+
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_PROVIDERS })
+                return response.text
+            else:
+                return [config.ERROR_VSPHERE_PROVIDERS]
 
 @app.route("/vsphereDatacenters", methods = ['POST', 'GET'])
 def run_vsphereDatacenters():
@@ -333,17 +346,18 @@ def run_vsphereDatacenters():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
     
-        jsonData = request.args.to_dict()
-  
-        response = ccp.getProviderVsphereDatacenters(jsonData["vsphereProviderUUID"])
+            response = ccp.getProviderVsphereDatacenters(jsonData["vsphereProviderUUID"])
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATACENTERS })
-            return jsonify(response)
-        else:
-            return [config.ERROR_VSPHERE_DATACENTERS]
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATACENTERS })
+                return jsonify(response)
+            else:
+                return [config.ERROR_VSPHERE_DATACENTERS]
 
 @app.route("/vsphereClusters", methods = ['POST', 'GET'])
 def run_vsphereClusters():
@@ -351,17 +365,18 @@ def run_vsphereClusters():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-    
-        jsonData = request.args.to_dict()
+        if "ccpToken" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
 
-        response = ccp.getProviderVsphereClusters(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+            response = ccp.getProviderVsphereClusters(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_CLUSTERS })
-            return jsonify(response)
-        else:
-            return []
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_CLUSTERS })
+                return jsonify(response)
+            else:
+                return []
 
 @app.route("/vsphereResourcePools", methods = ['POST', 'GET'])
 def run_vsphereResourcePools():
@@ -369,17 +384,19 @@ def run_vsphereResourcePools():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-    
-        jsonData = request.args.to_dict()
+        if "ccpToken" in session:
 
-        response = ccp.getProviderVsphereResourcePools(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"],jsonData["vsphereProviderCluster"])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_RESOURCE_POOLS })
-            return jsonify(response)
-        else:
-            return []
+            response = ccp.getProviderVsphereResourcePools(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"],jsonData["vsphereProviderCluster"])
+
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_RESOURCE_POOLS })
+                return jsonify(response)
+            else:
+                return []
 
 @app.route("/vsphereNetworks", methods = ['POST', 'GET'])
 def run_vsphereNetworks():
@@ -387,17 +404,19 @@ def run_vsphereNetworks():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-    
-        jsonData = request.args.to_dict()
+        if "ccpToken" in session:
 
-        response = ccp.getProviderVsphereNetworks(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_NETWORKS })
-            return jsonify(response)
-        else:
-            return []
+            response = ccp.getProviderVsphereNetworks(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_NETWORKS })
+                return jsonify(response)
+            else:
+                return []
 
 @app.route("/vsphereDatastores", methods = ['POST', 'GET'])
 def run_vsphereDatastores():
@@ -405,17 +424,19 @@ def run_vsphereDatastores():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-    
-        jsonData = request.args.to_dict()
+        if "ccpToken" in session:
 
-        response = ccp.getProviderVsphereDatastores(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATASTORES })
-            return jsonify(response)
-        else:
-            return []
+            response = ccp.getProviderVsphereDatastores(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATASTORES })
+                return jsonify(response)
+            else:
+                return []
 
 @app.route("/vsphereVMs", methods = ['POST', 'GET'])
 def run_vsphereVMs():
@@ -423,17 +444,19 @@ def run_vsphereVMs():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-    
-        jsonData = request.args.to_dict()
+        if "ccpToken" in session:
 
-        response = ccp.getProviderVsphereVMs(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_VMS })
-            return jsonify(response)
-        else:
-            return []
+            response = ccp.getProviderVsphereVMs(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_VMS })
+                return jsonify(response)
+            else:
+                return []
 
 @app.route("/vipPools", methods = ['POST', 'GET'])
 def run_vipPools():
@@ -441,46 +464,58 @@ def run_vipPools():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-    
-        jsonData = request.args.to_dict()
+        if "ccpToken" in session:
 
-        response = ccp.getVIPPools()
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
 
-        if response:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VIP_POOLS })
-            return jsonify(response)
-        else:
-            return []
+            response = ccp.getVIPPools()
+
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VIP_POOLS })
+                return jsonify(response)
+            else:
+                return []
 
 @app.route("/clusterConfigTemplate", methods = ['POST', 'GET'])
 def run_clusterConfigTemplate():
     
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-    
-        try:
-            with open("ccpRequest.json") as json_data:
-                clusterData = json.load(json_data)
-                return jsonify(clusterData)
+        if "ccpToken" in session:
 
-        except IOError as e:
-            return "I/O error({0}): {1}".format(e.errno, e.strerror)
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            try:
+                with open("ccpRequest.json") as json_data:
+                    clusterData = json.load(json_data)
+                    return jsonify(clusterData)
 
-@app.route("/consoleLog", methods = ['POST', 'GET'])
-def run_consoleLog():
-    
+            except IOError as e:
+                return "I/O error({0}): {1}".format(e.errno, e.strerror)
+
+@app.route('/downloadKubeconfig', methods=['GET', 'POST'])
+def downloadKubeconfig():
+
     if request.method == 'GET':
 
-        ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-
+        if "ccpToken" in session:
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            return send_file("{}/{}".format(kubeConfigDir,session['sessionUUID']))
+        else:
+            return render_template('stage1.html')
 
 
 @socketio.on('connect')
 def test_connect():
     print("Connected to socketIO")
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=60)
 
 if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"

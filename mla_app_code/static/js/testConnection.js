@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
         $('#ccpLoginForm').on('submit', function(event) {
+
             var data = {"ipAddress":$('#ipAddress').val(),"username":$('#username').val(),"password":$('#password').val()};
             
             $.ajax({
@@ -10,9 +11,12 @@ $(document).ready(function(){
                 dataType : 'json',
                 data : JSON.stringify(data),
                 success: function(response) {
-                    if (response.redirectURL !== undefined) {
+
+                    localStorage.setItem('consoleLog', $('#consoleLog').val());
+                    
+                    if (response.redirectURL) {
                         window.location.replace(response.redirectURL);
-                    } else {
+                    }  else {
                         window.location.reload(true);
                     }
                 },
