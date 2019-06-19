@@ -7,16 +7,11 @@ ENV PYTHONUNBUFFERED=0
 ENV PLATFORM=linux
 ENV K8SVERSION=1.14.0
 ENV KS_VERSION=0.13.1
-ENV KF_VERSION=0.5.0
+ENV KF_VERSION=0.5.1
 
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
-
-# Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Install for ssh-keygen
 RUN apt-get update
@@ -41,6 +36,13 @@ RUN tar -xvf kfctl_v${KF_VERSION}_${PLATFORM}.tar.gz
 RUN rm kfctl_v${KF_VERSION}_${PLATFORM}.tar.gz
 RUN chmod +x ./kfctl
 RUN mv ./kfctl /usr/local/bin/
+
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 WORKDIR /app/mla_app_code
 
