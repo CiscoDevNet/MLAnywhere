@@ -24,10 +24,15 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 
+    <div id="error-box">
+        </div>
+
 
 </head>
 
 <body class="cui">
+
+
     <div class="content-fluid">
         <main>
             <header class="header header--tall">
@@ -50,7 +55,7 @@
                                     <div class="dropdown__menu dropdown__menu--openleft" style="width: 600px ;height: 620px;left: 50%  ;transform: translateX(-50%) ">
                                         <div class="form-group"  style="width: 600px ;height: 620px;border:">
                                             <div class="form-group__text"  style="width: 600px ;height: 620px;border:">
-                                                <textarea id="consoleLog" rows="39"  style="width: 600px ;height: 620px;border: none;overflow: auto;outline: none;resize:none;" readonly></textarea>
+                                                    <textarea id="consoleLog" rows="39" style="width: 600px ;height: 620px;border: none;overflow: scroll;outline: none;" ></textarea>
                                             </div>
                                         </div>
                                     </div>

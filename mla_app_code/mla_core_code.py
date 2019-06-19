@@ -20,7 +20,7 @@ from ccp import CCP
 from mlaConfig import config
 import proxy 
 
-import os
+import os,sys
 import requests
 from flask_socketio import SocketIO, emit
 import subprocess
@@ -28,6 +28,9 @@ from datetime import timedelta
 
 import uuid
 import secrets
+
+import re
+
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -98,6 +101,22 @@ def run_stage2():
 
                     if "proxyInput" in formData:
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_SETTING_PROXY })
+
+                        proxyInput = formData["proxyInput"]
+
+                        regex = re.compile(
+                                r'^((?:http)s?://)?' # http:// or https://
+                                r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+                                r'localhost|' #localhost...
+                                r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+                                r'(?::\d+)?' # optional port
+                                r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+                        if re.match(regex, proxyInput) is None:
+                            
+                            return json.dumps({'success':False,"errorCode":"ERROR_INVALID_PROXY","errorMessage":config.ERROR_INVALID_PROXY}), 400, {'ContentType':'application/json'}
+
+
                         # create a  directory to add temporary keys - will be deleted once the proxy has been configured
                         if not os.path.exists("./tmp-keys/"):
                             try:
@@ -119,6 +138,7 @@ def run_stage2():
 
                     else:
                         clusterData["ssh_key"] = formData["sshKey"] 
+                    
                     
                     clusterData["name"] = formData["clusterName"]
                     clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
@@ -185,7 +205,7 @@ def run_stage2():
 
                                     socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOYING_PROXY + " " + node["public_ip"] })
 
-                                    proxy.sendCommand(node["public_ip"],'ccpuser','./tmp-keys/id_ed25519',formData["sshKey"],'configure_proxy.sh',formData["proxyInput"] )
+                                    proxy.sendCommand(node["public_ip"],'ccpuser','./tmp-keys/id_ed25519',formData["sshKey"],'configure_proxy.sh',proxyInput )
                             else:
                                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.ERROR_PROXY_CONFIGURATION})
                             
@@ -218,16 +238,11 @@ def run_stage3():
     if request.method == 'POST':
         if "ccpToken" in session:
 
-            
-            # Alex: I tried to put the commands from the bash script kfapply into the python code directly. If this doesn't work, use the below line instead
-            #os.system("./kfapply.sh {} {}".format(config.GITHUB_TOKEN, config.KFAPP))
-
-            #os.system("kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml")
-
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
 
-            print (kubeSessionEnv)
+            print(kubeSessionEnv)
+
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
 
             proc = subprocess.Popen(["kubectl","create","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)

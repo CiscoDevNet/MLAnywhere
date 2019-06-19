@@ -84,16 +84,10 @@ $(document).ready(function(){
                 }
             },
             error: function(error) {
+
                 $("#ccpClusterForm :input").prop("disabled", false);
-                $("#alertBox").html(
-                    `
-                    <div class="alert alert--danger alert-dismissible fade in ">
-                        <div class="alert__icon icon-error-outline"></div>
-                        <strong>Cluster creation failed</strong>
-                        <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
-                    </div>
-                    `
-                );
+                
+                window.location.reload(true);
         }
         });
          

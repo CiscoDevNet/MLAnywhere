@@ -1,21 +1,21 @@
 {
 	"is_harbor_enabled": false,
-	"provider_client_config_uuid": "2e0690f4-c610-405f-85ae-bf638167f7c3",
+	"provider_client_config_uuid": "",
 	"name": "",
-	"kubernetes_version": "1.12.7",
+	"kubernetes_version": "1.13.5",
 	"datacenter": "lab",
 	"cluster": "hx-cluster",
 	"resource_pool": "hx-cluster/Resources",
 	"networks": [""],
 	"datastore": "",
 	"storage_class": "vsphere",
-	"workers": 2,
+	"workers": 1,
 	"ssh_user": "ccpuser",
 	"ssh_key": "",
 	"type": 1,
 	"masters": 1,
 	"deployer_type": "kubeadm",
-	"ingress_vip_pool_id": "15d70dfa-a23e-4ffb-9b90-38dcb1fb7f0f",
+	"ingress_vip_pool_id": "",
 	"load_balancer_ip_num": 1,
 	"is_istio_enabled": false,
 	"aws_iam_enabled": false,
@@ -29,7 +29,7 @@
 		"memory": 16384,
 		"template": "CCP/ccp-tenant-image-1.12.7-ubuntu18-3.2.1"
 	},
-	"node_ip_pool_uuid": "15d70dfa-a23e-4ffb-9b90-38dcb1fb7f0f",
+	"node_ip_pool_uuid": "",
 	"network_plugin": {
 		"name": "calico",
 		"status": "",
@@ -40,7 +40,7 @@
 		"provider": {
 			"vsphere_datacenter": "lab",
 			"vsphere_datastore": "",
-			"vsphere_client_config_uuid": "2e0690f4-c610-405f-85ae-bf638167f7c3",
+			"vsphere_client_config_uuid": "",
 			"vsphere_working_dir": "/lab/vm"
 		}
 	}
