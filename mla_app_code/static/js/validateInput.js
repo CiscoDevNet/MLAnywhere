@@ -10,7 +10,7 @@
     }  
 
     function validClusterName(myURL) {
-        var pattern = new RegExp('^[a-z.-]+$');
+        var pattern = new RegExp('^[a-z0-9.-]+$');
         return pattern.test(myURL);
 }  
 

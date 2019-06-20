@@ -54,7 +54,6 @@ class CCP:
     def getClusters(self):
 
         response = requests.request("GET", self.url + "/2/clusters",cookies=self.cookie, verify=False)
-
         return response
     
     def getCluster(self,name):
@@ -175,3 +174,15 @@ class CCP:
         except IOError as e:
             return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
+
+    def checkClusterAlreadyExists(self,clusterName):
+
+        clusters = self.getClusters()
+
+        clusters = clusters.json()
+
+        for cluster in clusters:
+            if clusterName in cluster.values():
+                return True
+        
+        return False

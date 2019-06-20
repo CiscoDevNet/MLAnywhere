@@ -476,7 +476,6 @@ def run_vsphereVMs():
 @app.route("/vipPools", methods = ['POST', 'GET'])
 def run_vipPools():
     
-    
     if request.method == 'GET':
 
         if "ccpToken" in session:
@@ -522,6 +521,24 @@ def downloadKubeconfig():
         else:
             return render_template('stage1.html')
 
+@app.route('/checkClusterAlreadyExists', methods=['GET', 'POST'])
+def checkClusterAlreadyExists():
+
+    if request.method == 'GET':
+
+        if "ccpToken" in session:
+
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            jsonData = request.args.to_dict()
+
+            clusterName = jsonData["clusterName"]
+
+            if not ccp.checkClusterAlreadyExists(clusterName):
+                print("ok")
+                return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+            else:
+                return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
 @socketio.on('connect')
 def test_connect():

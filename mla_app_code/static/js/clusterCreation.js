@@ -66,7 +66,7 @@ $(document).ready(function(){
                     `
                     <div class="alert alert--danger alert-dismissible fade in ">
                         <div class="alert__icon icon-error-outline"></div>
-                        <strong>Invalid URL. Please try again</strong>
+                        <strong>Invalid proxy URL. Please try again</strong>
                         <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
                     </div>
                     `
@@ -93,46 +93,71 @@ $(document).ready(function(){
 
                 return 
         } 
-        
 
         event.preventDefault();
 
-        form = $("#ccpClusterForm").serializeArray();
-        formData = {};
-
-        $(form).each(function(i, field){
-            formData[field.name] = field.value;
-        });
-
-        $("#ccpClusterForm :input").prop("disabled", true);
-
-        
+        //Check cluster name does not already exist - on success deploy the cluster
         $.ajax({
-            url: "/stage2",
-            type : "POST",
-            contentType: 'application/json',
-            dataType : 'json',
-            data : JSON.stringify(formData),
-            success: function(response) {
+            type: "GET",
+            url:"/checkClusterAlreadyExists?"+ $.param({ "clusterName":$("#clusterName").val()  }),
+            dataType: "json",
+            success: function (data) {
 
-                consoleLog = localStorage.getItem('consoleLog');
-                consoleLog += $('#consoleLog').val()
-                localStorage.setItem('consoleLog', consoleLog);
-
-                $("#ccpClusterForm :input").prop("disabled", false);
-                if (response.redirectURL) {
-                    window.location.replace(response.redirectURL);
-                } else {
-                    window.location.reload(true);
+                form = $("#ccpClusterForm").serializeArray();
+                formData = {};
+        
+                $(form).each(function(i, field){
+                    formData[field.name] = field.value;
+                });
+        
+                $("#ccpClusterForm :input").prop("disabled", true);
+        
+                
+                $.ajax({
+                    url: "/stage2",
+                    type : "POST",
+                    contentType: 'application/json',
+                    dataType : 'json',
+                    data : JSON.stringify(formData),
+                    success: function(response) {
+        
+                        consoleLog = localStorage.getItem('consoleLog');
+                        consoleLog += $('#consoleLog').val()
+                        localStorage.setItem('consoleLog', consoleLog);
+        
+                        $("#ccpClusterForm :input").prop("disabled", false);
+                        if (response.redirectURL) {
+                            window.location.replace(response.redirectURL);
+                        } else {
+                            window.location.reload(true);
+                        }
+                    },
+                    error: function(error) {
+        
+                        $("#ccpClusterForm :input").prop("disabled", false);
+                        
+                        window.location.reload(true);
                 }
+                });
             },
             error: function(error) {
 
-                $("#ccpClusterForm :input").prop("disabled", false);
-                
-                window.location.reload(true);
-        }
+                $("#alertBox").html(
+                    `
+                    <div class="alert alert--danger alert-dismissible fade in ">
+                        <div class="alert__icon icon-error-outline"></div>
+                        <strong>Cluster with the same name already exists. Please try a new one.</strong>
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
+                    </div>
+                    `
+                );
+
+                return 
+            }
         });
+
+         
+        
          
     });
      
