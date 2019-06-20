@@ -16,9 +16,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
 
     <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/testConnection.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/validateInput.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/testConnection.js') }}"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
@@ -94,32 +96,31 @@
                         <form id="ccpLoginForm">
                             <div class="col-md-12">
                                 <div class="section row">
-                                    <div class="form-group col-4">
-                                        <div class="form-group__text">
-                                            <input name="ipAddress" id="ipAddress" type="text" required>
-                                            <label for="ipAddress">CCP IP Address</label>
+                                    <div class="col offset-4 ">
+                                        <div class="form-group col-6">
+                                            <div class="form-group__text">
+                                                <input name="ipAddress" id="ipAddress" type="text" required>
+                                                <label for="ipAddress">CCP IP Address</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="section row">
-                                    <div class="form-group col-4">
-                                        <div class="form-group__text">
-                                            <input name="username" id="username" type="text" required>
-                                            <label for="username">Username</label>
+                                
+                                        <div class="form-group col-6">
+                                            <div class="form-group__text">
+                                                <input name="username" id="username" type="text" required>
+                                                <label for="username">Username</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="section row">
-                                    <div class="form-group col-4">
-                                        <div class="form-group__text">
-                                            <input name="password" id="password" type="password" required>
-                                            <label for="password">Password</label>
+                                
+                                        <div class="form-group col-6">
+                                            <div class="form-group__text">
+                                                <input name="password" id="password" type="password" required>
+                                                <label for="password">Password</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="section row">
-                                    <div class="form-group col-2">
-                                        <input id="connect" type="submit" class="btn btn--primary" value="Connect">
+                                
+                                        <div class="form-group col-2">
+                                            <input id="connect" type="submit" class="btn btn--primary" value="Connect">
+                                        </div>
                                     </div>
                                 </div>
 
