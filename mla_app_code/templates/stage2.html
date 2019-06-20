@@ -18,6 +18,8 @@
     <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/validateInput.js') }}"></script>
     <script src="{{ url_for('static', filename='js/populateClusterDropdowns.js') }}"></script>
     <script src="{{ url_for('static', filename='js/clusterCreation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
@@ -95,7 +97,9 @@
 
                         </div>
 
-                        
+                        <div id="alertBox"></div>
+
+
                         <form id="ccpClusterForm">
                             <div class="col-md-12">
                                 <div class="section row">

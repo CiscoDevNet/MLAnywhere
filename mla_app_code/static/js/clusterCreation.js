@@ -3,6 +3,7 @@ $(document).ready(function(){
     $('#consoleLog').append(localStorage.getItem('consoleLog'));
 
     $('#displayJSON').on('click', function(event) {
+        
         event.preventDefault();      
 
 
@@ -52,6 +53,48 @@ $(document).ready(function(){
     
     $('#deployCluster').on('click', function(event) {
         
+        // Ensure the address provided for the proxy is a valid URL format
+        if ( $("#proxySwitch").is(':checked') ) {
+            proxyInput = $('#proxyInput').val()
+            proxyInput = proxyInput.replace(/^https?\:\/\//i, "");
+
+            if (!validURL(proxyInput))
+            {
+                event.preventDefault();
+
+                $("#alertBox").html(
+                    `
+                    <div class="alert alert--danger alert-dismissible fade in ">
+                        <div class="alert__icon icon-error-outline"></div>
+                        <strong>Invalid URL. Please try again</strong>
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
+                    </div>
+                    `
+                );
+
+                return 
+            }
+        } 
+        
+        // Ensure the clustername provided is valid for CCP - lowercase and hyphen accepted
+        if ( !validClusterName($("#clusterName").val())) {
+
+                event.preventDefault();
+
+                $("#alertBox").html(
+                    `
+                    <div class="alert alert--danger alert-dismissible fade in ">
+                        <div class="alert__icon icon-error-outline"></div>
+                        <strong>Cluster Name must only contain lowercase alphanumeric characters and -</strong>
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
+                    </div>
+                    `
+                );
+
+                return 
+        } 
+        
+
         event.preventDefault();
 
         form = $("#ccpClusterForm").serializeArray();
