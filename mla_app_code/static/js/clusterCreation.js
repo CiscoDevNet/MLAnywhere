@@ -53,7 +53,7 @@ $(document).ready(function(){
     
     $('#deployCluster').on('click', function(event) {
         
-        // Ensure the address provided for the proxy is a valid URL format
+        /* Ensure the address provided for the proxy is a valid URL format
         if ( $("#proxySwitch").is(':checked') ) {
             proxyInput = $('#proxyInput').val()
             proxyInput = proxyInput.replace(/^https?\:\/\//i, "");
@@ -74,7 +74,7 @@ $(document).ready(function(){
 
                 return 
             }
-        } 
+        } */
         
         // Ensure the clustername provided is valid for CCP - lowercase and hyphen accepted
         if ( !validClusterName($("#clusterName").val())) {
@@ -133,10 +133,26 @@ $(document).ready(function(){
                         }
                     },
                     error: function(error) {
-        
+                        
                         $("#ccpClusterForm :input").prop("disabled", false);
                         
-                        window.location.reload(true);
+                        errorMessage = JSON.parse(error.responseText)
+                    
+                        if ("errorMessage" in errorMessage)
+                        {
+                            $("#alertBox").html(
+                                `
+                                <div class="alert alert--danger alert-dismissible fade in ">
+                                    <div class="alert__icon icon-error-outline"></div>
+                                        <strong>` + errorMessage["errorMessage"] +`:<BR><BR> ` +errorMessage["errorMessageExtended"] +`</strong>
+                                        
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
+                                </div>
+                                `
+                            );
+                        }
+                        
+                        
                 }
                 });
             },
