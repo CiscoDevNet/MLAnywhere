@@ -86,6 +86,9 @@ def run_stage2():
 
             uuid = ""
 
+            if "ccpToken" not in session:
+                return render_template('stage1.html')
+
             ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
 
             formData = request.get_json()
@@ -113,9 +116,7 @@ def run_stage2():
                                 r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
                         if re.match(regex, proxyInput) is None:
-                            
                             return json.dumps({'success':False,"errorCode":"ERROR_INVALID_PROXY","errorMessage":config.ERROR_INVALID_PROXY}), 400, {'ContentType':'application/json'}
-
 
                         # create a  directory to add temporary keys - will be deleted once the proxy has been configured
                         if not os.path.exists("./tmp-keys/"):
@@ -123,8 +124,9 @@ def run_stage2():
                                 os.makedirs("./tmp-keys/")
                             except OSError as e:
                                 if e.errno != errno.EEXIST:
-                                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': e })
-                                    raise
+                                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_CONFIGURING_PROXY })
+                                    return json.dumps({'success':False,"errorCode":"ERROR_CONFIGURING_PROXY","errorMessage":config.ERROR_CONFIGURING_PROXY,"errorMessageExtended":e}), 400, {'ContentType':'application/json'}
+
 
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS })
 
@@ -132,6 +134,7 @@ def run_stage2():
                         
                         with open("./tmp-keys/id_ed25519.pub") as f:
                             publicKey = f.readlines()
+                            
                         clusterData["ssh_key"] = publicKey[0]
 
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS_COMPLETE })
@@ -165,6 +168,9 @@ def run_stage2():
                     if response.status_code == 200:
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
                     
+                    if "uuid" not in response.json():
+                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                        return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
 
                     uuid = response.json()["uuid"]
                     
@@ -187,8 +193,9 @@ def run_stage2():
                         with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
                             f.write(kubeConfig.text)
                     else:
-                        #TODO SEND ERROR MESSAGE TO LOGGING
-                        print("UUID NOT FOUND")
+                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
+                        return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
+
 
                     # if a proxy is required then we need to insert his once the worker nodes have been deployed
 
@@ -214,15 +221,18 @@ def run_stage2():
                             proxy.deleteTemporaryKeys("./tmp-keys/")
 
                         else:
-                            #TODO SEND ERROR MESSAGE TO LOGGING
-                            print("WRONG NAME")
+                            socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
+                            return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":cluster.text}), 400, {'ContentType':'application/json'}
+
 
                     socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE})
 
                     return jsonify(dict(redirectURL='/stage3'))
 
             except IOError as e:
-                return "I/O error({0}): {1}".format(e.errno, e.strerror)
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
+                return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":e}), 400, {'ContentType':'application/json'}
+
 
         elif request.method == 'GET':
 
@@ -241,8 +251,6 @@ def run_stage3():
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
 
-            print(kubeSessionEnv)
-
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
 
             proc = subprocess.Popen(["kubectl","create","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
@@ -251,6 +259,7 @@ def run_stage3():
 
             if proc.returncode != 0:
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NVIDIA_YAML,stderr.decode("utf-8") )})
+                return json.dumps({'success':False,"errorCode":"ERROR_KUBECTL_NVIDIA_YAML","errorMessage":config.ERROR_KUBECTL_NVIDIA_YAML}), 400, {'ContentType':'application/json'}
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
 
@@ -263,6 +272,7 @@ def run_stage3():
 
             if proc.returncode != 0:
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_EXPORT_KFAPP,stderr.decode("utf-8") )})
+                return json.dumps({'success':False,"errorCode":"ERROR_EXPORT_KFAPP","errorMessage":config.ERROR_EXPORT_KFAPP}), 400, {'ContentType':'application/json'}
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_EXPORT_KFAPP)})
 
@@ -285,6 +295,7 @@ def run_stage3():
 
             if proc.returncode != 0:
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_INIT,stderr.decode("utf-8") )})
+                return json.dumps({'success':False,"errorCode":"ERROR_KFCTL_INIT","errorMessage":config.ERROR_KFCTL_INIT}), 400, {'ContentType':'application/json'}
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_INIT)})
 
@@ -296,6 +307,7 @@ def run_stage3():
 
             if proc.returncode != 0:
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_GENERATE_ALL,stderr.decode("utf-8") )})
+                return json.dumps({'success':False,"errorCode":"ERROR_KFCTL_GENERATE_ALL","errorMessage":config.ERROR_KFCTL_GENERATE_ALL}), 400, {'ContentType':'application/json'}
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_GENERATE_ALL)})
 
@@ -307,6 +319,7 @@ def run_stage3():
 
             if proc.returncode != 0:
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_APPLY_ALL,stderr.decode("utf-8") )})
+                return json.dumps({'success':False,"errorCode":"ERROR_KFCTL_APPLY_ALL","errorMessage":config.ERROR_KFCTL_APPLY_ALL}), 400, {'ContentType':'application/json'}
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_APPLY_ALL)})
             
@@ -346,9 +359,6 @@ def run_vsphereProviders():
             ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
             response = ccp.getProviderClientConfigs()
             
-            #if "access denied" in response.text:
-            #    return render_template('stage1.html')
-
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_PROVIDERS })
                 return response.text
