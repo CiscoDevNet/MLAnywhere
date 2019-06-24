@@ -53,7 +53,7 @@ $(document).ready(function(){
     
     $('#deployCluster').on('click', function(event) {
         
-        /* Ensure the address provided for the proxy is a valid URL format
+        //Ensure the address provided for the proxy is a valid URL format
         if ( $("#proxySwitch").is(':checked') ) {
             proxyInput = $('#proxyInput').val()
             proxyInput = proxyInput.replace(/^https?\:\/\//i, "");
@@ -74,7 +74,7 @@ $(document).ready(function(){
 
                 return 
             }
-        } */
+        } 
         
         // Ensure the clustername provided is valid for CCP - lowercase and hyphen accepted
         if ( !validClusterName($("#clusterName").val())) {
