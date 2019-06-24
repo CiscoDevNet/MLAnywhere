@@ -140,7 +140,7 @@ $(document).ready(function(){
         if ($('#vsphereDatacenters').has('option').length == 1){
           $('#vsphereDatacenters').trigger('change');
         }
-      }, 500);
+      }, 1000);
 
     }
 
@@ -151,13 +151,13 @@ $(document).ready(function(){
     if( !$('#vsphereClusters').has('option').length > 0 ) {
       dropdownClusters($('#vsphereProviders').val(),$('#vsphereDatacenters').val())
 
-      // if there's only a single datacenter then the "on change" event won't happen so we need to trigger it manually
+      // if there's only a single cluster then the "on change" event won't happen so we need to trigger it manually
       // need to set a timeout for a small delay otherwise it triggers before the dropdown has had a chance to populate
       setTimeout(function(){ 
         if ($('#vsphereClusters').has('option').length == 1){
           $('#vsphereClusters').trigger('change');
         }
-      }, 500);
+      }, 1000);
 
     }
 
@@ -180,6 +180,14 @@ $(document).ready(function(){
     if( !$('#vsphereResourcePools').has('option').length > 0 ) {
       dropdownResourcePools($('#vsphereProviders').val(),$('#vsphereDatacenters').val(),$('#vsphereClusters').val())
     }
+
+    // if there's only a single resource pool then the "on change" event won't happen so we need to trigger it manually
+      // need to set a timeout for a small delay otherwise it triggers before the dropdown has had a chance to populate
+      setTimeout(function(){ 
+        if ($('#vsphereResourcePools').has('option').length == 1){
+          $('#vsphereResourcePools').trigger('change');
+        }
+      }, 1000);
 
   });
 
@@ -210,7 +218,7 @@ $(document).ready(function(){
       if ($('#vsphereProviders').has('option').length == 1){
         $('#vsphereProviders').trigger('change');
       }
-    }, 500);
+    }, 1000);
     
     
   }
