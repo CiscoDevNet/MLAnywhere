@@ -31,6 +31,10 @@ import secrets
 
 import re
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -121,6 +125,7 @@ def run_stage2():
                         # create a  directory to add temporary keys - will be deleted once the proxy has been configured
                         if not os.path.exists("./tmp-keys/"):
                             try:
+                                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_CREATING_TEMP_DIR })
                                 os.makedirs("./tmp-keys/")
                             except OSError as e:
                                 if e.errno != errno.EEXIST:
@@ -130,13 +135,16 @@ def run_stage2():
 
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS })
 
-                        proxy.generateTemporaryKeys("./tmp-keys/")
-                        
-                        with open("./tmp-keys/id_ed25519.pub") as f:
-                            publicKey = f.readlines()
-                            
-                        clusterData["ssh_key"] = publicKey[0]
+                        keyName = "{}-{}".format(session["sessionUUID"],formData["clusterName"])    
 
+                        proxy.generateTemporaryKeys(keyName,"./tmp-keys")
+                        
+                        with open("./tmp-keys/{}.pub".format(keyName)) as f:
+                            publicKey = f.read().splitlines() 
+                        
+                        sshKey = str(publicKey[0])
+                        clusterData["ssh_key"] = sshKey
+                        
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS_COMPLETE })
 
                     else:
@@ -165,7 +173,7 @@ def run_stage2():
                     
                     response = ccp.deployCluster(clusterData)
 
-                    if response.status_code == 200:
+                    if (response.status_code == 200) or (response.status_code == 201) :
                         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
                     
                     if "uuid" not in response.json():
@@ -173,7 +181,7 @@ def run_stage2():
                         return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
 
                     uuid = response.json()["uuid"]
-                    
+
                     kubeConfig = ccp.getConfig(uuid)
 
                     if "apiVersion" in kubeConfig.text:
@@ -188,8 +196,7 @@ def run_stage2():
                                 if e.errno != errno.EEXIST:
                                     raise
 
-                        #print ("{}/config".format(kubeConfigDir))
-                        #with open("{}/config".format(kubeConfigDir), "w") as f:
+                        
                         with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
                             f.write(kubeConfig.text)
                     else:
@@ -204,21 +211,20 @@ def run_stage2():
                         if "uuid" in cluster.text:
                             cluster = cluster.json()
                             nodes = cluster["nodes"]
-                            privateKey = "./tmp-keys/id_ed25519"
-                            publicKey = "./tmp-keys/id_ed25519.pub"
+                            privateKey = "{}-{}".format(session["sessionUUID"],clusterData["name"])
+                            publicKey = "{}-{}.pub".format(session["sessionUUID"],clusterData["name"])
                             
-                            if os.path.isfile(privateKey) and os.path.isfile(publicKey):
+                            if os.path.isfile('./tmp-keys/{}'.format(privateKey)) and os.path.isfile('./tmp-keys/{}'.format(publicKey)) :
                                 for node in nodes:
 
                                     socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOYING_PROXY + " " + node["public_ip"] })
-
-                                    proxy.sendCommand(node["public_ip"],'ccpuser','./tmp-keys/id_ed25519',formData["sshKey"],'configure_proxy.sh',proxyInput )
+                                    proxy.sendCommand(node["public_ip"],'ccpuser','./tmp-keys/{}'.format(privateKey),formData["sshKey"],'configure_proxy.sh',proxyInput )
                             else:
-                                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.ERROR_PROXY_CONFIGURATION})
+                                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_PROXY_CONFIGURATION})
                             
                             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_SSH_CLEANUP})
 
-                            proxy.deleteTemporaryKeys("./tmp-keys/")
+                            proxy.deleteTemporaryKeys(privateKey,publicKey,"./tmp-keys")
 
                         else:
                             socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
@@ -243,7 +249,6 @@ def run_stage2():
 
 @app.route("/stage3", methods = ['POST', 'GET'])
 def run_stage3():
-
     
     if request.method == 'POST':
         if "ccpToken" in session:
@@ -277,15 +282,15 @@ def run_stage3():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_EXPORT_KFAPP)})
 
 
+            if not os.path.isdir("{}".format(config.KFAPP)):
+                proc = subprocess.Popen(["mkdir {}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=kubeSessionEnv)
+                proc.wait()
+                (stdout, stderr) = proc.communicate()
 
-            proc = subprocess.Popen(["mkdir {}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MKDIR_KFAPP,stderr.decode("utf-8") )})
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MKDIR_KFAPP)})
+                if proc.returncode != 0:
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MKDIR_KFAPP,stderr.decode("utf-8") )})
+                else:
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MKDIR_KFAPP)})
 
 
 
@@ -545,7 +550,6 @@ def checkClusterAlreadyExists():
             clusterName = jsonData["clusterName"]
 
             if not ccp.checkClusterAlreadyExists(clusterName):
-                print("ok")
                 return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
             else:
                 return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 

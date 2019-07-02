@@ -25,11 +25,11 @@ from subprocess import Popen, PIPE
 from flask_socketio import SocketIO, emit
 
 
-def generateTemporaryKeys(dir=""):
+def generateTemporaryKeys(keyName, dir=""):
     
     #TODO update to use subprocess and check for errors
 
-    os.system('echo "\n" | ssh-keygen -o -a 100 -t ed25519 -f ' + dir + 'id_ed25519 -q -N "" > /dev/null  ')
+    os.system('echo "\n" | ssh-keygen -o -a 100 -t ed25519 -f {}/{} -q -N "" > /dev/null  '.format(dir,keyName))
 
     return None
 
@@ -64,10 +64,13 @@ def sendCommand(hostname, username,tmpSSHKey,userSSHKey,script,args=None, port=2
         #TODO ERROR CHECKING AND LOGGING ABOVE
         return "No proxy address was supplied"
 
-def deleteTemporaryKeys(dir=""):
+def deleteTemporaryKeys(privateKey,publicKey,dir):
+
+    try:
+        os.remove('{}/{}'.format(dir,privateKey))
+        os.remove('{}/{}'.format(dir,publicKey))
+    except:
+        print("Error while deleting file ", '{}/{}'.format(dir,privateKey))
+
     
-    #TODO update to use subprocess and check for errors
-
-    os.system('rm -rf ' + dir)
-
     return None
