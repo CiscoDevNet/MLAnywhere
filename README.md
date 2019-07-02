@@ -12,6 +12,7 @@ Table of Contents
       * [Installation](#installation)
       * [MLAnywhere Deployment Options](#mlanywhere-deployment-options)
       * [Using a Corporate Proxy](#using-a-corporate-proxy)
+      * [Demo Scripts](#demo-scripts)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
 
@@ -37,6 +38,22 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 ## MLAnywhere Deployment Options
 
 ### Standalone
+
+There are two parts to the MLAnywhere installation wizard, the core scripts and the Kubeflow deployment tools. Both of these need to be available in order to using MLAnywhere in a standalone environment.
+
+1. Clone the MLAnywhere repository to your local machine
+
+```git clone https://github.com/CiscoDevNet/MLAnywhere.git```
+
+2. Ensure the following tools are available on your local machine. See the script, `sample-kf-tools-installation.sh` ,for an installation example 
+
+* kubectl - 1.14.0
+* ksonnet - 0.13.1
+* kfctl - 0.5.1
+
+3. From the `mla_app_code` folder run `python mla_core_code.py`. This will start MLAnywhere on port 5000 by default
+
+4. Navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
 
 ### Docker
 
