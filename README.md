@@ -26,7 +26,7 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 
 #### High Level Steps
 
-* Install the MLAnywhere installation wizard (see below for deployment options)
+* Deploy the MLAnywhere installation wizard (see below for deployment options)
 * Login to the CCP deployment where the new Kubeflow cluster will be created
 * Fill in the cluster form and wait for it to be deployed
 * Deploy Kubeflow in the newly created cluster
