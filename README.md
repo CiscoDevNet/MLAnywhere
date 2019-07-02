@@ -10,7 +10,8 @@ Table of Contents
       * [Kubeflow Resource Requirements](#kubeflow-resource-requirements)
       * [Compatibility](#compatibility)
       * [Installation](#installation)
-      * [Cluster Deployment](#cluster-deployment)
+      * [MLAnywhere Deployment Options](#mlanywhere-deployment-options)
+      * [Using a Corporate Proxy](#using-a-corporate-proxy)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
 
@@ -33,7 +34,17 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 * Download the Kubeconfig for the cluster
 * Start developing!
 
-## Cluster Deployment
+## MLAnywhere Deployment Options
+
+### Standalone
+
+### Docker
+
+### Kubernetes
+
+### Vagrant
+
+## Using a Corporate Proxy
 
 ## Troubleshooting
 
