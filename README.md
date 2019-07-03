@@ -183,25 +183,24 @@ In this scenario you have deployed the MLAnywhere wizard to an environment which
    1. Update `/etc/systemd/system/docker.service.d/https-proxy.conf` with the appropriate proxy settings. 
    
    ```
-   [Service]
-   Environment="HTTPS_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
-   ```
+    [Service]
+    Environment="HTTPS_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
+    ```
   
   2. Update `/etc/systemd/system/docker.service.d/http-proxy.conf` with the appropriate proxy settings. 
-
-   ```
-   [Service]
-   Environment="HTTP_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
-   ```
+    
+    ```
+    [Service]
+    Environment="HTTP_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
+    ```
    
   3. Restart docker
   
-   ```
-   sudo systemctl daemon-reload
-   sudo systemctl restart docker
-   ```
-
-
+    ```
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
+    ```
+    
 * When using the wizard to create a new cluster in stage 2, leave the proxy field disabled
 
 ### MLAnywhere Installation Wizard - Proxy, Kubeflow - Proxy
