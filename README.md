@@ -175,6 +175,33 @@ In this scenario you have deployed the MLAnywhere wizard to an environment which
    export https_proxy = http://proxy.mycompany.com:80
    export no_proxy = localhost, 127.0.0.1
    ```
+   
+* If running the installation wizard in a Docker or Kubernetes environment behind a corporate proxy you will also need to configure the Docker service to use the proxy. IF this is not enabled you may not be able to pull down the required images.
+
+   On each of the worker nodes where the installation wizard is running:
+   
+   1. Update `/etc/systemd/system/docker.service.d/https-proxy.conf` with the appropriate proxy settings. 
+   
+   ```
+   [Service]
+   Environment="HTTPS_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
+   ```
+  
+  2. Update `/etc/systemd/system/docker.service.d/http-proxy.conf` with the appropriate proxy settings. 
+
+   ```
+   [Service]
+   Environment="HTTP_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
+   ```
+   
+  3. Restart docker
+  
+   ```
+   sudo systemctl daemon-reload
+   sudo systemctl restart docker
+   ```
+
+
 * When using the wizard to create a new cluster in stage 2, leave the proxy field disabled
 
 ### MLAnywhere Installation Wizard - Proxy, Kubeflow - Proxy
