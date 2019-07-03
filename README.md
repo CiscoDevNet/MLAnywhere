@@ -122,7 +122,7 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 
    `kubectl get nodes -o wide`
 
-7. Open a browser and navigate to the IP Address of one of the nodes, remembing to include the port. e.g. http://10.1.1.21:30003/stage1
+7. Open a browser and navigate to the IP Address of one of the nodes, remembing to include the port. e.g. http://10.1.1.21:30003
 
 
 ### Vagrant
