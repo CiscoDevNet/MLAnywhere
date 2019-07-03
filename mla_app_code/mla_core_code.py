@@ -39,6 +39,11 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+@app.route("/")
+def index():
+    if request.method == 'GET':
+        return render_template('stage1.html')
+
 
 @app.route("/testConnection", methods = ['POST', 'GET'])
 def run_testConnection():
@@ -553,6 +558,7 @@ def checkClusterAlreadyExists():
                 return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
             else:
                 return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
+
 
 @socketio.on('connect')
 def test_connect():
