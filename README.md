@@ -45,7 +45,7 @@ There are two parts to the MLAnywhere installation wizard, the core scripts and 
 
 ```git clone https://github.com/CiscoDevNet/MLAnywhere.git```
 
-2. Ensure the following tools are available on your local machine. See the script, `sample-kf-tools-installation.sh` ,for an installation example 
+2. Ensure the following tools are available on your local machine. See the script, `mlanywhere-bootstrap.sh` ,for an installation example 
 
 * kubectl - 1.14.0
 * ksonnet - 0.13.1
