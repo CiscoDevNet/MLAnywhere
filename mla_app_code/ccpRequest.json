@@ -9,7 +9,7 @@
 	"networks": [""],
 	"datastore": "",
 	"storage_class": "vsphere",
-	"workers": 1,
+	"workers": 3,
 	"ssh_user": "ccpuser",
 	"ssh_key": "",
 	"type": 1,
