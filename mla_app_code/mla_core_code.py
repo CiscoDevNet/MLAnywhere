@@ -101,144 +101,144 @@ def run_stage2():
                 with open("ccpRequest.json") as json_data:
                     
                     clusterData = json.load(json_data)
-
-                    # if a proxy is required then we need to insert this once the worker nodes have been deployed
-                    # we will generate new SSH keys which will be provided to CCP as the initial keys
-                    # once the proxy has been updated we will insert the 
-
-                    if "proxyInput" in formData:
-                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_SETTING_PROXY })
-
-                        proxyInput = formData["proxyInput"]
-
-                        regex = re.compile(
-                                r'^((?:http)s?://)?' # http:// or https://
-                                r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-                                r'localhost|' #localhost...
-                                r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-                                r'(?::\d+)?' # optional port
-                                r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-
-                        if re.match(regex, proxyInput) is None:
-                            return json.dumps({'success':False,"errorCode":"ERROR_INVALID_PROXY","errorMessage":config.ERROR_INVALID_PROXY}), 400, {'ContentType':'application/json'}
-
-                        # create a  directory to add temporary keys - will be deleted once the proxy has been configured
-                        if not os.path.exists("./tmp-keys/"):
-                            try:
-                                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_CREATING_TEMP_DIR })
-                                os.makedirs("./tmp-keys/")
-                            except OSError as e:
-                                if e.errno != errno.EEXIST:
-                                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_CONFIGURING_PROXY })
-                                    return json.dumps({'success':False,"errorCode":"ERROR_CONFIGURING_PROXY","errorMessage":config.ERROR_CONFIGURING_PROXY,"errorMessageExtended":e}), 400, {'ContentType':'application/json'}
-
-
-                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS })
-
-                        keyName = "{}-{}".format(session["sessionUUID"],formData["clusterName"])    
-
-                        proxy.generateTemporaryKeys(keyName,"./tmp-keys")
-                        
-                        with open("./tmp-keys/{}.pub".format(keyName)) as f:
-                            publicKey = f.read().splitlines() 
-                        
-                        sshKey = str(publicKey[0])
-                        clusterData["ssh_key"] = sshKey
-                        
-                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS_COMPLETE })
-
-                    else:
-                        clusterData["ssh_key"] = formData["sshKey"] 
-                    
-                    
-                    clusterData["name"] = formData["clusterName"]
-                    clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
-                    clusterData["name"] = formData["clusterName"]
-                    clusterData["datacenter"] = formData["vsphereDatacenters"]
-                    clusterData["cluster"] = formData["vsphereClusters"]
-                    clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
-                    clusterData["datastore"] = formData["vsphereDatastores"] 
-                    clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
-                    clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
-                    clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
-                    clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
-                    clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
-                    clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
-                    clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
-                    clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
-                    
-                    clusterData["networks"] = [formData["vsphereNetworks"] ]
-
-                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
-                    
-                    response = ccp.deployCluster(clusterData)
-
-                    if (response.status_code == 200) or (response.status_code == 201) :
-                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
-                    
-                    if "uuid" not in response.json():
-                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
-                        return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
-
-                    uuid = response.json()["uuid"]
-
-                    kubeConfig = ccp.getConfig(uuid)
-
-                    if "apiVersion" in kubeConfig.text:
-
-                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
-
-                        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-                        if not os.path.exists(kubeConfigDir):
-                            try:
-                                os.makedirs(kubeConfigDir)
-                            except OSError as e:
-                                if e.errno != errno.EEXIST:
-                                    raise
-
-                        
-                        with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
-                            f.write(kubeConfig.text)
-                    else:
-                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
-                        return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
-
-
-                    # if a proxy is required then we need to insert his once the worker nodes have been deployed
-
-                    if "proxyInput" in formData:
-                        cluster = ccp.getCluster(clusterData["name"])
-                        if "uuid" in cluster.text:
-                            cluster = cluster.json()
-                            nodes = cluster["nodes"]
-                            privateKey = "{}-{}".format(session["sessionUUID"],clusterData["name"])
-                            publicKey = "{}-{}.pub".format(session["sessionUUID"],clusterData["name"])
-                            
-                            if os.path.isfile('./tmp-keys/{}'.format(privateKey)) and os.path.isfile('./tmp-keys/{}'.format(publicKey)) :
-                                for node in nodes:
-
-                                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOYING_PROXY + " " + node["public_ip"] })
-                                    proxy.sendCommand(node["public_ip"],'ccpuser','./tmp-keys/{}'.format(privateKey),formData["sshKey"],'configure_proxy.sh',proxyInput )
-                            else:
-                                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_PROXY_CONFIGURATION})
-                            
-                            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_SSH_CLEANUP})
-
-                            proxy.deleteTemporaryKeys(privateKey,publicKey,"./tmp-keys")
-
-                        else:
-                            socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
-                            return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":cluster.text}), 400, {'ContentType':'application/json'}
-
-
-                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE})
-
-                    return jsonify(dict(redirectURL='/stage3'))
-
+            
             except IOError as e:
+                
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
                 return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":e}), 400, {'ContentType':'application/json'}
 
+            # if a proxy is required then we need to insert this once the worker nodes have been deployed
+            # we will generate new SSH keys which will be provided to CCP as the initial keys
+            # once the proxy has been updated we will insert the 
+
+            if "proxyInput" in formData:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_SETTING_PROXY })
+
+                proxyInput = formData["proxyInput"]
+
+                regex = re.compile(
+                        r'^((?:http)s?://)?' # http:// or https://
+                        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+                        r'localhost|' #localhost...
+                        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+                        r'(?::\d+)?' # optional port
+                        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+                if re.match(regex, proxyInput) is None:
+                    return json.dumps({'success':False,"errorCode":"ERROR_INVALID_PROXY","errorMessage":config.ERROR_INVALID_PROXY}), 400, {'ContentType':'application/json'}
+
+                # create a  directory to add temporary keys - will be deleted once the proxy has been configured
+                if not os.path.exists("./tmp-keys/"):
+                    try:
+                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_CREATING_TEMP_DIR })
+                        os.makedirs("./tmp-keys/")
+                    except OSError as e:
+                        if e.errno != errno.EEXIST:
+                            socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_CONFIGURING_PROXY })
+                            return json.dumps({'success':False,"errorCode":"ERROR_CONFIGURING_PROXY","errorMessage":config.ERROR_CONFIGURING_PROXY,"errorMessageExtended":e}), 400, {'ContentType':'application/json'}
+
+
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS })
+
+                keyName = "{}-{}".format(session["sessionUUID"],formData["clusterName"])    
+
+                proxy.generateTemporaryKeys(keyName,"./tmp-keys")
+                
+                with open("./tmp-keys/{}.pub".format(keyName)) as f:
+                    publicKey = f.read().splitlines() 
+                
+                sshKey = str(publicKey[0])
+                clusterData["ssh_key"] = sshKey
+                
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_GENERATING_KEYS_COMPLETE })
+
+            else:
+                clusterData["ssh_key"] = formData["sshKey"] 
+            
+                
+            clusterData["name"] = formData["clusterName"]
+            clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
+            clusterData["name"] = formData["clusterName"]
+            clusterData["datacenter"] = formData["vsphereDatacenters"]
+            clusterData["cluster"] = formData["vsphereClusters"]
+            clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
+            clusterData["datastore"] = formData["vsphereDatastores"] 
+            clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
+            clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
+            clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
+            clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
+            clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
+            clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
+            clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
+            clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
+            
+            clusterData["networks"] = [formData["vsphereNetworks"] ]
+
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
+            
+            response = ccp.deployCluster(clusterData)
+
+            if (response.status_code == 200) or (response.status_code == 201) :
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
+            
+            if "uuid" not in response.json():
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+
+            uuid = response.json()["uuid"]
+
+            kubeConfig = ccp.getConfig(uuid)
+
+            if "apiVersion" in kubeConfig.text:
+
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
+
+                kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+                if not os.path.exists(kubeConfigDir):
+                    try:
+                        os.makedirs(kubeConfigDir)
+                    except OSError as e:
+                        if e.errno != errno.EEXIST:
+                            raise
+
+                
+                with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
+                    f.write(kubeConfig.text)
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
+                return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
+
+
+            # if a proxy is required then we need to insert his once the worker nodes have been deployed
+
+            if "proxyInput" in formData:
+                cluster = ccp.getCluster(clusterData["name"])
+                if "uuid" in cluster.text:
+                    cluster = cluster.json()
+                    nodes = cluster["nodes"]
+                    privateKey = "{}-{}".format(session["sessionUUID"],clusterData["name"])
+                    publicKey = "{}-{}.pub".format(session["sessionUUID"],clusterData["name"])
+                    
+                    if os.path.isfile('./tmp-keys/{}'.format(privateKey)) and os.path.isfile('./tmp-keys/{}'.format(publicKey)) :
+                        for node in nodes:
+
+                            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOYING_PROXY + " " + node["public_ip"] })
+                            proxy.sendCommand(node["public_ip"],'ccpuser','./tmp-keys/{}'.format(privateKey),formData["sshKey"],'configure_proxy.sh',proxyInput )
+                    else:
+                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_PROXY_CONFIGURATION})
+                    
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_PROXY_SSH_CLEANUP})
+
+                    proxy.deleteTemporaryKeys(privateKey,publicKey,"./tmp-keys")
+
+                else:
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
+                    return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":cluster.text}), 400, {'ContentType':'application/json'}
+
+
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE})
+
+            return jsonify(dict(redirectURL='/stage3'))
 
         elif request.method == 'GET':
 
