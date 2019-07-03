@@ -149,6 +149,39 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 
 ## Using a Corporate Proxy
 
+When using the MLAnywhere Installation Wizard behind a corporate proxy, you may need to configure proxy settings on the MLAnywhere or Kubeflow hosts. 
+
+The following scenarios outline these configurations.
+
+### MLAnywhere Installation Wizard - No Proxy, Kubeflow - No Proxy
+
+* No additional configuration required for either the wizard or Kubeflow hosts
+
+### MLAnywhere Installation Wizard - No Proxy, Kubeflow - Proxy
+
+In this scenario you have deployed the MLAnywhere wizard to an environment which does not require a proxy, however you are connecting to a CCP cluster which does require a proxy. For example, you are running the wizard on your laptop and connecting to your CCP lab behind a proxy.
+
+* No additional configuration required for the MLAnywhere Wizard host
+* When using the wizard to create a new cluster in stage 2, enable the proxy field and add the required proxy address
+
+### MLAnywhere Installation Wizard - Proxy, Kubeflow - No Proxy
+
+* Configure the host on which the MLAnywhere wizard is running with the `http_proxy`, `https_proxy`, and `no_proxy settings`
+
+   For example
+   
+   ```
+   export http_proxy = http://proxy.mycompany.com:80
+   export https_proxy = http://proxy.mycompany.com:80
+   export no_proxy = localhost, 127.0.0.1
+   ```
+* When using the wizard to create a new cluster in stage 2, leave the proxy field disabled
+
+### MLAnywhere Installation Wizard - Proxy, Kubeflow - Proxy
+
+
+
+
 ## Troubleshooting
 
 ## License
