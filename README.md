@@ -43,7 +43,7 @@ There are two parts to the MLAnywhere installation wizard, the core scripts and 
 
 1. Clone the MLAnywhere repository to your local machine
 
-```git clone https://github.com/CiscoDevNet/MLAnywhere.git```
+   ```git clone https://github.com/CiscoDevNet/MLAnywhere.git```
 
 2. Ensure the following tools are available on your local machine. See the script, `mlanywhere-bootstrap.sh` ,for an installation example 
 
@@ -63,15 +63,15 @@ There are two parts to the MLAnywhere installation wizard, the core scripts and 
 
 1. Install Vagrant on your local machine
 
- [Vagrant installation instructions](https://www.vagrantup.com/docs/installation/)
+   [Vagrant installation instructions](https://www.vagrantup.com/docs/installation/)
 
 2. Clone the MLAnywhere repository to your local machine
 
- `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
+   `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
 
 3. Change directory to newly cloned MLAnywhere folder
 
- `cd MlAnywhere`
+   `cd MlAnywhere`
 
 4. Run `vagrant up` from the MlAnywhere folder
 
