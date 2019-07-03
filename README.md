@@ -57,6 +57,39 @@ There are two parts to the MLAnywhere installation wizard, the core scripts and 
 
 ### Docker
 
+If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice.
+
+1. Login to Docker hub or the repository of your choice
+
+    [Docker hub login instruction] (https://docs.docker.com/engine/reference/commandline/login/)
+
+2. Create repository if not already existing
+
+   [Creating a Dockerhub repository] (https://docs.docker.com/docker-hub/repos/)
+
+3. Clone the MLAnywhere repository to your local machine
+
+   `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
+   
+4. Change directory to newly created MLAnywhere repository
+
+   `cd MLAnywhere`
+
+5. Build Docker image and tag appropriately
+
+   `docker build -t conmurphy/mlanywhere:mlanywhere-beta-v1-app . --no-cache`
+
+6. Push image into repository
+
+   `docker push conmurphy/mlanywhere:mlanywhere-beta-v1-app`
+
+7. Deploy new container on machine
+
+   `docker run -p 5000:5000 conmurphy/mlanywhere:mlanywhere-beta-v1-app`
+
+8. Open browser and navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
+
+
 ### Kubernetes
 
 ### Vagrant
@@ -75,7 +108,7 @@ There are two parts to the MLAnywhere installation wizard, the core scripts and 
 
 4. Run `vagrant up` from the MlAnywhere folder
 
-5. Open browser and navigate to `http://localhost:5000`
+5. Open browser and navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
 
 ## Using a Corporate Proxy
 
