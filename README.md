@@ -61,6 +61,22 @@ There are two parts to the MLAnywhere installation wizard, the core scripts and 
 
 ### Vagrant
 
+1. Install Vagrant on your local machine
+
+[Vagrant installation instructions](https://www.vagrantup.com/docs/installation/)
+
+2. Clone the MLAnywhere repository to your local machine
+
+```git clone https://github.com/CiscoDevNet/MLAnywhere.git```
+
+3. Change directory to newly cloned MLAnywhere folder
+
+`cd MlAnywhere`
+
+4. Run `vagrant up` from the MlAnywhere folder
+
+5. Open browser and navigate to `http://localhost:5000`
+
 ## Using a Corporate Proxy
 
 ## Troubleshooting
