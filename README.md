@@ -57,7 +57,7 @@ There are two parts to the MLAnywhere installation wizard, the core scripts and 
 
 ### Docker
 
-If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice.
+If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice. If the image has already been built you can skip steps 3,4,5, and 6. The installation instructions assume you are running Docker on your local machine.
 
 1. Login to Docker hub or the repository of your choice
 
@@ -88,7 +88,6 @@ If you don't currently have a Docker image built, use the following steps to bui
    `docker run -p 5000:5000 conmurphy/mlanywhere:mlanywhere-beta-v1-app`
 
 8. Open browser and navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
-
 
 ### Kubernetes
 
