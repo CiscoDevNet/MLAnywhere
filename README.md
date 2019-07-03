@@ -166,6 +166,8 @@ In this scenario you have deployed the MLAnywhere wizard to an environment which
 
 ### MLAnywhere Installation Wizard - Proxy, Kubeflow - No Proxy
 
+* When using the wizard to create a new cluster in stage 2, leave the proxy field disabled
+
 * Configure the host on which the MLAnywhere wizard is running with the `http_proxy`, `https_proxy`, and `no_proxy settings`
 
    For example
@@ -243,14 +245,86 @@ NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of 
              - containerPort: 5000
    ```
 
-
-
-* When using the wizard to create a new cluster in stage 2, leave the proxy field disabled
-
 ### MLAnywhere Installation Wizard - Proxy, Kubeflow - Proxy
 
+* When using the wizard to create a new cluster in stage 2, enable the proxy field and add the required proxy address
 
+* Configure the host on which the MLAnywhere wizard is running with the `http_proxy`, `https_proxy`, and `no_proxy settings`
 
+   For example
+   
+   ```
+   export http_proxy = http://proxy.mycompany.com:80
+   export https_proxy = http://proxy.mycompany.com:80
+   export no_proxy = localhost, 127.0.0.1
+   ```
+   
+* If running the installation wizard in a Docker or Kubernetes environment behind a corporate proxy you will also need to configure the Docker service to use the proxy. If this is not enabled you may not be able to pull down the required images.
+
+   On each of the worker nodes where the installation wizard is running:
+   
+   1. Update `/etc/systemd/system/docker.service.d/https-proxy.conf` with the appropriate proxy settings. 
+   
+   ```
+    [Service]
+    Environment="HTTPS_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
+    ```
+  
+  2. Update `/etc/systemd/system/docker.service.d/http-proxy.conf` with the appropriate proxy settings. 
+    
+    ```
+    [Service]
+    Environment="HTTP_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
+    ```
+   
+  3. Restart docker
+  
+    ```
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
+    ```
+
+* If running the installation wizard in a Docker or Kubernetes environment behind a corporate proxy you will also need to include the proxy configuration in the containers themselves. This can be achieved by setting the correct environmental variables. Samples have been provided in the Kubernetes `yml` files.
+
+NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of the `no_proxy` configuration. See below for example. 
+
+   Sample deployment file
+   
+   ```
+   apiVersion: extensions/v1beta1
+   kind: Deployment
+   metadata:
+     name: mlanywhere
+   spec:
+     strategy:
+       rollingUpdate:
+         maxSurge: 1
+         maxUnavailable: 1
+       type: RollingUpdate
+     replicas: 1
+     template:
+       metadata:
+         labels:
+           app: mlanywhere
+       spec:
+         containers:
+         - name: mlanywhere
+           image: mlanywhere:mlanywhere-beta-v1-app
+
+           imagePullPolicy: "IfNotPresent"
+
+           # Uncomment if using a proxy
+           env:
+           - name: https_proxy
+             value: "http://proxy.mycompany.com:80"
+           - name: http_proxy
+             value: "http://proxy.mycompany.com:80"
+           - name: no_proxy
+             value: "localhost,127.0.0.1,10.96.0.1"
+
+           ports:
+             - containerPort: 5000
+   ```
 
 ## Troubleshooting
 
