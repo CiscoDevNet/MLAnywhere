@@ -91,6 +91,40 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 ### Kubernetes
 
+The following assumes you already have a Kubernetes cluster running in which to deploy the MLAnywhere Installation Wizard. 
+
+The MLAnywhere Installation Wizard is deployed to Kubernetes with a `service` and a `deployment`. These files have been created separately, or alternatively you can use the all in one file, `mlanywhere-all-in-one.yml`. 
+
+By default MLAnywhere uses a Kubernetes Nodeport for access running on port 30003. This service can be changed if required.
+
+
+1. Install Kubectl and configure KUBECONFIG access to the Kubernetes cluster if not already configured.
+
+   [Install and setup Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+   
+2. Clone the MLAnywhere repository to your local machine
+
+   `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
+
+3. Change directory to newly cloned MLAnywhere folder
+
+   `cd MlAnywhere`
+ 
+4. Deploy the MLAnywhere Installation Wizard
+
+   `kubectl apply -f mlanywhere-all-in-one.yml 
+   
+5. Check the pod has been deployed correctly
+
+   `kubectl get pods`
+
+6. Determine the IP address of the worker nodes to which the pod has been deployed
+
+   `kubectl get nodes -o wide`
+
+7. Open a browser and navigate to the IP Address of one of the nodes, remembing to include the port. e.g. http://10.1.1.21:30003/stage1
+
+
 ### Vagrant
 
 1. Install Vagrant on your local machine
