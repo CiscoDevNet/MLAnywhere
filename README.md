@@ -61,11 +61,11 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 1. Login to Docker hub or the repository of your choice
 
-    [Docker hub login instruction] (https://docs.docker.com/engine/reference/commandline/login/)
+    [Docker hub login instruction](https://docs.docker.com/engine/reference/commandline/login/)
 
 2. Create repository if not already existing
 
-   [Creating a Dockerhub repository] (https://docs.docker.com/docker-hub/repos/)
+   [Creating a Dockerhub repository](https://docs.docker.com/docker-hub/repos/)
 
 3. Clone the MLAnywhere repository to your local machine
 
