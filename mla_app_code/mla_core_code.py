@@ -13,7 +13,7 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 '''
 
-from flask import Flask, json, render_template, request, session, Response, jsonify, send_file
+from flask import Flask, json, render_template, request, session, Response, jsonify, send_file, redirect
 
 
 from ccp import CCP
@@ -263,7 +263,7 @@ def run_stage3():
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
 
-            proc = subprocess.Popen(["kubectl","create","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc = subprocess.Popen(["kubectl","apply","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
             proc.wait()
             (stdout, stderr) = proc.communicate()
 
@@ -530,7 +530,12 @@ def run_clusterConfigTemplate():
                 return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
 @app.route('/downloadKubeconfig', methods=['GET', 'POST'])
-def downloadKubeconfig():
+def downloadKubeconfig_redirect():
+
+    return redirect('/downloadKubeconfig/kubeconfig.yaml')
+
+@app.route('/downloadKubeconfig/<filename>', methods=['GET', 'POST'])
+def downloadKubeconfig(filename):
 
     if request.method == 'GET':
 
