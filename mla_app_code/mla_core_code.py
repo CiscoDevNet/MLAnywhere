@@ -14,8 +14,10 @@ or implied.
 '''
 
 from flask import Flask, json, render_template, request, session, Response, jsonify, send_file, redirect
+import kubernetes.client
+from kubernetes.client.rest import ApiException
 
-
+from kubernetes  import config as kubeConfig
 from ccp import CCP
 from mlaConfig import config
 import proxy 
@@ -32,6 +34,8 @@ import secrets
 import re
 
 import logging
+
+from pprint import pprint
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -357,6 +361,47 @@ def run_stage4():
         else:
             return render_template('stage1.html')
 
+@app.route("/stage5", methods = ['POST', 'GET'])
+def run_stage5():
+
+    if request.method == 'POST':
+        if "ccpToken" in session:
+
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': '/Users/conmurph/Downloads/kubeconfig.yml',"KFAPP":config.KFAPP}
+
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
+
+            '''proc = subprocess.Popen(["kubectl","apply","-f","ingress.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+            print (stderr.decode("utf-8"))
+            print (stdout.decode("utf-8"))
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_DEPLOY_INGRESS,stderr.decode("utf-8") )})
+                return json.dumps({'success':False,"errorCode":"ERROR_KUBECTL_DEPLOY_INGRESS","errorMessage":config.ERROR_KUBECTL_DEPLOY_INGRESS}), 400, {'ContentType':'application/json'}
+            else:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS_COMPLETE)})
+                return json.dumps({'success':True,"errorCode":"ERROR_KUBECTL_DEPLOY_INGRESS","errorMessage":config.ERROR_KUBECTL_DEPLOY_INGRESS}), 400, {'ContentType':'application/json'}
+            '''
+            
+            kubeConfig.load_kube_config()
+            #api_instance = kubernetes.client.ExtensionsV1beta1Api()
+            api_instance = kubernetes.client.CoreV1Api()
+
+            api_response = api_instance.list_namespaced_service(namespace="ccp",label_selector="nginx-ingress",watch=False)
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_INGRESS_DEPLOYED_CORRECTLY })
+            print(api_response)
+
+    if request.method == 'GET':
+
+        if "ccpToken" in session:
+            return render_template('stage5.html')
+        else:
+            return render_template('stage1.html')
 
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
@@ -528,6 +573,34 @@ def run_clusterConfigTemplate():
 
             except IOError as e:
                 return "I/O error({0}): {1}".format(e.errno, e.strerror)
+
+@app.route("/viewPods", methods = ['POST', 'GET'])
+def run_viewPods():
+    
+    if request.method == 'GET':
+
+        if "ccpToken" in session:
+
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': '/Users/conmurph/Downloads/kubeconfig.yml',"KFAPP":config.KFAPP}
+
+            kubeConfig.load_kube_config()
+            api_instance = kubernetes.client.CoreV1Api()
+
+
+            api_response = api_instance.list_pod_for_all_namespaces( watch=False)
+            
+            podsToReturn = []
+            for i in api_response.items:
+                podsToReturn.append({"NAMESPACE":  i.metadata.namespace, "NAME":i.metadata.name, "STATUS":i.status.phase})
+            
+            return jsonify(podsToReturn)
+            
 
 @app.route('/downloadKubeconfig', methods=['GET', 'POST'])
 def downloadKubeconfig_redirect():
