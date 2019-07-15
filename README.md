@@ -354,6 +354,11 @@ spec:
 
 So with the example of http://1x.9x.8x.2x:30003/stage1 you should get the following web page presented to you: -
 
+![MLA Stage 1](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage1.png)
+
+
+
+
 
 
 
