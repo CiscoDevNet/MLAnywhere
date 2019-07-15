@@ -352,6 +352,10 @@ spec:
     app: mlanywhere
 ```
 
+So with the example of http://1x.9x.8x.2x:30003/stage1 you should get the following web page presented to you: -
+
+
+
 
 
 ## Troubleshooting
