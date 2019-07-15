@@ -326,7 +326,17 @@ NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of 
              - containerPort: 5000
    ```
 
-## Using MLAnywhere
+## Using MLAnywhere (on Kubernetes)
+
+There are currently 4 simple stages to MLAnywhere which are all built into the tool which lead to the creation of a kubeflow environment.
+
+### Stage 1 
+
+Access the IP address and port that has been defined in the asscociated service included in the K8s manifest file mlanywhere-svc.yml.
+
+In this example it is port 30003 and this is appended to the IP address of the hosting K8s VM as we are using a NodePort
+
+
 
 ## Troubleshooting
 
