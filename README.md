@@ -332,9 +332,25 @@ There are currently 4 simple stages to MLAnywhere which are all built into the t
 
 ### Stage 1 
 
-Access the IP address and port that has been defined in the asscociated service included in the K8s manifest file mlanywhere-svc.yml.
+Access the IP address hosting K8s worker node VM as we are using a NodePort ServiceType, and port that has been defined in the K8s manifest file mlanywhere-svc.yml.
 
-In this example it is port 30003 and this is appended to the IP address of the hosting K8s VM as we are using a NodePort
+In this example it is port 30003 as per the service description: -
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlanywhere-svc
+  labels:
+    app: mlanywhere-svc
+spec:
+  type: NodePort
+  ports:
+  - port: 5000
+    nodePort: 30003
+    protocol: TCP
+  selector:
+    app: mlanywhere
+```
 
 
 
