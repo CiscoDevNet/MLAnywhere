@@ -17,6 +17,7 @@ Table of Contents
          * [Vagrant](#vagrant)
       * [Using a Corporate Proxy](#using-a-corporate-proxy)
       * [Demo Scripts](#demo-scripts)
+      * [Using MLAnywhere](#Using MLAnywhere (on Kubernetes))
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
 
@@ -401,6 +402,23 @@ We have added this due to aid the process of troubleshooting in case of underlyi
 
 
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_logging.png)
+
+
+### Stage 3
+
+Well this stage is very easy indeed.....simply press the **Install Kubeflow** button and it does exactly that!
+
+
+
+Again there is the option to see what is happening under the skin with the **Logging** button if required.
+
+
+### Stage 4
+
+From the final screen you can download the **KUBECONFIG** file to be able to connect to you Kubernetes cluster using **kubectl**.
+
+*NOTE*: In the next release we will have the links to the Kubeflow Dashboard included in this final page.
+
 
 
 
