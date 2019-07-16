@@ -17,7 +17,7 @@ Table of Contents
          * [Vagrant](#vagrant)
       * [Using a Corporate Proxy](#using-a-corporate-proxy)
       * [Demo Scripts](#demo-scripts)
-      * [Using MLAnywhere](#Using MLAnywhere (on Kubernetes))
+      * [Using MLAnywhere](#using-mlanywhere)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
 
@@ -327,7 +327,7 @@ NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of 
              - containerPort: 5000
    ```
 
-## Using MLAnywhere (on Kubernetes)
+## Using MLAnywhere
 
 There are currently 4 simple stages to MLAnywhere which are all built into the tool which lead to the creation of a kubeflow environment.
 
@@ -404,13 +404,24 @@ We have added this due to aid the process of troubleshooting in case of underlyi
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_logging.png)
 
 
+It's worth noting that MLA will build out automatically the supporting Kubernetes cluster via the targeted container cluster manager
+
+![MLA Stage 2_Cluster Build](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_cluster_build.png)
+
+
 ### Stage 3
 
 Well this stage is very easy indeed.....simply press the **Install Kubeflow** button and it does exactly that!
 
 
+![MLA Stage 3_Deploy_Kubeflow](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3.png)
+
 
 Again there is the option to see what is happening under the skin with the **Logging** button if required.
+
+
+
+
 
 
 ### Stage 4
@@ -420,7 +431,7 @@ From the final screen you can download the **KUBECONFIG** file to be able to con
 *NOTE*: In the next release we will have the links to the Kubeflow Dashboard included in this final page.
 
 
-
+Done.......it was that easy!
 
 
 ## Troubleshooting
