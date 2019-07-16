@@ -391,6 +391,20 @@ The **SSH Key** is a public key that you select which will get injected into the
 
 Another key value aspect of MLA is it's ability to configure the various **proxy** settings which are needed if your K8s environment is behind a corportate proxy. This is especially key in cloud native and open-source soluitons which need to dynamically contact services such as Docker Hub, GitHub and OS repositories as part of the automated build prcoesses include in tooling around contianer environments.
 
+So it's simply a case of inserting your appropriate proxy address into the provided area and let MLA configure all of the various configuration files that need updated throughout the underlying operating system.
+
+
+![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_proxy.png)
+
+Furthermore, once you hit the **Deploy** button, you have the ability to view what is happening under the skin of MLA via the **Logging**.
+We have added this due to aid the process of troubleshooting in case of underlying problems in the infrastruccture etc.
+
+
+![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_logging.png)
+
+
+
+
 ## Troubleshooting
 
 ## License
