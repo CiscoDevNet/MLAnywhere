@@ -18,6 +18,10 @@ Table of Contents
       * [Using a Corporate Proxy](#using-a-corporate-proxy)
       * [Demo Scripts](#demo-scripts)
       * [Using MLAnywhere](#using-mlanywhere)
+         * [stage1](#stage-1)
+         * [stage2](#stage-2)
+         * [stage3](#stage-3)
+         * [stage4](#stage-4)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
 
