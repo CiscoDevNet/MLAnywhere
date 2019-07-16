@@ -373,18 +373,23 @@ As the contianer management tool is hosted upon vmware vSphere, we get the oppor
 - VIP Pool 
 - SSH Key 
 
+
 Most of these aspects are obvious but I will expand on a few elements here.
 
 The **vSphere Provider** is a concept with CCP which we are exposing but this should be left as the default "vSphere" 
+
 The **CCP Tenant Image Name** is the OVA image that is loaded into vSphere as part of the CCP process but effectively you are chosing the revision of the K8s cluster so in this example it is 1.13.5.
+
 The **VIP Pool** is again a feature within CCP which is a pool of IP addresses pre entered into CCP from which VIPs will be allocated from.
-**SSH Key** is a public key that you select which will get injected into the supporting VMs in the maintenance or troubleshoot operations so thie key will normally come from your local laptop, or jump host.
+
+The **SSH Key** is a public key that you select which will get injected into the supporting VMs in the maintenance or troubleshoot operations so thie key will normally come from your local laptop, or jump host.
+
+
 
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2.png)
 
 
-
-
+Another key value aspect of MLA is it's ability to configure the various **proxy** settings which are needed if your K8s environment is behind a corportate proxy. This is especially key in cloud native and open-source soluitons which need to dynamically contact services such as Docker Hub, GitHub and OS repositories as part of the automated build prcoesses include in tooling around contianer environments.
 
 ## Troubleshooting
 
