@@ -34,7 +34,7 @@ $(document).ready(function(){
     verifyK8sServices();
     checkIngress();
     checkKubeflowDashboardReachability();
-
+    verifyNotebooks();
 
 
 });
@@ -186,6 +186,58 @@ function createNotebookServer() {
     })
 }
 
+function verifyNotebooks() {
+
+    $("#uploadFile").prop("disabled", true);
+
+    $.ajax({
+        url: "/verifyNotebooks",
+        type : "GET",
+        contentType: 'application/json',
+
+        success: function(response) {
+
+            if (typeof Object.keys(response) !== 'undefined' && Object.keys(response).length > 0) {
+                $("#uploadFile").prop("disabled", false);
+                $("#notebookAlert").empty().html(
+                    `
+                    <div class="alert alert--success">
+                        <div class="alert__icon icon-check-outline"></div>
+                        <div class="alert__message">Notebook created</div>
+                    </div>
+                    ` 
+                )  
+            }
+            else {
+                $("#uploadFile").prop("disabled", true);
+                $("#notebookAlert").empty().html(
+                    `
+                    <div class="alert alert--info">
+                        <div class="alert__icon icon-check-outline"></div>
+                        <div class="alert__message">Ready to create notebook</div>
+                    </div>
+                    ` 
+                )  
+            }
+            
+            
+
+        },
+        error: function(error) {
+
+            $("#uploadFile").prop("disabled", false);
+
+            $("#notebookAlert").empty().html(
+                `
+                <div class="alert alert--danger">
+                    <div class="alert__icon icon-error-outline"></div>
+                    <div class="alert__message">Issue creating notebook</div>
+                </div>
+                `
+            );
+        }
+    })
+}
 
 
 
@@ -343,8 +395,7 @@ function viewPods() {
             var event_data = '';
     
             $.each(jsonToDisplay, function(index, value){
-                console.log(IDBIndex)
-                console.log(value)
+
                 event_data += '<tr>';
                 event_data += '<td align="left">'+value.NAMESPACE+'</td>';
                 event_data += '<td align="left">'+value.NAME+'</td>';

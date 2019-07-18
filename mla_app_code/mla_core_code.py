@@ -51,7 +51,7 @@ ALLOWED_EXTENSIONS = set(['py'])
 @app.route("/")
 def index():
     if request.method == 'GET':
-        return render_template('stage1.html')
+        return render_template('stageTitle.html')
 
 
 @app.route("/testConnection", methods = ['POST', 'GET'])
@@ -558,11 +558,11 @@ def run_viewPods():
         
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
+            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
-            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-            #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
+            #kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+            kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
 
             api_instance = kubernetes.client.CoreV1Api()
 
@@ -654,8 +654,8 @@ def getIngressDetails():
 
         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
         
-        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-        #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
+        #kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+        kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
 
         api_instance = kubernetes.client.ExtensionsV1beta1Api()
         
@@ -757,15 +757,23 @@ def run_createNotebookServer():
             ]
             
             for new_nb in new_notebooks:
-                data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_type=Existing&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'
+                data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_size=10&ws_access_modes=ReadWriteOnce&ws_type=New&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'
+                #data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '#&ws_type=Existing&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'      
 
                 response = requests.post('http://' + ingress["IP"] + '/jupyter/api/namespaces/kubeflow/notebooks', data, headers=headers)
+
+            status = response.json()
+
+            if not status["success"]:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["log"] )})
+                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
 
             ready = False
             timeout = False
             counter = 0
 
-            while ready != True or timeout != True:
+            while not (ready or timeout):
+                
                 counter += 1
                 nblist = get_notebooks(ingress["IP"])
                 loop_ready = True
@@ -795,14 +803,14 @@ def run_uploadFiletoJupyter():
 
         if "ccpToken" in session:
 
-            file = request.files.to_dict()
+            filename = request.files.to_dict()
+            filename = next(iter( filename.keys() ))
 
-            filename = next(iter( file.keys() ))
+            file = request.files[filename]
 
             if file and allowed_file(file.filename):
                 encoded = base64.b64encode(file.read())
                 data = {'name':file.filename,'path':file.filename,'type':'file','format':'base64','content': str(encoded)}
-                print(data)
             else:
                 return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
 
@@ -822,16 +830,42 @@ def run_uploadFiletoJupyter():
             
             data = json.dumps(data)
             
-            response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file_name, cookies=dict(_xsrf=xsrf), headers=headers, data=data)
+            response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file.filename, cookies=dict(_xsrf=xsrf), headers=headers, data=data)
+
+            status = response.json()
 
             if response.status_code == 200:
                 return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
             else:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["message"] )})
                 return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
 
         else:
             return render_template('stage1.html')
 
+@app.route('/verifyNotebooks', methods=['GET'])
+def verifyNotebooks():
+
+    if request.method == 'GET':
+
+        if "ccpToken" in session:
+
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        
+            ingress = getIngressDetails()
+
+            if ingress == None:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
+            else:
+                ingress = ingress.json
+
+            notebooks = get_notebooks(ingress["IP"])
+
+            for notebook in notebooks:
+                if notebook["name"] == config.NOTEBOOK_NAME:
+                    return jsonify(notebook)
+            
+            return jsonify([])  
 
 def get_notebooks(ip):
     nblist = requests.get('http://' + ip + '/jupyter/api/namespaces/kubeflow/notebooks')
@@ -840,7 +874,7 @@ def get_notebooks(ip):
 
 
 def get_jupyter_cookie(ip):
-    req = requests.get('http://' + ip + '/notebook/kubeflow/bolts-server/tree?')
+    req = requests.get('http://' + ip + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/tree?')
     return req.cookies['_xsrf']
 
 
