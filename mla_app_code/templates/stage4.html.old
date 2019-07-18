@@ -21,8 +21,7 @@
         
             
             <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
-            <script src="{{ url_for('static', filename='js/postInstallation.js') }}"></script>
-            <script src="{{ url_for('static', filename='js/postInstallViews.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/downloadKubeconfig.js') }}"></script>
             
 
             
@@ -86,78 +85,15 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="row">
-                                        
-                                        <p></p>
-
-                                    </div>
-
-                                    <div class="row">
-                                        
-                                            <div class="col-md-8">
-                                                    <div class="col-md-2">
-                                                        <div class="section row"> 
-                                                            <input id="viewPods" type="submit" class="btn btn--primary" value="View Pods">     
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                        
-                                    </div>
-
-                                    <div class="row">
-                                        
-                                            <p></p>
-    
-                                     </div>
-
-                                    <div class="row">
-                                        
-                                            <div class="col-md-8">
-                                                    <div class="col-md-6">
-                                                            <div class="ui-steps ui-steps--vertical ui-steps--success ">
-                                                                <div class="ui-step visited">
-                                                                    <div class="step__icon">1</div>
-                                                                    <div class="step__label">Enable ingress</div>
-                                                                </div>
-                                                                <div class="ui-step active">
-                                                                    <div class="step__icon">2</div>
-                                                                    <div class="step__label">Verify Kubeflow running</div>
-                                                                </div>
-                                                                <div class="ui-step">
-                                                                    <div class="step__icon">3</div>
-                                                                    <div class="step__label">Deploy Jupyter Notebook servers</div>
-                                                                </div>
-                                                                <div class="ui-step">
-                                                                    <div class="step__icon">4</div>
-                                                                    <div class="step__label">Verify Jupyter Notebook servers running</div>
-                                                                </div>
-                                                            </div>
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                            <div class="section row"> 
-                                                                    <input id="completePostInstallationTasks" type="submit" class="btn btn--primary" value="Complete Post Installation Tasks">     
-                                                                </div>
-                                                    </div>
-                                            </div>
-                                        
-                                    </div>
-
-                                    <div class="section row">
-                                        <div class="offset-4">
-                                            
-                                            <input id="kubeflowDashboard" type="submit" class="btn btn--primary" value="Kubeflow Dashboard">
-                                            <input id="jupyterDashboard" type="submit" class="btn btn--primary " value="Jupyter Dashboard">
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        
-                                        <p></p>
-
-                                    </div>
-
-
+            
+                                        <BR>
+                                            <h2>Kubeflow deployed</h2>
+                                        <BR>
+                                            <h3>Download your Kubeconfig file to get started ... </h3>
+                                        <BR>
+                          
+                                    <input id="downloadKubeconfig" type="submit" class="btn btn--primary" value="Download Kubeconfig File">
+        
                                 </div>
         
                             </div>
@@ -182,32 +118,5 @@
                 </footer>
             </main>
         </div>
-        <div id="jsonModal" class="modal fade" tabindex="-1">
-                <div class="modal-dialog" style="    max-width: 1100px">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Cluster Configuration</h5>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                                <table id="viewModal" class="display" style="border-spacing: 50px 0; border-collapse: separate;">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center">Namespace</th>
-                                                <th class="text-center">Name</th>
-                                                <th class="text-center">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            
-                                        </tbody>
-                                    </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
     </body>
 </html>

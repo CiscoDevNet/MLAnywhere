@@ -37,11 +37,16 @@ import logging
 
 from pprint import pprint
 
-logging.basicConfig(level=logging.DEBUG)
+import base64
+
+#logging.basicConfig(level=logging.DEBUG)
 
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+ALLOWED_EXTENSIONS = set(['py'])
+
 
 @app.route("/")
 def index():
@@ -264,7 +269,7 @@ def run_stage3():
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-
+           
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
 
             proc = subprocess.Popen(["kubectl","apply","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
@@ -363,38 +368,6 @@ def run_stage4():
 
 @app.route("/stage5", methods = ['POST', 'GET'])
 def run_stage5():
-
-    if request.method == 'POST':
-        if "ccpToken" in session:
-
-            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': '/Users/conmurph/Downloads/kubeconfig.yml',"KFAPP":config.KFAPP}
-
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
-
-            '''proc = subprocess.Popen(["kubectl","apply","-f","ingress.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            print (stderr.decode("utf-8"))
-            print (stdout.decode("utf-8"))
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_DEPLOY_INGRESS,stderr.decode("utf-8") )})
-                return json.dumps({'success':False,"errorCode":"ERROR_KUBECTL_DEPLOY_INGRESS","errorMessage":config.ERROR_KUBECTL_DEPLOY_INGRESS}), 400, {'ContentType':'application/json'}
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS_COMPLETE)})
-                return json.dumps({'success':True,"errorCode":"ERROR_KUBECTL_DEPLOY_INGRESS","errorMessage":config.ERROR_KUBECTL_DEPLOY_INGRESS}), 400, {'ContentType':'application/json'}
-            '''
-            
-            kubeConfig.load_kube_config()
-            #api_instance = kubernetes.client.ExtensionsV1beta1Api()
-            api_instance = kubernetes.client.CoreV1Api()
-
-            api_response = api_instance.list_namespaced_service(namespace="ccp",label_selector="nginx-ingress",watch=False)
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_INGRESS_DEPLOYED_CORRECTLY })
-            print(api_response)
 
     if request.method == 'GET':
 
@@ -585,11 +558,12 @@ def run_viewPods():
         
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': '/Users/conmurph/Downloads/kubeconfig.yml',"KFAPP":config.KFAPP}
+            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+            #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
 
-            kubeConfig.load_kube_config()
             api_instance = kubernetes.client.CoreV1Api()
 
 
@@ -600,7 +574,126 @@ def run_viewPods():
                 podsToReturn.append({"NAMESPACE":  i.metadata.namespace, "NAME":i.metadata.name, "STATUS":i.status.phase})
             
             return jsonify(podsToReturn)
+
+@app.route("/toggleIngress", methods = ['POST', 'GET'])
+def run_toggleIngress():
+    
+    if request.method == 'POST':
+        if "ccpToken" in session:
+
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+
+            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
+        
+            ingress = getIngressDetails()
             
+            if ingress == None:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
+            else:
+                ingress = ingress.json
+
+            if ingress["ACCESSTYPE"] == "NodePort":
+                proc = subprocess.Popen(["kubectl","apply","-f","ingress.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+                proc.wait()
+                (stdout, stderr) = proc.communicate()
+
+                if proc.returncode != 0:
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
+                else:
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_CONFIGURING_INGRESS)})
+            elif ingress["ACCESSTYPE"] == "Ingress":
+                proc = subprocess.Popen(["kubectl","delete","-f","ingress.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+                proc.wait()
+                (stdout, stderr) = proc.communicate()
+
+                if proc.returncode != 0:
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_NODEPORT,stderr.decode("utf-8") )})
+                else:
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_CONFIGURING_NODEPORT)})
+
+        return getIngressDetails()
+
+
+@app.route("/checkIngress", methods = ['POST', 'GET'])
+def run_checkIngress():
+
+    if request.method == 'GET':
+        if "ccpToken" in session:
+            return getIngressDetails()
+
+@app.route("/checkKubeflowDashboardReachability", methods = ['POST', 'GET'])
+def run_checkKubeflowDashboardReachability():
+    
+    if request.method == 'GET':
+        if "ccpToken" in session:
+            ingress = getIngressDetails()
+
+            if ingress == None:
+                return json.dumps({'success':False,"errorCode":"ERROR_KUBEFLOW_DASHBOARD_REACHABILITY","errorMessage":config.ERROR_KUBEFLOW_DASHBOARD_REACHABILITY}), 400, {'ContentType':'application/json'}
+            else:
+                ingress = ingress.json
+
+            if ingress["IP"]:
+                url = "http://{}".format(ingress["IP"])
+                response = requests.request("GET", url , verify=False)
+                if response.status_code == 200:
+                    return jsonify({"STATUS": response.status_code , "URL":url})
+                else:
+                    return json.dumps({'success':False,"errorCode":"ERROR_KUBEFLOW_DASHBOARD_REACHABILITY","errorMessage":config.ERROR_KUBEFLOW_DASHBOARD_REACHABILITY}), 400, {'ContentType':'application/json'}
+
+
+    return json.dumps({'success':False,"errorCode":"ERROR_KUBEFLOW_DASHBOARD_REACHABILITY","errorMessage":config.ERROR_KUBEFLOW_DASHBOARD_REACHABILITY}), 400, {'ContentType':'application/json'}
+
+def getIngressDetails():
+    
+    if "ccpToken" in session:
+
+        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+        kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
+        
+        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+        #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
+
+        api_instance = kubernetes.client.ExtensionsV1beta1Api()
+        
+        api_response = api_instance.list_namespaced_ingress(namespace="kubeflow",field_selector="metadata.name=kubeflow-ingress",watch=False)
+
+        # check whether an ingress has been deployed and if not then return the nodeport for the ambassador service, otherwise return the loadbalancer
+        # ip of the nginx controller - will probably needto update when deploying other non CCP instances in the future
+        if api_response.items:
+            for i in api_response.items:
+                if "kubeflow-ingress" in i.metadata.name and "kubeflow" in i.metadata.namespace:
+                    api_instance = kubernetes.client.CoreV1Api()
+                    service = api_instance.list_namespaced_service(namespace="ccp",field_selector="metadata.name=nginx-ingress-controller",watch=False)
+                    for j in service.items:
+                        if (j.spec.load_balancer_ip):
+                            return jsonify({"ACCESSTYPE":  "Ingress", "IP":j.spec.load_balancer_ip})
+        else:
+            workerAddress = ""
+            workerPort = ""
+            api_instance = kubernetes.client.CoreV1Api()
+            nodes = api_instance.list_node( watch=False)
+            for n in nodes.items:
+                if "worker" in n.metadata.name:
+                    for address in n.status.addresses:
+                        if address.type == "ExternalIP" :
+                            workerAddress = address.address
+
+            api_instance = kubernetes.client.CoreV1Api()
+            service = api_instance.list_namespaced_service(namespace="kubeflow",field_selector="metadata.name=ambassador",watch=False)
+            for j in service.items:
+                for port in j.spec.ports:
+                    if port.node_port:
+                        workerPort = str(port.node_port)
+
+            if workerAddress and workerPort:
+                return jsonify({"ACCESSTYPE":  "NodePort", "IP":"{}:{}".format(workerAddress,workerPort)})
+
+
+                
 
 @app.route('/downloadKubeconfig', methods=['GET', 'POST'])
 def downloadKubeconfig_redirect():
@@ -637,6 +730,123 @@ def checkClusterAlreadyExists():
             else:
                 return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
+@app.route('/createNotebookServer', methods=['GET', 'POST'])
+def run_createNotebookServer():
+
+    if request.method == 'POST':
+
+        if "ccpToken" in session:
+
+            ingress = getIngressDetails()
+
+            if ingress == None:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
+            else:
+                ingress = ingress.json
+
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
+
+            new_notebooks = [
+                {
+                    'name': config.NOTEBOOK_NAME,
+                    'cpu': config.NOTEBOOK_CPU,
+                    'memory': config.NOTEBOOK_MEMORY 
+                }
+            ]
+            
+            for new_nb in new_notebooks:
+                data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_type=Existing&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'
+
+                response = requests.post('http://' + ingress["IP"] + '/jupyter/api/namespaces/kubeflow/notebooks', data, headers=headers)
+
+            ready = False
+            timeout = False
+            counter = 0
+
+            while ready != True or timeout != True:
+                counter += 1
+                nblist = get_notebooks(ingress["IP"])
+                loop_ready = True
+                for nb in nblist:
+                    if 'running' not in nb['status'].keys():
+                        loop_Ready = False
+                
+                if loop_ready == True:
+                    ready = True
+                
+                if counter > 1000 and ready == False:
+                    timeout = True     
+                
+            if response.status_code == 200:
+                return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
+            else:
+                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
+
+
+        else:
+            return render_template('stage1.html')
+
+@app.route('/uploadFiletoJupyter', methods=['GET', 'POST'])
+def run_uploadFiletoJupyter():
+
+    if request.method == 'POST':
+
+        if "ccpToken" in session:
+
+            file = request.files.to_dict()
+
+            filename = next(iter( file.keys() ))
+
+            if file and allowed_file(file.filename):
+                encoded = base64.b64encode(file.read())
+                data = {'name':file.filename,'path':file.filename,'type':'file','format':'base64','content': str(encoded)}
+                print(data)
+            else:
+                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
+
+            ingress = getIngressDetails()
+
+            if ingress == None:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
+            else:
+                ingress = ingress.json
+
+            xsrf = get_jupyter_cookie(ingress["IP"])
+            
+            headers = {
+                'Content-Type': 'application/json',
+                'X-XSRFToken': xsrf
+            }
+            
+            data = json.dumps(data)
+            
+            response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file_name, cookies=dict(_xsrf=xsrf), headers=headers, data=data)
+
+            if response.status_code == 200:
+                return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
+            else:
+                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
+
+        else:
+            return render_template('stage1.html')
+
+
+def get_notebooks(ip):
+    nblist = requests.get('http://' + ip + '/jupyter/api/namespaces/kubeflow/notebooks')
+    nblist = json.loads(nblist.content)
+    return nblist['notebooks']
+
+
+def get_jupyter_cookie(ip):
+    req = requests.get('http://' + ip + '/notebook/kubeflow/bolts-server/tree?')
+    return req.cookies['_xsrf']
+
+
+def allowed_file(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+	
 
 @socketio.on('connect')
 def test_connect():
