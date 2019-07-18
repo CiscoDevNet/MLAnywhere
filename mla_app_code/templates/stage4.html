@@ -12,7 +12,7 @@
         
             <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-            <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+            
         
             <script src="{{ url_for('static', filename='js/jquery-3.4.1.js') }}"></script>
             <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
@@ -21,6 +21,7 @@
         
             
             <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/postInstallation.js') }}"></script>
             <script src="{{ url_for('static', filename='js/downloadKubeconfig.js') }}"></script>
             
 
@@ -35,7 +36,6 @@
                             <span class="icon-cisco"></span>
                         </a>
                         <div class="header-bar__main">
-                            
                         </div>
                         <div class="header-toolbar">
             
@@ -85,15 +85,129 @@
                                         </div>
                                     </div>
                                     
-            
-                                        <BR>
-                                            <h2>Kubeflow deployed</h2>
-                                        <BR>
-                                            <h3>Download your Kubeconfig file to get started ... </h3>
-                                        <BR>
-                          
-                                    <input id="downloadKubeconfig" type="submit" class="btn btn--primary" value="Download Kubeconfig File">
-        
+                                    <div class="row">
+                                        
+                                        <p></p>
+                                        <div id="alertBox"></div>
+
+                                    </div>
+
+                                    <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                        <h4 class="page-title">Running Post Install Check</h4>
+                                                        <p></p>
+                                                        <p></p>
+                                                </div>
+                                            </div>
+                                    </div>
+
+                                     <div class="container">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                
+                                                <div class="card card">
+                                                        <div class="card__header">
+                                                                
+                                                        </div>
+                                                        <div class="card__body">
+                                                                <div class="container">
+                                                                        <div class="row">
+                                                                                <div class="col-md-7">
+                                                                                    <div id="kubernetesPodAlert" >
+                                                                                            <div class="alert alert--info">
+                                                                                                <div class="alert__icon "></div>
+                                                                                                <div class="alert__message">Checking Kubernetes pods</div>
+                                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                        <input id="viewPods" type="submit" class="btn btn--primary" value="View Pods"> 
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                        <input id="downloadKubeconfig" type="submit" class="btn btn--primary" value="Download Kubeconfig File">
+                                                                                </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                                <div class="col-md-7">
+                                                                                    <div id="ingressAlert" >
+                                                                                            <div class="alert alert--info">
+                                                                                                <div class="alert__icon "></div>
+                                                                                                <div class="alert__message">Checking ingress deployment</div>
+                                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                        <input id="toggleIngress" type="submit" class="btn btn--primary" value="Toggle Ingress">
+                                                                                </div>
+                                                                               
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                                <div class="col-md-7">
+                                                                                    <div id="kubeflowDashboardAlert" >
+                                                                                            <div class="alert alert--info">
+                                                                                                <div class="alert__icon "></div>
+                                                                                                <div class="alert__message">Confirming Kubeflow dashboard reachability</div>
+                                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                        <input id="kubeflowDashboard" type="submit" class="btn btn--primary" value="Kubeflow Dashboard">
+                                                                                </div>
+                                                                               
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                                <div class="col-md-7">
+                                                                                    <div id="notebookAlert" >
+                                                                                            <div class="alert alert--info">
+                                                                                                <div class="alert__icon "></div>
+                                                                                                <div class="alert__message">Ready to create new notebook</div>
+                                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                        <input id="createNotebook" type="submit" class="btn btn--primary" value="Create Notebook">
+                                                                                </div>
+                                                                               
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                                <div class="col-md-7">
+                                                                                    <div id="notebookFileAlert" >
+                                                                                            <div class="alert alert--info">
+                                                                                                <div class="alert__icon "></div>
+                                                                                                <div class="alert__message">Ready to upload file to Jupyter notebook</div>
+                                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                        <input id="uploadFile" type="submit" class="btn btn--primary" value="Upload File">
+                                                                                        <input id="file-input" type="file" name="file-input" style="display: none;" />
+                                                                                </div>
+                                                                               
+                                                                        </div>
+
+  
+                                                                </div>
+
+                                                        </div>
+                                                </div>
+                                                        
+                                            </div>
+                                        </div>
+                                            
+                                    </div>
+                                </div>
+
+                                    <div class="row">
+                                        
+                                        <p></p>
+
+                                    </div>
+
+
                                 </div>
         
                             </div>
@@ -118,5 +232,32 @@
                 </footer>
             </main>
         </div>
+        <div id="jsonModal" class="modal fade" tabindex="-1">
+                <div class="modal-dialog" style="    max-width: 1100px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cluster Configuration</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                                <table id="viewModal" class="display" style="border-spacing: 50px 0; border-collapse: separate;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Namespace</th>
+                                                <th class="text-center">Name</th>
+                                                <th class="text-center">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </body>
 </html>
