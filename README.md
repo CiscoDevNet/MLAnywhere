@@ -1,5 +1,7 @@
 # MLAnywhere (mla) 
 
+![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_dark_final_transparent.png)
+
 This is a project to simplify the process of deploying Kubeflow + Tensorflow onto any underlying Kubernetes platform
 
 
