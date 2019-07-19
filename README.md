@@ -2,7 +2,7 @@
 
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_dark_final_transparent_small.png)
 
-This is a project to simplify the process of deploying Kubeflow + Tensorflow onto any underlying Kubernetes platform
+This is a project to simplify the process of deploying Kubeflow (along with the underlying runtimes like Tensorflow) onto any underlying Kubernetes platform
 
 
 Table of Contents
