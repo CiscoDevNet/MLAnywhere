@@ -158,7 +158,8 @@ function createNotebookServer() {
 
         success: function(response) {
             
-            $("#createNotebook").prop("disabled", false);
+            $("#createNotebook").prop("disabled", true);
+            $("#uploadFile").prop("disabled", false);
 
             $("#notebookAlert").empty().html(
                 `
@@ -199,6 +200,8 @@ function verifyNotebooks() {
 
             if (typeof Object.keys(response) !== 'undefined' && Object.keys(response).length > 0) {
                 $("#uploadFile").prop("disabled", false);
+                $("#createNotebook").prop("disabled", true);
+
                 $("#notebookAlert").empty().html(
                     `
                     <div class="alert alert--success">
@@ -231,7 +234,7 @@ function verifyNotebooks() {
                 `
                 <div class="alert alert--danger">
                     <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Issue creating notebook</div>
+                    <div class="alert__message">There was a problem verifying the notebooks</div>
                 </div>
                 `
             );
@@ -396,11 +399,23 @@ function viewPods() {
     
             $.each(jsonToDisplay, function(index, value){
 
-                event_data += '<tr>';
-                event_data += '<td align="left">'+value.NAMESPACE+'</td>';
-                event_data += '<td align="left">'+value.NAME+'</td>';
-                event_data += '<td align="left">'+value.STATUS+'</td>';
-                event_data += '</tr>';
+                if (!((value.STATUS == "Running" ) || (value.STATUS == "Succeeded")))
+                {
+                    event_data += '<tr style="color:red">';
+                    event_data += '<td align="left" >'+value.NAMESPACE+'</td>';
+                    event_data += '<td align="left">'+value.NAME+'</td>';
+                    event_data += '<td align="left">'+value.STATUS+'</td>';
+                    event_data += '</tr>';
+                }
+                else 
+                {
+                    event_data += '<tr>';
+                    event_data += '<td align="left">'+value.NAMESPACE+'</td>';
+                    event_data += '<td align="left">'+value.NAME+'</td>';
+                    event_data += '<td align="left">'+value.STATUS+'</td>';
+                    event_data += '</tr>';
+                }
+                
             });
             $("#viewModal").empty().append(event_data);
         },

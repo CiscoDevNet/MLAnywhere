@@ -39,6 +39,8 @@ from pprint import pprint
 
 import base64
 
+
+
 #logging.basicConfig(level=logging.DEBUG)
 
 
@@ -558,11 +560,11 @@ def run_viewPods():
         
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
-            #kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-            kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
+            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+            #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
 
             api_instance = kubernetes.client.CoreV1Api()
 
@@ -583,6 +585,7 @@ def run_toggleIngress():
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
         
@@ -654,8 +657,8 @@ def getIngressDetails():
 
         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
         
-        #kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-        kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
+        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+        #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
 
         api_instance = kubernetes.client.ExtensionsV1beta1Api()
         
@@ -709,6 +712,7 @@ def downloadKubeconfig(filename):
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             return send_file("{}/{}".format(kubeConfigDir,session['sessionUUID']))
+            #return send_file("kubeconfig.yaml")
         else:
             return render_template('stage1.html')
 
@@ -760,7 +764,7 @@ def run_createNotebookServer():
                 data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_size=10&ws_access_modes=ReadWriteOnce&ws_type=New&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'
                 #data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '#&ws_type=Existing&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'      
 
-                response = requests.post('http://' + ingress["IP"] + '/jupyter/api/namespaces/kubeflow/notebooks', data, headers=headers)
+                response = requests.post('http://' + ingress["IP"] + '/jupyter/api/namespaces/kubeflow/notebooks', data, headers=headers, verify=False)
 
             status = response.json()
 
@@ -809,8 +813,11 @@ def run_uploadFiletoJupyter():
             file = request.files[filename]
 
             if file and allowed_file(file.filename):
-                encoded = base64.b64encode(file.read())
-                data = {'name':file.filename,'path':file.filename,'type':'file','format':'base64','content': str(encoded)}
+                encodedFile = str(file.read())
+                encodedFile = encodedFile.encode("utf-8")
+                encoded = str(base64.b64encode(encodedFile))
+                data = {'name':file.filename,'path':file.filename,'type':'file','format':'base64','content':encoded}
+
             else:
                 return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
 
@@ -830,11 +837,11 @@ def run_uploadFiletoJupyter():
             
             data = json.dumps(data)
             
-            response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file.filename, cookies=dict(_xsrf=xsrf), headers=headers, data=data)
+            response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file.filename, cookies=dict(_xsrf=xsrf), headers=headers, data=data, verify=False)
 
             status = response.json()
 
-            if response.status_code == 200:
+            if response.status_code == 200 or response.status_code == 201:
                 return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
             else:
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["message"] )})
@@ -868,13 +875,13 @@ def verifyNotebooks():
             return jsonify([])  
 
 def get_notebooks(ip):
-    nblist = requests.get('http://' + ip + '/jupyter/api/namespaces/kubeflow/notebooks')
+    nblist = requests.get('http://' + ip + '/jupyter/api/namespaces/kubeflow/notebooks', verify=False)
     nblist = json.loads(nblist.content)
     return nblist['notebooks']
 
 
 def get_jupyter_cookie(ip):
-    req = requests.get('http://' + ip + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/tree?')
+    req = requests.get('http://' + ip + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/tree?',verify=False)
     return req.cookies['_xsrf']
 
 
