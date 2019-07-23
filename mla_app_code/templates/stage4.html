@@ -24,7 +24,11 @@
             <script src="{{ url_for('static', filename='js/postInstallation.js') }}"></script>
             <script src="{{ url_for('static', filename='js/downloadKubeconfig.js') }}"></script>
             
-
+            <style>
+                .stage4btn1 {
+                    min-width: 226px !important;
+                }
+            </style>
             
     </head>
     <body class="cui">
@@ -122,7 +126,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-2">
-                                                                                        <input id="viewPods" type="submit" class="btn btn--primary" value="View Pods"> 
+                                                                                        <input id="viewPods" type="submit" class="btn btn--primary stage4btn1" value="View Pods"> 
                                                                                 </div>
                                                                                 <div class="col-md-3">
                                                                                         <input id="downloadKubeconfig" type="submit" class="btn btn--primary" value="Download Kubeconfig File">
@@ -133,12 +137,12 @@
                                                                                     <div id="ingressAlert" >
                                                                                             <div class="alert alert--info">
                                                                                                 <div class="alert__icon "></div>
-                                                                                                <div class="alert__message">Checking ingress deployment</div>
+                                                                                                <div class="alert__message">Waiting for previous stage to finish</div>
                                                                                             </div>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-2">
-                                                                                        <input id="toggleIngress" type="submit" class="btn btn--primary" value="Toggle Ingress">
+                                                                                        <input id="toggleIngress" type="submit" class="btn btn--primary stage4btn1" value="Toggle Ingress">
                                                                                 </div>
                                                                                
                                                                         </div>
@@ -148,12 +152,12 @@
                                                                                     <div id="kubeflowDashboardAlert" >
                                                                                             <div class="alert alert--info">
                                                                                                 <div class="alert__icon "></div>
-                                                                                                <div class="alert__message">Confirming Kubeflow dashboard reachability</div>
+                                                                                                <div class="alert__message">Waiting for previous stage to finish</div>
                                                                                             </div>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-2">
-                                                                                        <input id="kubeflowDashboard" type="submit" class="btn btn--primary" value="Kubeflow Dashboard">
+                                                                                        <input id="kubeflowDashboard" type="submit" class="btn btn--primary stage4btn1" value="Kubeflow Dashboard">
                                                                                 </div>
                                                                                
                                                                         </div>
@@ -163,12 +167,12 @@
                                                                                     <div id="notebookAlert" >
                                                                                             <div class="alert alert--info">
                                                                                                 <div class="alert__icon "></div>
-                                                                                                <div class="alert__message">Ready to create new notebook server</div>
+                                                                                                <div class="alert__message">Waiting for previous stage to finish</div>
                                                                                             </div>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-2">
-                                                                                        <input id="createNotebook" type="submit" class="btn btn--primary" value="Create Server">
+                                                                                        <input id="createNotebook" type="submit" class="btn btn--primary stage4btn1" value="Server Dashboard">
                                                                                 </div>
                                                                                
                                                                         </div>
@@ -178,15 +182,10 @@
                                                                                     <div id="notebookFileAlert" >
                                                                                             <div class="alert alert--info">
                                                                                                 <div class="alert__icon "></div>
-                                                                                                <div class="alert__message">Ready to upload file to Jupyter notebook</div>
+                                                                                                <div class="alert__message">Waiting for previous stage to finish</div>
                                                                                             </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="col-md-2">
-                                                                                        <input id="uploadFile" type="submit" class="btn btn--primary" value="Upload File">
-                                                                                        <input id="file-input" type="file" name="file-input" style="display: none;" />
-                                                                                </div>
-                                                                               
                                                                         </div>
 
   
