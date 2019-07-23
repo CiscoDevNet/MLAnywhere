@@ -806,21 +806,7 @@ def run_uploadFiletoJupyter():
     if request.method == 'POST':
 
         if "ccpToken" in session:
-
-            filename = request.files.to_dict()
-            filename = next(iter( filename.keys() ))
-
-            file = request.files[filename]
-
-            if file and allowed_file(file.filename):
-                encodedFile = str(file.read())
-                encodedFile = encodedFile.encode("utf-8")
-                encoded = str(base64.b64encode(encodedFile))
-                data = {'name':file.filename,'path':file.filename,'type':'file','format':'base64','content':encoded}
-
-            else:
-                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
-
+            
             ingress = getIngressDetails()
 
             if ingress == None:
@@ -835,17 +821,28 @@ def run_uploadFiletoJupyter():
                 'X-XSRFToken': xsrf
             }
             
-            data = json.dumps(data)
+            path = './demos/bolts/'
+            files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
             
-            response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file.filename, cookies=dict(_xsrf=xsrf), headers=headers, data=data, verify=False)
+            logging.warn(files)
 
-            status = response.json()
+            for file in files:
+                encodedFile = str(file.read())
+                encodedFile = encodedFile.encode("utf-8")
+                encoded = str(base64.b64encode(encodedFile))
+                data = {'name':file.filename,'path':file.filename,'type':'file','format':'base64','content':encoded}
+                
+                data = json.dumps(data)
+            
+                response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file.filename, cookies=dict(_xsrf=xsrf), headers=headers, data=data, verify=False)
 
-            if response.status_code == 200 or response.status_code == 201:
-                return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["message"] )})
-                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
+                status = response.json()
+
+                if response.status_code == 200 or response.status_code == 201:
+                    return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
+                else:
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["message"] )})
+                    return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
 
         else:
             return render_template('stage1.html')
