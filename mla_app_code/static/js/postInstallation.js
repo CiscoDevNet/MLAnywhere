@@ -1,7 +1,13 @@
+post_install_stage = 1
+
 $(document).ready(function(){
     
     $('#consoleLog').append(localStorage.getItem('consoleLog'));
 
+    $("#toggleIngress").prop("disabled", true);
+    $("#kubeflowDashboard").prop("disabled", true);
+    $("#createNotebook").prop("disabled", true);
+    $("#uploadFile").prop("disabled", true);
 
     $('#viewPods').on('click', function(event) {
         event.preventDefault();      
@@ -20,23 +26,15 @@ $(document).ready(function(){
 
     $('#createNotebook').on('click', function(event) {
         event.preventDefault();      
-        createNotebookServer();
+        openNotebookServer();
     });
 
     $('#uploadFile').on('click', function() {
-        $('#file-input').trigger('click');
+        uploadFiletoJupyter()
     });
 
-    $("#file-input").change(function(){
-        uploadFiletoJupyter()
-      });
-
-    verifyK8sServices();
-    checkIngress();
-    checkKubeflowDashboardReachability();
-    verifyNotebooks();
-
-
+    verifyPostInstall()
+    setInterval(verifyPostInstall,5000);
 });
 
 function verifyK8sServices() {
@@ -64,24 +62,29 @@ function verifyK8sServices() {
             {
                 alertClass = "alert alert--success"
                 statusMsg = "Kubernetes pods running"
+                $("#kubernetesPodAlert").empty().html(
+                    `
+                    <div class="` + alertClass +`">
+                        <div class="alert__icon icon-check-outline"></div>
+                        <div class="alert__message">` + statusMsg +`</div>
+                    </div>
+                    ` 
+                )
+                post_install_stage = 2
             }
             else
             {
-                alertClass = "alert alert--danger"
-                statusMsg = "Kubernetes pods not running"
-
+                alertClass = "alert alert--warning"
+                statusMsg = "Waiting for Kubernetes pods to start"
+                $("#kubernetesPodAlert").empty().html(
+                    `
+                    <div class="` + alertClass +`">
+                        <div class="alert__icon icon-error-outline"></div>
+                        <div class="alert__message">` + statusMsg +`</div>
+                    </div>
+                    ` 
+                )
             }
-
-
-            $("#kubernetesPodAlert").empty().html(
-                `
-                <div class="` + alertClass +`">
-                    <div class="alert__icon icon-check-outline"></div>
-                    <div class="alert__message">` + statusMsg +`</div>
-                </div>
-                ` 
-            )
-           
         },
         error: function(error) {
 
@@ -90,7 +93,7 @@ function verifyK8sServices() {
             $("#postInstallChecklist").empty().append(
                 `
                 <div class="alert alert--danger">
-                    <div class="alert__icon icon-check-outline"></div>
+                    <div class="alert__icon icon-error-outline"></div>
                     <div class="alert__message">Error running post install check</div>
                 </div>
                 ` 
@@ -146,7 +149,7 @@ function createNotebookServer() {
         `
         <div class="alert alert--warning">
             <div class="alert__icon icon-check-outline"></div>
-            <div class="alert__message">Creating notebook</div>
+            <div class="alert__message">Creating Notebook Server</div>
         </div>
         ` 
     )  
@@ -163,9 +166,9 @@ function createNotebookServer() {
 
             $("#notebookAlert").empty().html(
                 `
-                <div class="alert alert--success">
+                <div class="alert alert--warning">
                     <div class="alert__icon icon-check-outline"></div>
-                    <div class="alert__message">Notebook created</div>
+                    <div class="alert__message">Creating Notebook Server</div>
                 </div>
                 ` 
             )  
@@ -173,13 +176,13 @@ function createNotebookServer() {
         },
         error: function(error) {
 
-            $("#createNotebook").prop("disabled", false);
+            $("#createNotebook").prop("disabled", true);
 
             $("#notebookAlert").empty().html(
                 `
                 <div class="alert alert--danger">
                     <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Issue creating notebook</div>
+                    <div class="alert__message">Issue creating Notebook Server</div>
                 </div>
                 `
             );
@@ -199,9 +202,10 @@ function verifyNotebooks() {
         success: function(response) {
 
             if (typeof Object.keys(response) !== 'undefined' && Object.keys(response).length > 0) {
-                $("#uploadFile").prop("disabled", false);
-                $("#createNotebook").prop("disabled", true);
-
+                console.log(response)
+                
+                //REAL SUCCESS
+                $("#createNotebook").prop("disabled", false);
                 $("#notebookAlert").empty().html(
                     `
                     <div class="alert alert--success">
@@ -209,7 +213,10 @@ function verifyNotebooks() {
                         <div class="alert__message">Notebook created</div>
                     </div>
                     ` 
-                )  
+                )
+                uploadFiletoJupyter()
+                
+                //TODO: not ready yet response (being created)
             }
             else {
                 $("#uploadFile").prop("disabled", true);
@@ -217,7 +224,7 @@ function verifyNotebooks() {
                     `
                     <div class="alert alert--info">
                         <div class="alert__icon icon-check-outline"></div>
-                        <div class="alert__message">Ready to create notebook</div>
+                        <div class="alert__message">Error during Notebook Server creation</div>
                     </div>
                     ` 
                 )  
@@ -248,20 +255,12 @@ function uploadFiletoJupyter() {
 
     var fd = new FormData();
 
-    file = $("#file-input")[0].files[0].name
-
-    lastDot = file.lastIndexOf('.');
-
-    filename = file.substring(0, lastDot);
-
-    fd.append(filename, ($("#file-input"))[0].files[0]);
-
     $.ajax({
         url: "/uploadFiletoJupyter",
         type : "POST",
         processData: false,
         contentType: false, 
-        data:fd,
+        data:{},
         success: function(response) {
 
             $("#notebookFileAlert").empty().html(
@@ -304,8 +303,8 @@ function checkIngress() {
                     <div class="alert__message">Cluster access configured as ` + jsonToDisplay.ACCESSTYPE +` on address ` + jsonToDisplay.IP +`</div>
                 </div>
                 ` 
-            )  
-
+            )
+            post_install_stage = 3
         },
         error: function(error) {
 
@@ -331,7 +330,6 @@ function checkKubeflowDashboardReachability() {
         contentType: 'application/json',
 
         success: function(jsonToDisplay) {
-            
             $("#kubeflowDashboardAlert").empty().html(
                 `
                 <div class="alert alert--success">
@@ -339,8 +337,9 @@ function checkKubeflowDashboardReachability() {
                     <div class="alert__message">Kubeflow dashboard is available</div>
                 </div>
                 ` 
-            )  
-
+            )
+            createNotebookServer()
+            post_install_stage = 4
         },
         error: function(error) {
 
@@ -434,5 +433,40 @@ function viewPods() {
     });
 }
 
+function openNotebookServer() {
+    $.ajax({
+        url: "/checkIngress",
+        type : "GET",
+        contentType: 'application/json',
 
+        success: function(jsonToDisplay) {
+            
+            url = "http://" + jsonToDisplay.IP + '/notebook/kubeflow/mla-notebook'
+            window.open(url)
 
+        },
+        error: function(error) {
+
+            $("#ingressAlert").empty().html(
+                `
+                <div class="alert alert--danger">
+                <div class="alert__icon icon-error-outline"></div>
+                <div class="alert__message">Issue retrieving Notebook Server Dashboard details</div>
+            </div>
+                `
+            );
+        }
+    }) 
+}
+
+function verifyPostInstall() {
+    if(post_install_stage == 1) {
+        verifyK8sServices();
+    } else if(post_install_stage == 2) {
+        checkIngress();
+    } else if(post_install_stage == 3) {
+        checkKubeflowDashboardReachability();
+    } else if(post_install_stage == 4) {
+        verifyNotebooks();
+    }
+}
