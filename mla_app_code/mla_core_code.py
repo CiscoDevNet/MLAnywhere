@@ -14,7 +14,8 @@ or implied.
 '''
 
 from flask import Flask, json, render_template, request, session, Response, jsonify, send_file, redirect
-import kubernetes.client
+from kubernetes import client, utils
+import kubernetes.utils
 from kubernetes.client.rest import ApiException
 
 from kubernetes  import config as kubeConfig
@@ -36,8 +37,6 @@ import re
 import logging
 
 from pprint import pprint
-
-import base64
 
 
 
@@ -762,7 +761,7 @@ def run_createNotebookServer():
             
             for new_nb in new_notebooks:
                 data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_size=10&ws_access_modes=ReadWriteOnce&ws_type=New&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'
-                #data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '#&ws_type=Existing&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'      
+                #data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_type=Existing&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'      
 
                 response = requests.post('http://' + ingress["IP"] + '/jupyter/api/namespaces/kubeflow/notebooks', data, headers=headers, verify=False)
 
@@ -807,6 +806,33 @@ def run_uploadFiletoJupyter():
 
         if "ccpToken" in session:
             
+            # Read IPYNB and PVC file names
+            path = './demos/ipynb/'
+            ipynb = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+            
+            path = './demos/pvc/'
+            pvcfiles = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+            
+            # Load Kubeconfig
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+
+            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+
+            # Apply PVC
+            client_config = client.Configuration()
+            client_config.verify_ssl = False
+            k8s_client = client.ApiClient(client_config) 
+            
+            for file in pvcfiles:
+                logging.warn(file)
+                utils.create_from_yaml(
+                    k8s_client = k8s_client,
+                    yaml_file = os.path.join(os.getcwd(),'demos', 'pvc', file),
+                    namespace = "kubeflow"
+                )
+
+            # Upload file
             ingress = getIngressDetails()
 
             if ingress == None:
@@ -821,28 +847,27 @@ def run_uploadFiletoJupyter():
                 'X-XSRFToken': xsrf
             }
             
-            path = './demos/bolts/'
-            files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-            
-            logging.warn(files)
+            overall_status = True
+            for file in ipynb:
+                file_path = os.path.join(os.getcwd(),'demos', 'ipynb')
+                file_content = json.loads(open(os.path.join(file_path, file)).read())
 
-            for file in files:
-                encodedFile = str(file.read())
-                encodedFile = encodedFile.encode("utf-8")
-                encoded = str(base64.b64encode(encodedFile))
-                data = {'name':file.filename,'path':file.filename,'type':'file','format':'base64','content':encoded}
-                
-                data = json.dumps(data)
-            
-                response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file.filename, cookies=dict(_xsrf=xsrf), headers=headers, data=data, verify=False)
+                data = {'name':file,'path':file,'type':'notebook','format':'json','content':file_content}
+
+                response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file, cookies=dict(_xsrf=xsrf), headers=headers, data=json.dumps(data), verify=False)
 
                 status = response.json()
 
                 if response.status_code == 200 or response.status_code == 201:
-                    return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
+                    pass
                 else:
+                    overall_status = False
                     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["message"] )})
-                    return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
+            
+            if overall_status == True:
+                return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
+            else:
+                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
 
         else:
             return render_template('stage1.html')
@@ -899,4 +924,3 @@ if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
     app.run(host='0.0.0.0', port=5000)
     socketio.run(app)
-
