@@ -7,7 +7,6 @@ $(document).ready(function(){
     $("#toggleIngress").prop("disabled", true);
     $("#kubeflowDashboard").prop("disabled", true);
     $("#createNotebook").prop("disabled", true);
-    $("#uploadFile").prop("disabled", true);
 
     $('#viewPods').on('click', function(event) {
         event.preventDefault();      
@@ -27,10 +26,6 @@ $(document).ready(function(){
     $('#createNotebook').on('click', function(event) {
         event.preventDefault();      
         openNotebookServer();
-    });
-
-    $('#uploadFile').on('click', function() {
-        uploadFiletoJupyter()
     });
 
     verifyPostInstall()
@@ -162,12 +157,11 @@ function createNotebookServer() {
         success: function(response) {
             
             $("#createNotebook").prop("disabled", true);
-            $("#uploadFile").prop("disabled", false);
 
             $("#notebookAlert").empty().html(
                 `
                 <div class="alert alert--warning">
-                    <div class="alert__icon icon-check-outline"></div>
+                    <div class="alert__icon icon-error-outline"></div>
                     <div class="alert__message">Creating Notebook Server</div>
                 </div>
                 ` 
@@ -192,8 +186,6 @@ function createNotebookServer() {
 
 function verifyNotebooks() {
 
-    $("#uploadFile").prop("disabled", true);
-
     $.ajax({
         url: "/verifyNotebooks",
         type : "GET",
@@ -202,28 +194,39 @@ function verifyNotebooks() {
         success: function(response) {
 
             if (typeof Object.keys(response) !== 'undefined' && Object.keys(response).length > 0) {
-                console.log(response)
+                console.log(Object.keys(response.status))
                 
-                //REAL SUCCESS
-                $("#createNotebook").prop("disabled", false);
-                $("#notebookAlert").empty().html(
-                    `
-                    <div class="alert alert--success">
-                        <div class="alert__icon icon-check-outline"></div>
-                        <div class="alert__message">Notebook created</div>
-                    </div>
-                    ` 
-                )
-                uploadFiletoJupyter()
-                
-                //TODO: not ready yet response (being created)
+                if("running" == Object.keys(response.status)[0]) {
+                    $("#createNotebook").prop("disabled", false);
+                    $("#notebookAlert").empty().html(
+                        `
+                        <div class="alert alert--success">
+                            <div class="alert__icon icon-check-outline"></div>
+                            <div class="alert__message">Notebook created</div>
+                        </div>
+                        ` 
+                    )
+                    $("#createNotebook").prop("disabled", false);
+                    post_install_stage = 5
+                    uploadFiletoJupyter()
+                } else {
+                    $("#createNotebook").prop("disabled", false);
+                    $("#notebookAlert").empty().html(
+                        `
+                        <div class="alert alert--warning">
+                            <div class="alert__icon icon-error-outline"></div>
+                            <div class="alert__message">Waiting for Notebook Server creation</div>
+                        </div>
+                        ` 
+                    )
+                    $("#createNotebook").prop("disabled", true);
+                }
             }
             else {
-                $("#uploadFile").prop("disabled", true);
                 $("#notebookAlert").empty().html(
                     `
-                    <div class="alert alert--info">
-                        <div class="alert__icon icon-check-outline"></div>
+                    <div class="alert alert--danger">
+                        <div class="alert__icon icon-error-outline"></div>
                         <div class="alert__message">Error during Notebook Server creation</div>
                     </div>
                     ` 
@@ -234,8 +237,6 @@ function verifyNotebooks() {
 
         },
         error: function(error) {
-
-            $("#uploadFile").prop("disabled", false);
 
             $("#notebookAlert").empty().html(
                 `
@@ -267,7 +268,7 @@ function uploadFiletoJupyter() {
                 `
                 <div class="alert alert--success">
                     <div class="alert__icon icon-check-outline"></div>
-                    <div class="alert__message">File uploaded to Jupyter notebook</div>
+                    <div class="alert__message">Demos created on Notebook Server</div>
                 </div>
                 ` 
             )  
@@ -279,7 +280,7 @@ function uploadFiletoJupyter() {
                 `
                 <div class="alert alert--danger">
                     <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Issue uploading file to Jupyter notebook</div>
+                    <div class="alert__message">Issue creating demos on Notebook Server</div>
                 </div>
                 `
             );
@@ -304,6 +305,7 @@ function checkIngress() {
                 </div>
                 ` 
             )
+            $("#toggleIngress").prop("disabled", false);
             post_install_stage = 3
         },
         error: function(error) {
@@ -338,6 +340,7 @@ function checkKubeflowDashboardReachability() {
                 </div>
                 ` 
             )
+            $("#kubeflowDashboard").prop("disabled", false);
             createNotebookServer()
             post_install_stage = 4
         },
