@@ -1,5 +1,10 @@
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: guestbook
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: nfs
   annotations:
