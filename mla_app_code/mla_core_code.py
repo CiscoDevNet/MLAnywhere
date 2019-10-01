@@ -832,18 +832,18 @@ def run_uploadFiletoJupyter():
 
             kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
 
-            # Apply PVC
-            client_config = client.Configuration()
-            client_config.verify_ssl = False
-            k8s_client = client.ApiClient(client_config) 
-            
-            for file in pvcfiles:
-                logging.warn(file)
-                utils.create_from_yaml(
-                    k8s_client = k8s_client,
-                    yaml_file = os.path.join(os.getcwd(),'demos', 'pvc', file),
-                    namespace = "kubeflow"
-                )
+            # # Apply PVC
+            # client_config = client.Configuration()
+            # client_config.verify_ssl = False
+            # k8s_client = client.ApiClient(client_config)
+            #
+            # for file in pvcfiles:
+            #     logging.warn(file)
+            #     utils.create_from_yaml(
+            #         k8s_client = k8s_client,
+            #         yaml_file = os.path.join(os.getcwd(),'demos', 'pvc', file),
+            #         namespace = "kubeflow"
+            #
 
             # Upload file
             ingress = getIngressDetails()
