@@ -283,6 +283,19 @@ def run_stage3():
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
 
+            # Deploy PVC for RWX
+            proc = subprocess.Popen(["kubectl", "apply", "-f","nfs.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
+                return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
+            else:
+                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
+
+
 
 
             proc = subprocess.Popen(["export","KFAPP=","{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True, env=kubeSessionEnv)

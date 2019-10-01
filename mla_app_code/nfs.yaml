@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: guestbook
+  name: kubeflow
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: nfs
+  namespace: kubeflow
   annotations:
       dummy: "test"
 spec:
