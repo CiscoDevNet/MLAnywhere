@@ -36,6 +36,7 @@ RUN tar -xvf kfctl_v${KF_VERSION}_${PLATFORM}.tar.gz
 RUN rm kfctl_v${KF_VERSION}_${PLATFORM}.tar.gz
 RUN chmod +x ./kfctl
 RUN mv ./kfctl /usr/local/bin/
+RUN helminstall.sh
 
 
 # Copy the current directory contents into the container at /app

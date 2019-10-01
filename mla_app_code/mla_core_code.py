@@ -283,8 +283,20 @@ def run_stage3():
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
 
-            # Deploy PVC for RWX
-            proc = subprocess.Popen(["kubectl", "apply", "-f","nfs.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            # Update Helm
+            proc = subprocess.Popen(["helm", "repo", "update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
+                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
+            else:
+                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
+
+            # Deploy NFS Server Provisioner
+            proc = subprocess.Popen(["helm", "install", "update", "stable/nfs-server-provisioner", "--name", "kf", "--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
             proc.wait()
             (stdout, stderr) = proc.communicate()
 
@@ -295,7 +307,17 @@ def run_stage3():
             else:
                 socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
 
-
+            # # Deploy PVC for RWX
+            # proc = subprocess.Popen(["kubectl", "apply", "-f","nfs.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            # proc.wait()
+            # (stdout, stderr) = proc.communicate()
+            #
+            #
+            # if proc.returncode != 0:
+            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
+            #     return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
+            # else:
+            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
 
 
             proc = subprocess.Popen(["export","KFAPP=","{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True, env=kubeSessionEnv)
@@ -833,16 +855,16 @@ def run_uploadFiletoJupyter():
             kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
 
             # # Apply PVC
-            # client_config = client.Configuration()
-            # client_config.verify_ssl = False
-            # k8s_client = client.ApiClient(client_config)
-            #
-            # for file in pvcfiles:
-            #     logging.warn(file)
-            #     utils.create_from_yaml(
-            #         k8s_client = k8s_client,
-            #         yaml_file = os.path.join(os.getcwd(),'demos', 'pvc', file),
-            #         namespace = "kubeflow"
+            client_config = client.Configuration()
+            client_config.verify_ssl = False
+            k8s_client = client.ApiClient(client_config)
+
+            for file in pvcfiles:
+                logging.warn(file)
+                utils.create_from_yaml(
+                    k8s_client = k8s_client,
+                    yaml_file = os.path.join(os.getcwd(),'demos', 'pvc', file),
+                    namespace = "kubeflow"
             #
 
             # Upload file
