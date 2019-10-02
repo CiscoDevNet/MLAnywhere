@@ -283,6 +283,18 @@ def run_stage3():
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
 
+            proc = subprocess.Popen(["helm", "init"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+
+
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
+                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
+            else:
+                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
+
+
             # Update Helm
             proc = subprocess.Popen(["helm", "repo", "update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
             proc.wait()
