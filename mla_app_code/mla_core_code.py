@@ -283,41 +283,41 @@ def run_stage3():
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
 
-            proc = subprocess.Popen(["helm","init"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
-                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
-            else:
-                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
-
-
-            # Update Helm
-            proc = subprocess.Popen(["helm","repo","update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
-                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
-            else:
-                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
-
-            # Deploy NFS Server Provisioner
-            proc = subprocess.Popen(["helm","install","update","stable/nfs-server-provisioner","--name","kf","--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
-                return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
-            else:
-                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
+            # proc = subprocess.Popen(["helm","init"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            # proc.wait()
+            # (stdout, stderr) = proc.communicate()
+            #
+            #
+            # if proc.returncode != 0:
+            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
+            #     return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
+            # else:
+            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
+            #
+            #
+            # # Update Helm
+            # proc = subprocess.Popen(["helm","repo","update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            # proc.wait()
+            # (stdout, stderr) = proc.communicate()
+            #
+            #
+            # if proc.returncode != 0:
+            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
+            #     return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
+            # else:
+            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
+            #
+            # # Deploy NFS Server Provisioner
+            # proc = subprocess.Popen(["helm","install","update","stable/nfs-server-provisioner","--name","kf","--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            # proc.wait()
+            # (stdout, stderr) = proc.communicate()
+            #
+            #
+            # if proc.returncode != 0:
+            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
+            #     return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
+            # else:
+            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
 
             # # Deploy PVC for RWX
             # proc = subprocess.Popen(["kubectl", "apply", "-f","nfs.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
