@@ -283,7 +283,7 @@ def run_stage3():
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
 
-            proc = subprocess.Popen(["helm", "init"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc = subprocess.Popen(["helm","init"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
             proc.wait()
             (stdout, stderr) = proc.communicate()
 
@@ -296,7 +296,7 @@ def run_stage3():
 
 
             # Update Helm
-            proc = subprocess.Popen(["helm", "repo", "update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc = subprocess.Popen(["helm","repo","update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
             proc.wait()
             (stdout, stderr) = proc.communicate()
 
@@ -308,7 +308,7 @@ def run_stage3():
                 socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
 
             # Deploy NFS Server Provisioner
-            proc = subprocess.Popen(["helm", "install", "update", "stable/nfs-server-provisioner", "--name", "kf", "--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc = subprocess.Popen(["helm","install","update","stable/nfs-server-provisioner","--name","kf","--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
             proc.wait()
             (stdout, stderr) = proc.communicate()
 
