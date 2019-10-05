@@ -38,7 +38,7 @@ import logging
 
 from pprint import pprint
 
-
+import time
 
 #logging.basicConfig(level=logging.DEBUG)
 
@@ -250,7 +250,6 @@ def run_stage2():
                     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
                     return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":cluster.text}), 400, {'ContentType':'application/json'}
 
-
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE})
 
             return jsonify(dict(redirectURL='/stage3'))
@@ -283,53 +282,107 @@ def run_stage3():
             else:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
 
-            # proc = subprocess.Popen(["helm","init"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            # proc.wait()
-            # (stdout, stderr) = proc.communicate()
-            #
-            #
-            # if proc.returncode != 0:
-            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
-            #     return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
-            # else:
-            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
-            #
-            #
-            # # Update Helm
-            # proc = subprocess.Popen(["helm","repo","update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            # proc.wait()
-            # (stdout, stderr) = proc.communicate()
-            #
-            #
-            # if proc.returncode != 0:
-            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
-            #     return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
-            # else:
-            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM)})
-            #
-            # # Deploy NFS Server Provisioner
-            # proc = subprocess.Popen(["helm","install","update","stable/nfs-server-provisioner","--name","kf","--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            # proc.wait()
-            # (stdout, stderr) = proc.communicate()
-            #
-            #
-            # if proc.returncode != 0:
-            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
-            #     return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
-            # else:
-            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
+            proc = subprocess.Popen(["helm","init", "--upgrade"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+            
+            
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
+                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
+            else:
+                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM_SERVER)})
+            
+            
+            # Update Helm
+            proc = subprocess.Popen(["helm","repo","update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+            
+            
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
+                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
+            else:
+                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM_CLIENT)})
+                
+            # Make sure all Pods are ready
+            helm_wait = True
+            while helm_wait:
+                helm_change = True
+                
+                ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
 
-            # # Deploy PVC for RWX
-            # proc = subprocess.Popen(["kubectl", "apply", "-f","nfs.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            # proc.wait()
-            # (stdout, stderr) = proc.communicate()
-            #
-            #
-            # if proc.returncode != 0:
-            #     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
-            #     return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
-            # else:
-            #     socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
+                kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+                kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+
+                kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+
+                api_instance = kubernetes.client.CoreV1Api()
+                api_response = api_instance.list_pod_for_all_namespaces(watch=False)
+                
+                for i in api_response.items:
+                    if i.status.phase != "Running" and i.status.phase != "Succeeded":
+                        helm_change = False
+                        
+                if helm_change == True:
+                    helm_wait = False
+                    time.sleep(8)
+            
+            # Deploy NFS Server Provisioner
+            proc = subprocess.Popen(["helm","install","stable/nfs-server-provisioner","--name","kf-nfs","--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc.wait()
+            (stdout, stderr) = proc.communicate()
+            
+            if proc.returncode != 0:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_NFS_SERVER,stderr.decode("utf-8"))})
+                return json.dumps({'success': False, "errorCode": "ERROR_NFS_SERVER","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
+            else:
+                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_NFS_SERVER)})
+                
+            # Change default storage class
+            try:
+                configuration = kubernetes.client.Configuration()
+                storage_api = kubernetes.client.StorageV1Api(kubernetes.client.ApiClient(configuration))
+                body = {
+                    'metadata': {
+                        'annotations': {
+                            'storageclass.beta.kubernetes.io/is-default-class': 'false'
+                        }
+                    }
+                }
+                resp = storage_api.patch_storage_class('standard', body)
+                logging.warn(api_response)
+            except ApiException as e:
+                logging.warn("Exception when calling StorageV1Api->patch_storage_class: %s\n" % e)
+                
+            try:
+                configuration = kubernetes.client.Configuration()
+                storage_api = kubernetes.client.StorageV1Api(kubernetes.client.ApiClient(configuration))
+                body = {
+                    'metadata': {
+                        'annotations': {
+                            'storageclass.kubernetes.io/is-default-class': 'true'
+                        }
+                    }
+                }
+                resp = storage_api.patch_storage_class('nfs', body)
+                logging.warn(api_response)
+            except ApiException as e:
+                logging.warn("Exception when calling StorageV1Api->patch_storage_class: %s\n" % e)
+            
+
+            # Deploy PVC for RWX
+#            proc = subprocess.Popen(["kubectl", "apply", "-f","nfs.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+#            proc.wait()
+#            (stdout, stderr) = proc.communicate()
+#            
+#            
+#            if proc.returncode != 0:
+#                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
+#                return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
+#            else:
+#                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
 
 
             proc = subprocess.Popen(["export","KFAPP=","{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True, env=kubeSessionEnv)
