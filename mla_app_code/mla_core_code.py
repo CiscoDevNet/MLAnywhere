@@ -272,7 +272,7 @@ def run_stage3():
            
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
 
-            proc = subprocess.Popen(["kubectl","apply","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+            proc = subprocess.Popen(["kubectl","apply","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/master/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
             proc.wait()
             (stdout, stderr) = proc.communicate()
 
@@ -935,7 +935,7 @@ def run_uploadFiletoJupyter():
             ingress = getIngressDetails()
 
             if ingress == None:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.UPLOAD_FILE,stderr.decode("utf-8") )})
             else:
                 ingress = ingress.json
 
