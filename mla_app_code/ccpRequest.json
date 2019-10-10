@@ -20,7 +20,7 @@
 	"is_istio_enabled": false,
 	"aws_iam_enabled": false,
 	"worker_node_pool": {
-		"vcpus": 2,
+		"vcpus": 4,
 		"memory": 16384,
 		"template": "CCP/ccp-tenant-image-1.12.7-ubuntu18-3.2.1"
 	},
