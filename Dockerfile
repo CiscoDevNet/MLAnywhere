@@ -14,10 +14,10 @@ WORKDIR /app
 
 
 # Install for ssh-keygen
-RUN apt-get update
-RUN apt-get -y install openssh-client
-
-RUN apt-get install -y wget
+RUN apt-get update && apt-get install -y \
+curl \
+wget \
+openssh-client
 
 # Install needed executables
 RUN wget https://storage.googleapis.com/kubernetes-release/release/v${K8SVERSION}/bin/${PLATFORM}/amd64/kubectl
@@ -38,13 +38,17 @@ RUN chmod +x ./kfctl
 RUN mv ./kfctl /usr/local/bin/
 
 
+
 # Copy the current directory contents into the container at /app
 COPY . /app
+
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 WORKDIR /app/mla_app_code
+RUN chmod +x helmInstall.sh
+RUN ./helmInstall.sh
 
 
 # Run amla_core_code.py when the container launches
