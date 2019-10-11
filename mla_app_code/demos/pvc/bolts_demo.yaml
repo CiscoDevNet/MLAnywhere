@@ -6,6 +6,7 @@ metadata:
     app: bolts-classifier
     purpose: mla-demo
 spec:
+  storageClassName: "nfs"
   accessModes:
     - ReadWriteOnce
   resources:
