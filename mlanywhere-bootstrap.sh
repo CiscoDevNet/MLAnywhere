@@ -41,7 +41,7 @@ sudo apt -y install git
 # Uncomment for when using private git repo
 #sudo git clone https://<username>:<PersonalAccessToken>@github.com/CiscoDevNet/MLAnywhere.git /app
 
-sudo git clone -b https://github.com/CiscoDevNet/MLAnywhere.git /app
+sudo git clone https://github.com/CiscoDevNet/MLAnywhere.git /app
 
 pip3 install  -r /app/requirements.txt
 
