@@ -48,25 +48,7 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 * Download the Kubeconfig for the cluster
 * Start developing!
 
-## MLAnywhere Deployment Options
-
-### Standalone
-
-There are two parts to the MLAnywhere installation wizard, the core scripts and the Kubeflow deployment tools. Both of these need to be available in order to using MLAnywhere in a standalone environment.
-
-1. Clone the MLAnywhere repository to your local machine
-
-   ```git clone https://github.com/CiscoDevNet/MLAnywhere.git```
-
-2. Ensure the following tools are available on your local machine. See the script, `mlanywhere-bootstrap.sh` ,for an installation example 
-
-* kubectl - 1.14.0
-* ksonnet - 0.13.1
-* kfctl - 0.5.1
-
-3. From the `mla_app_code` folder run `python mla_core_code.py`. This will start MLAnywhere on port 5000 by default
-
-4. Navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
+## MLAnywhere Deployment Technique
 
 ### Docker
 
@@ -90,15 +72,15 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 5. Build Docker image and tag appropriately
 
-   `docker build -t conmurphy/mlanywhere:mlanywhere-beta-v1-app . --no-cache`
+   `docker build -t <your_repo>/mlanywhere:mlanywhere-beta-v1-app . --no-cache`
 
 6. Push image into repository
 
-   `docker push conmurphy/mlanywhere:mlanywhere-beta-v1-app`
+   `docker push <your_repo>/mlanywhere:mlanywhere-beta-v1-app`
 
 7. Deploy new container on machine
 
-   `docker run -p 5000:5000 conmurphy/mlanywhere:mlanywhere-beta-v1-app`
+   `docker run -p 5000:5000 <your_repo>/mlanywhere:mlanywhere-beta-v1-app`
 
 8. Open browser and navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
 
@@ -137,24 +119,6 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 
 7. Open a browser and navigate to the IP Address of one of the nodes, remembing to include the port. e.g. http://10.1.1.21:30003
 
-
-### Vagrant
-
-1. Install Vagrant on your local machine
-
-   [Vagrant installation instructions](https://www.vagrantup.com/docs/installation/)
-
-2. Clone the MLAnywhere repository to your local machine
-
-   `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
-
-3. Change directory to newly cloned MLAnywhere folder
-
-   `cd MlAnywhere`
-
-4. Run `vagrant up` from the MlAnywhere folder
-
-5. Open browser and navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
 
 ## Using a Corporate Proxy
 
