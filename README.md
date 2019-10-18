@@ -76,11 +76,7 @@ If you don't currently have a Docker image built, use the following steps to bui
 
    `docker push <your_repo>/mlanywhere:mlanywhere-beta-v1-app`
 
-7. Deploy new container on machine
 
-   `docker run -p 5000:5000 <your_repo>/mlanywhere:mlanywhere-beta-v1-app`
-
-8. Open browser and navigate to the IP address of your local machine using port 5000. e.g. http://localhost:5000
 
 ### Kubernetes
 
