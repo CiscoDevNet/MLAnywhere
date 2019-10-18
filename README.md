@@ -13,7 +13,7 @@ Table of Contents
       * [Compatibility](#compatibility)
       * [Installation](#installation)
       * [MLAnywhere Deployment Options](#mlanywhere-deployment-options)
-         * [Docker](#docker)
+         * [Docker Image Preparation](#Docker Image Preparation)
          * [Kubernetes](#kubernetes)
       * [Using a Corporate Proxy](#using-a-corporate-proxy)
       * [Demo Scripts](#demo-scripts)
