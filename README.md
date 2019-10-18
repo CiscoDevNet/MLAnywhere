@@ -13,10 +13,8 @@ Table of Contents
       * [Compatibility](#compatibility)
       * [Installation](#installation)
       * [MLAnywhere Deployment Options](#mlanywhere-deployment-options)
-      	  * [Standalone](#standalone)
          * [Docker](#docker)
          * [Kubernetes](#kubernetes)
-         * [Vagrant](#vagrant)
       * [Using a Corporate Proxy](#using-a-corporate-proxy)
       * [Demo Scripts](#demo-scripts)
       * [Using MLAnywhere](#using-mlanywhere)
@@ -50,7 +48,7 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 
 ## MLAnywhere Deployment Technique
 
-### Docker
+### Docker Image Preparation
 
 If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice. If the image has already been built you can skip steps 3,4,5, and 6. The installation instructions assume you are running Docker on your local machine.
 
