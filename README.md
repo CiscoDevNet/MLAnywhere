@@ -44,7 +44,10 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 * Fill in the cluster form and wait for it to be deployed
 * Deploy Kubeflow in the newly created cluster
 * Download the Kubeconfig for the cluster
-* Start developing!
+* Start developing ML magic!
+
+
+![MLA_Installatin_Flow](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_flow_diagram.png)
 
 ## MLAnywhere Deployment Technique
 
