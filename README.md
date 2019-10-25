@@ -57,7 +57,7 @@ At a high level the installation flow is as follows
 
 
 
-### Docker Image Preparation
+### Download code and Docker Image Preparation (steps 1 + 2) 
 
 If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice. If the image has already been built you can skip steps 3,4,5, and 6. The installation instructions assume you are running Docker on your local machine.
 
@@ -87,7 +87,7 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 
 
-### Kubernetes
+### Installing MLAnywhere into a Kubernetes cluster (steps 3 + 4)  
 
 The following assumes you already have a Kubernetes cluster running in which to deploy the MLAnywhere Installation Wizard. 
 
