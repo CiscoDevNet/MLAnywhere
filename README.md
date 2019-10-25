@@ -47,9 +47,15 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 * Start developing ML magic!
 
 
-![MLA_Installatin_Flow](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_flow_diagram.png)
 
 ## MLAnywhere Deployment Technique
+
+At a high level the installation flow is as follows
+
+
+![MLA_Installatin_Flow](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_flow_diagram.png)
+
+
 
 ### Docker Image Preparation
 
