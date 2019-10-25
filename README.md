@@ -57,31 +57,31 @@ At a high level the installation flow is as follows
 
 
 
-### Download code and Docker Image Preparation (steps 1 + 2) 
+### Downloading code and Docker Image Preparation (steps 1 + 2) 
 
 If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice. If the image has already been built you can skip steps 3,4,5, and 6. The installation instructions assume you are running Docker on your local machine.
 
-1. Login to Docker hub or the repository of your choice
-
-    [Docker hub login instruction](https://docs.docker.com/engine/reference/commandline/login/)
-
-2. Create repository if not already existing
-
-   [Creating a Dockerhub repository](https://docs.docker.com/docker-hub/repos/)
-
-3. Clone the MLAnywhere repository to your local machine
+1. Clone the MLAnywhere repository to your local machine
 
    `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
    
-4. Change directory to newly created MLAnywhere repository
+2. Change directory to newly created MLAnywhere repository
 
    `cd MLAnywhere`
 
-5. Build Docker image and tag appropriately
+3. Build Docker image and tag appropriately
 
    `docker build -t <your_repo>/mlanywhere:mlanywhere-beta-v1-app . --no-cache`
+   
+4. Login to Docker hub or the repository of your choice
 
-6. Push image into repository
+    [Docker hub login instruction](https://docs.docker.com/engine/reference/commandline/login/)
+    
+   Or....create repository if not already existing
+
+   [Creating a Dockerhub repository](https://docs.docker.com/docker-hub/repos/)
+
+5. Push image into repository
 
    `docker push <your_repo>/mlanywhere:mlanywhere-beta-v1-app`
 
@@ -111,6 +111,8 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 4. Deploy the MLAnywhere Installation Wizard
 
    `kubectl apply -f mlanywhere-all-in-one.yml 
+   
+   Note: Make sure you update the location of the image to the one you created in the earlier stage
    
 5. Check the pod has been deployed correctly
 
