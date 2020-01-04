@@ -48,6 +48,7 @@ socketio = SocketIO(app)
 
 ALLOWED_EXTENSIONS = set(['py'])
 
+API_VERSION = 3
 
 @app.route("/")
 def index():
@@ -63,16 +64,21 @@ def run_testConnection():
         jsonData = request.get_json()
         
         ccp = CCP("https://" + jsonData['ipAddress'],jsonData['username'],jsonData['password'])
-                
-        login = ccp.login()
 
-        if not login:
+        
+        # vip pools UUID still requires the v2 API so you need to login for both the v2 and v3 API until the vip pools has been moved to v3
+               
+        loginV2 = ccp.loginV2()
+        loginV3 = ccp.loginV3()
+
+        if not loginV2 and not loginV3:
             socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_CCP_LOGIN })
             return json.dumps({'success':False}), 401, {'ContentType':'application/json'} 
         else:
             session['ccpURL'] = "https://" + jsonData['ipAddress']
-            session['ccpToken'] = login.cookies.get_dict()
+            session['ccpToken'] = loginV2.cookies.get_dict()
             session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+            session['x-auth-token'] = loginV3
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CCP_LOGIN })
             return jsonify(dict(redirectURL='/stage2'))
@@ -86,14 +92,17 @@ def run_stage1():
 
         ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
                 
-        login = ccp.login()
+        loginV2 = ccp.loginV2()
+        loginV3 = ccp.loginV3()
 
-        if not login:
+        if not loginV2 and not loginV3:
             print ("There was an issue with login: " + login.text)
             return render_template('stage1.html')
         else:
             session['ccpURL'] = "https://" + request.form['IP Address']
-            session['ccpToken'] = login.cookies.get_dict()
+            session['ccpToken'] = loginV2.cookies.get_dict()
+            session['x-auth-token'] = loginV3
+
             return render_template('stage2.html')
 
     return render_template('stage1.html')
@@ -105,18 +114,20 @@ def run_stage2():
 
             uuid = ""
 
-            if "ccpToken" not in session:
+            if "ccpToken" not in session or "x-auth-token" not in session:
                 return render_template('stage1.html')
 
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
 
             formData = request.get_json()
             
             try:
-                with open("ccpRequest.json") as json_data:
-                    
-                    clusterData = json.load(json_data)
-            
+                if API_VERSION == 2:
+                    with open("ccpRequestV2.json") as json_data:
+                        clusterData = json.load(json_data)
+                else:
+                    with open("ccpRequestV3.json") as json_data:
+                        clusterData = json.load(json_data)
             except IOError as e:
                 
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
@@ -170,24 +181,39 @@ def run_stage2():
             else:
                 clusterData["ssh_key"] = formData["sshKey"] 
             
-                
-            clusterData["name"] = formData["clusterName"]
-            clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
-            clusterData["name"] = formData["clusterName"]
-            clusterData["datacenter"] = formData["vsphereDatacenters"]
-            clusterData["cluster"] = formData["vsphereClusters"]
-            clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
-            clusterData["datastore"] = formData["vsphereDatastores"] 
-            clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
-            clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
-            clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
-            clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
-            clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
-            clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
-            clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
-            clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
-            
-            clusterData["networks"] = [formData["vsphereNetworks"] ]
+            if "vsphereResourcePools" not in formData:
+                formData["vsphereResourcePools"] = ""
+
+            if API_VERSION == 2:
+                clusterData["name"] = formData["clusterName"]
+                clusterData["datacenter"] = formData["vsphereDatacenters"]
+                clusterData["cluster"] = formData["vsphereClusters"]
+                clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
+                clusterData["datastore"] = formData["vsphereDatastores"] 
+                clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
+                clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
+                clusterData["networks"] = [formData["vsphereNetworks"] ]
+                clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
+                clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
+                clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
+                clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
+                clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
+            else:
+                clusterData["name"] = formData["clusterName"]
+                clusterData["subnet_id"] = formData["vipPools"] 
+                clusterData["master_group"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["node_groups"][0]["template"] = formData["tenantImageTemplate"] 
+                clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
+                clusterData["provider"] = formData["vsphereProviders"]
+                clusterData["vsphere_infra"]["datacenter"] = formData["vsphereDatacenters"] 
+                clusterData["vsphere_infra"]["datastore"] = formData["vsphereDatastores"] 
+                clusterData["vsphere_infra"]["networks"] = [ formData["vsphereNetworks"] ]
+                clusterData["vsphere_infra"]["cluster"] = formData["vsphereClusters"] 
+                clusterData["vsphere_infra"]["resource_pool"] = formData["vsphereResourcePools"]
+                clusterData["node_groups"][0]["ssh_key"] = clusterData["ssh_key"]
+                clusterData["master_group"]["ssh_key"] = clusterData["ssh_key"]
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
             
@@ -196,11 +222,18 @@ def run_stage2():
             if (response.status_code == 200) or (response.status_code == 201) :
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
             
-            if "uuid" not in response.json():
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
-                return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+            if API_VERSION == 2 :
+                if "uuid" not in response.json():
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                    return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
 
-            uuid = response.json()["uuid"]
+                uuid = response.json()["uuid"]
+            else:
+                if "id" not in response.json():
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                    return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+
+                uuid = response.json()["id"]
 
             kubeConfig = ccp.getConfig(uuid)
 
@@ -265,7 +298,7 @@ def run_stage2():
 def run_stage3():
     
     if request.method == 'POST':
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
@@ -451,7 +484,7 @@ def run_stage3():
     
     elif request.method == 'GET':
 
-            if "ccpToken" in session:
+            if "ccpToken" in session and "x-auth-token" in session:
                 return render_template('stage3.html')
             else:
                 return render_template('stage1.html')
@@ -462,7 +495,7 @@ def run_stage4():
 
     if request.method == 'GET':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             return render_template('stage4.html')
         else:
             return render_template('stage1.html')
@@ -472,7 +505,7 @@ def run_stage5():
 
     if request.method == 'GET':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             return render_template('stage5.html')
         else:
             return render_template('stage1.html')
@@ -483,14 +516,14 @@ def run_vsphereProviders():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
 
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
             response = ccp.getProviderClientConfigs()
-            
+
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_PROVIDERS })
-                return response.text
+                return jsonify(response)
             else:
                 return [config.ERROR_VSPHERE_PROVIDERS]
 
@@ -500,8 +533,8 @@ def run_vsphereDatacenters():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
     
@@ -519,8 +552,8 @@ def run_vsphereClusters():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -530,7 +563,7 @@ def run_vsphereClusters():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_CLUSTERS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereResourcePools", methods = ['POST', 'GET'])
 def run_vsphereResourcePools():
@@ -538,9 +571,8 @@ def run_vsphereResourcePools():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -548,9 +580,10 @@ def run_vsphereResourcePools():
 
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_RESOURCE_POOLS })
+                
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereNetworks", methods = ['POST', 'GET'])
 def run_vsphereNetworks():
@@ -558,9 +591,8 @@ def run_vsphereNetworks():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -570,7 +602,7 @@ def run_vsphereNetworks():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_NETWORKS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereDatastores", methods = ['POST', 'GET'])
 def run_vsphereDatastores():
@@ -578,9 +610,8 @@ def run_vsphereDatastores():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -590,7 +621,7 @@ def run_vsphereDatastores():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATASTORES })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereVMs", methods = ['POST', 'GET'])
 def run_vsphereVMs():
@@ -598,9 +629,8 @@ def run_vsphereVMs():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -610,16 +640,15 @@ def run_vsphereVMs():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_VMS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vipPools", methods = ['POST', 'GET'])
 def run_vipPools():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -629,21 +658,27 @@ def run_vipPools():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VIP_POOLS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/clusterConfigTemplate", methods = ['POST', 'GET'])
 def run_clusterConfigTemplate():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             try:
-                with open("ccpRequest.json") as json_data:
-                    clusterData = json.load(json_data)
-                    return jsonify(clusterData)
+                
+                if API_VERSION == 2:
+                    with open("ccpRequestV2.json") as json_data:
+                        clusterData = json.load(json_data)
+                        return jsonify(clusterData)
+                else:
+                    with open("ccpRequestV3.json") as json_data:
+                        clusterData = json.load(json_data)
+                        return jsonify(clusterData)
+
 
             except IOError as e:
                 return "I/O error({0}): {1}".format(e.errno, e.strerror)
@@ -653,9 +688,8 @@ def run_viewPods():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
@@ -680,7 +714,8 @@ def run_viewPods():
 def run_toggleIngress():
     
     if request.method == 'POST':
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
+            
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
@@ -721,14 +756,14 @@ def run_toggleIngress():
 def run_checkIngress():
 
     if request.method == 'GET':
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             return getIngressDetails()
 
 @app.route("/checkKubeflowDashboardReachability", methods = ['POST', 'GET'])
 def run_checkKubeflowDashboardReachability():
     
     if request.method == 'GET':
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             ingress = getIngressDetails()
 
             if ingress == None:
@@ -749,7 +784,7 @@ def run_checkKubeflowDashboardReachability():
 
 def getIngressDetails():
     
-    if "ccpToken" in session:
+    if "ccpToken" in session and "x-auth-token" in session:
 
         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
         kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
@@ -807,7 +842,7 @@ def downloadKubeconfig(filename):
 
     if request.method == 'GET':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             return send_file("{}/{}".format(kubeConfigDir,session['sessionUUID']))
@@ -820,9 +855,9 @@ def checkClusterAlreadyExists():
 
     if request.method == 'GET':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
 
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -838,7 +873,7 @@ def run_createNotebookServer():
 
     if request.method == 'POST':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
 
             ingress = getIngressDetails()
 
@@ -904,7 +939,7 @@ def run_uploadFiletoJupyter():
 
     if request.method == 'POST':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             
             # Read IPYNB and PVC file names
             path = './demos/ipynb/'
@@ -976,9 +1011,9 @@ def verifyNotebooks():
 
     if request.method == 'GET':
 
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
 
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             ingress = getIngressDetails()
 
