@@ -78,9 +78,11 @@ class CCP:
         if self.apiVersion == 2:
             response = requests.request("GET", self.url + "/2/clusters/" + uuid + "/env", cookies=self.cookie, verify=False)
         else:
-            response = requests.request("GET", self.url + "/v3/clusters/" + uuid + "/env",headers=headers, verify=False)
-
+            response = requests.request("GET", self.url + "/v3/clusters/" + uuid ,headers=headers, verify=False)
+    
         return response
+        
+        
 
 
     def getClusters(self):
