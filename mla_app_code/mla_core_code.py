@@ -29,6 +29,8 @@ from flask_socketio import SocketIO, emit
 import subprocess
 from datetime import timedelta
 
+import time
+
 import uuid
 import secrets
 
@@ -205,7 +207,6 @@ def run_stage2():
                 clusterData["subnet_id"] = formData["vipPools"] 
                 clusterData["master_group"]["template"] = formData["tenantImageTemplate"] 
                 clusterData["node_groups"][0]["template"] = formData["tenantImageTemplate"] 
-                clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
                 clusterData["provider"] = formData["vsphereProviders"]
                 clusterData["vsphere_infra"]["datacenter"] = formData["vsphereDatacenters"] 
                 clusterData["vsphere_infra"]["datastore"] = formData["vsphereDatastores"] 
@@ -214,15 +215,17 @@ def run_stage2():
                 clusterData["vsphere_infra"]["resource_pool"] = formData["vsphereResourcePools"]
                 clusterData["node_groups"][0]["ssh_key"] = clusterData["ssh_key"]
                 clusterData["master_group"]["ssh_key"] = clusterData["ssh_key"]
+                clusterData.pop('ssh_key', None)
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
-            
+
             response = ccp.deployCluster(clusterData)
 
-            if (response.status_code == 200) or (response.status_code == 201) :
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
-            
             if API_VERSION == 2 :
+
+                if (response.status_code == 200) or (response.status_code == 201) :
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
+            
                 if "uuid" not in response.json():
                     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
                     return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
@@ -237,25 +240,64 @@ def run_stage2():
 
             kubeConfig = ccp.getConfig(uuid)
 
-            if "apiVersion" in kubeConfig.text:
+            if API_VERSION == 2 :
 
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
+                if "apiVersion" in kubeConfig.text:
 
-                kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-                if not os.path.exists(kubeConfigDir):
-                    try:
-                        os.makedirs(kubeConfigDir)
-                    except OSError as e:
-                        if e.errno != errno.EEXIST:
-                            raise
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
 
-                
-                with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
-                    f.write(kubeConfig.text)
+                    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+                    if not os.path.exists(kubeConfigDir):
+                        try:
+                            os.makedirs(kubeConfigDir)
+                        except OSError as e:
+                            if e.errno != errno.EEXIST:
+                                raise
+
+                    
+                    with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
+                        f.write(kubeConfig.text)
+                else:
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
+                    return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
+
             else:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
-                return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
 
+                # it looks like the CCP V3 API has made the cluster creation async so we get back a response straight away however
+                # theres a status field which shows "CREATING". Will need to wait until this is "READY"
+
+                if "status" in kubeConfig.text:
+                    while kubeConfig.json()["status"] == "CREATING":
+                        kubeConfig = ccp.getConfig(uuid)
+                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
+                        time.sleep(30)
+
+                    if kubeConfig.json()["status"] != "READY":
+                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                        return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
+
+                    if "kubeconfig" in kubeConfig.text:
+
+                        kubeConfig = kubeConfig.json()["kubeconfig"]
+
+                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
+
+                        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+                        if not os.path.exists(kubeConfigDir):
+                            try:
+                                os.makedirs(kubeConfigDir)
+                            except OSError as e:
+                                if e.errno != errno.EEXIST:
+                                    raise
+
+                        
+                        with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
+                            f.write(kubeConfig)
+                    else:
+                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
+                        return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
 
             # if a proxy is required then we need to insert his once the worker nodes have been deployed
 
