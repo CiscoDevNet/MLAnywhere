@@ -57,6 +57,52 @@ def index():
     if request.method == 'GET':
         return render_template('stageTitle.html')
 
+    
+    
+##################################
+# PICK EXISTING OR NEW CLUSTER
+##################################
+
+
+
+    
+##################################
+# REGISTER EXISTING CLUSTER
+##################################
+
+@app.route("/stage0", methods = ['POST', 'GET'])
+def run_stage0():
+
+    if request.method == 'GET':
+        return render_template('stage0b.html')
+
+
+##################################
+# LOGIN TO CCP
+##################################
+
+@app.route("/stage1")
+def run_stage1():
+
+    if request.method == 'POST':
+
+        ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
+                
+        loginV2 = ccp.loginV2()
+        loginV3 = ccp.loginV3()
+
+        if not loginV2 and not loginV3:
+            print ("There was an issue with login: " + login.text)
+            return render_template('stage1.html')
+        else:
+            session['ccpURL'] = "https://" + request.form['IP Address']
+            session['ccpToken'] = loginV2.cookies.get_dict()
+            session['x-auth-token'] = loginV3
+
+            return render_template('stage2.html')
+
+    return render_template('stage1.html')
+
 
 @app.route("/testConnection", methods = ['POST', 'GET'])
 def run_testConnection():
@@ -86,28 +132,30 @@ def run_testConnection():
             return jsonify(dict(redirectURL='/stage2'))
     
     return render_template('stage1.html')
+
+
+##################################
+# CREATE CCP CLUSTER
+##################################
+
+@app.route('/checkClusterAlreadyExists', methods=['GET', 'POST'])
+def checkClusterAlreadyExists():
+
+    if request.method == 'GET':
+
+        if "ccpToken" in session and "x-auth-token" in session:
+
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
-@app.route("/stage1")
-def run_stage1():
+            jsonData = request.args.to_dict()
 
-    if request.method == 'POST':
+            clusterName = jsonData["clusterName"]
 
-        ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
-                
-        loginV2 = ccp.loginV2()
-        loginV3 = ccp.loginV3()
+            if not ccp.checkClusterAlreadyExists(clusterName):
+                return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+            else:
+                return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
-        if not loginV2 and not loginV3:
-            print ("There was an issue with login: " + login.text)
-            return render_template('stage1.html')
-        else:
-            session['ccpURL'] = "https://" + request.form['IP Address']
-            session['ccpToken'] = loginV2.cookies.get_dict()
-            session['x-auth-token'] = loginV3
-
-            return render_template('stage2.html')
-
-    return render_template('stage1.html')
 
 @app.route("/stage2", methods = ['POST', 'GET'])
 def run_stage2():
@@ -337,6 +385,11 @@ def run_stage2():
             else:
                 return render_template('stage1.html')
 
+            
+##################################
+# DEPLOY KUBEFLOW
+##################################
+            
 @app.route("/stage3", methods = ['POST', 'GET'])
 def run_stage3():
     
@@ -370,7 +423,11 @@ def run_stage3():
             else:
                 return render_template('stage1.html')
 
-    
+
+##################################
+# POST INSTALL VIEW
+##################################
+            
 @app.route("/stage4")
 def run_stage4():
 
@@ -381,6 +438,11 @@ def run_stage4():
         else:
             return render_template('stage1.html')
 
+        
+##################################
+# OTHER
+##################################
+        
 @app.route("/stage5", methods = ['POST', 'GET'])
 def run_stage5():
 
@@ -391,14 +453,6 @@ def run_stage5():
         else:
             return render_template('stage1.html')
 
-
-@app.route("/stage0", methods = ['POST', 'GET'])
-def run_stage0():
-
-    if request.method == 'GET':
-
-        return render_template('stage0b.html')
-       
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
 def run_vsphereProviders():
@@ -730,24 +784,6 @@ def downloadKubeconfig(filename):
             return send_file("{}/{}".format(kubeConfigDir,session['sessionUUID']))
         else:
             return render_template('stage1.html')
-
-@app.route('/checkClusterAlreadyExists', methods=['GET', 'POST'])
-def checkClusterAlreadyExists():
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session and "x-auth-token" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
-        
-            jsonData = request.args.to_dict()
-
-            clusterName = jsonData["clusterName"]
-
-            if not ccp.checkClusterAlreadyExists(clusterName):
-                return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
-            else:
-                return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
 
 def allowed_file(filename):
