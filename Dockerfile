@@ -25,6 +25,9 @@ RUN pip install --upgrade pip
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 
+WORKDIR /app/mla_app_code
+
+
 # Run amla_core_code.py when the container launches
 CMD python "./mla_core_code.py" 
 
