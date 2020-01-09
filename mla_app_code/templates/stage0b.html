@@ -19,9 +19,7 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
 
-    <script src="{{ url_for('static', filename='js/validateInput.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/populateClusterDropdowns.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/clusterCreation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/clusterUpload.js') }}"></script>
     <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
@@ -95,9 +93,9 @@
                             <div class="section">
                                 <div class="col-md-6">
                                     <div class="text-center">
-                                            <form action="/stage3.html">
-                                                <input type="file" name="kubeconfig">
-                                                <input type="submit">
+                                            <form>
+                                                <input type="file" name="kubeconfig" id="file">
+                                                <input type="submit" id="uploadCluster">
                                               </form>
                                     </div>
                                 </div>

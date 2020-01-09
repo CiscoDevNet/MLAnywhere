@@ -16,12 +16,22 @@ RUN apt-get update && apt-get install -y \
 curl \
 wget
 
+
+# Install kubectl
+RUN wget https://storage.googleapis.com/kubernetes-release/release/v${K8SVERSION}/bin/${PLATFORM}/amd64/kubectl
+RUN chmod +x ./kubectl
+RUN mv ./kubectl /usr/local/bin/
+
+
+#Upgrade pip
+RUN pip install --upgrade pip
+
+
 # Copy the current directory contents into the container at /app
 COPY . /app
 
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --upgrade pip
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 
