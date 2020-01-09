@@ -397,7 +397,7 @@ def run_stage0():
 
     if request.method == 'GET':
 
-        return render_template('stage0.html')
+        return render_template('stage0b.html')
        
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
