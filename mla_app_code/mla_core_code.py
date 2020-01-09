@@ -13,7 +13,8 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 '''
 
-from flask import Flask, json, render_template, request, session, Response, jsonify, send_file, redirect
+from flask import Flask, json, render_template, request, session, Response, jsonify, send_file, redirect, url_for
+from werkzeug.utils import secure_filename
 from kubernetes import client, utils
 import kubernetes.utils
 from kubernetes.client.rest import ApiException
@@ -75,6 +76,28 @@ def run_stage0():
 
     if request.method == 'GET':
         return render_template('stage0b.html')
+    
+    
+@app.route("/uploadCluster", methods = ['POST'])
+def uploadCluster():   
+    session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+    
+    if 'file' not in request.files:
+        return '', 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return '', 400
+    
+    if file:
+        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+        if not os.path.exists(kubeConfigDir):
+            os.mkdir(kubeConfigDir)
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(kubeConfigDir, str(session['sessionUUID']))) #SessionID is used as filename
+        deploy_mla(session["sessionUUID"])
+        return render_template('stage4.html')
 
 
 ##################################
@@ -389,28 +412,33 @@ def run_stage2():
 ##################################
 # DEPLOY KUBEFLOW
 ##################################
-            
+
+def deploy_mla(kubeconfig_name):
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir, kubeconfig_name)}
+    
+    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
+    
+    proc = subprocess.Popen(["kubectl","apply","-f","mla_tenant.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+    
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MLA_YAML,stderr.decode("utf-8") )})
+        return json.dumps({'success':False,"errorCode": "ERROR_KUBEFLOW_YAML","errorMessage":config.ERROR_MLA_YAML}), 400, {'ContentType':'application/json'}
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MLA_YAML)})
+    
+    return
+
+
 @app.route("/stage3", methods = ['POST', 'GET'])
 def run_stage3():
     
     if request.method == 'POST':
         if "ccpToken" in session and "x-auth-token" in session:
-
-            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-           
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
-
-            proc = subprocess.Popen(["kubectl","apply","-f","mla_tenant.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBEFLOW_YAML,stderr.decode("utf-8") )})
-                return json.dumps({'success':False,"errorCode":"ERROR_KUBEFLOW_YAML","errorMessage":config.ERROR_KUBEFLOW_YAML}), 400, {'ContentType':'application/json'}
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBEFLOW_YAML)})
-
+            
+            deploy_mla(session["sessionUUID"])
             
             return jsonify(dict(redirectURL='/stage4'))
         else:
