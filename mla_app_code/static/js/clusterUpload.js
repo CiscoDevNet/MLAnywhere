@@ -17,7 +17,6 @@ $(document).ready(function(){
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log(response)
                 if (response.redirectURL) {
                     window.location.replace(response.redirectURL);
                 } else {
