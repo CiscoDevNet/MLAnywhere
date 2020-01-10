@@ -81,6 +81,7 @@ def run_stage0():
 @app.route("/uploadCluster", methods = ['POST'])
 def uploadCluster():   
     session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+    session['customCluster'] = True
     
     if 'file' not in request.files:
         return '', 400
@@ -97,7 +98,7 @@ def uploadCluster():
         filename = secure_filename(file.filename)
         file.save(os.path.join(kubeConfigDir, str(session['sessionUUID']))) #SessionID is used as filename
         deploy_mla(session["sessionUUID"])
-        return render_template('stage4.html')
+        return jsonify(dict(redirectURL='/stage4'))
 
 
 ##################################
@@ -461,12 +462,38 @@ def run_stage4():
 
     if request.method == 'GET':
 
-        if "ccpToken" in session and "x-auth-token" in session:
+        if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
             return render_template('stage4.html')
         else:
             return render_template('stage1.html')
-
         
+
+@app.route("/mladeploymentstatus", methods = ['GET'])
+def mladeploymentstatus():
+    if "mla_endpoint" not in session:
+        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+        kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
+        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+
+        api_instance = kubernetes.client.CoreV1Api()
+        
+        nodes = api_instance.list_node(watch=False)
+        for node in nodes.items:
+            for address in node.status.addresses:
+                if address.type == 'ExternalIP':
+                    node_ip = address.address
+            
+        services = api_instance.list_namespaced_service('default')
+        for service in services.items:
+            if service.metadata.name == 'mla-svc':
+                node_port = service.spec.ports[0].node_port
+        
+        session["mla_endpoint"] = str(node_ip) + ':' + str(node_port)
+      
+    status = requests.get("http://{}/status".format(session["mla_endpoint"]))
+    return status.text, 200
+
+
 ##################################
 # OTHER
 ##################################
