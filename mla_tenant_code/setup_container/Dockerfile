@@ -16,6 +16,11 @@ RUN apt-get -y install python3-pip
 RUN pip3 install kubernetes
 
 #####################################
+# COPY SETUP FILE TO CONTAINER
+#####################################
+COPY ./setup ./setup
+
+#####################################
 # SETUP KUBECTL
 #####################################
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -25,11 +30,16 @@ RUN mv ./kubectl /usr/local/bin/kubectl
 #####################################
 # SETUP KUBEFLOW
 #####################################
-RUN curl -L https://github.com/kubeflow/kubeflow/releases/download/v0.7.1/kfctl_v0.7.1-2-g55f9b2a_linux.tar.gz > kfctl.tar.gz
-RUN tar xvf kfctl.tar.gz
-RUN rm kfctl.tar.gz
-RUN chmod +x ./kfctl
-RUN mv ./kfctl /usr/local/bin/kfctl
+#RUN curl -L https://github.com/kubeflow/kubeflow/releases/download/v0.7.1/kfctl_v0.7.1-2-g55f9b2a_linux.tar.gz > kfctl.tar.gz
+#RUN tar xvf kfctl.tar.gz
+#RUN rm kfctl.tar.gz
+#RUN chmod +x ./kfctl
+#RUN mv ./kfctl /usr/local/bin/kfctl
+
+#TEMPORARY FIX
+RUN ls ./setup
+RUN chmod +x /setup/kfctl
+RUN mv /setup/kfctl /usr/local/bin/kfctl
 
 #####################################
 # SETUP HELM
@@ -47,17 +57,11 @@ RUN mv ./helm /usr/local/bin/helm
 #RUN kubectl version > ../install.log
 
 #####################################
-# COPY SETUP FILE TO CONTAINER
-#####################################
-COPY ./setup ./setup
-
-#####################################
 # KUBEFLOW SETUP PART 1
 #####################################
 RUN mkdir kfapp
-WORKDIR "/kfapp"
-RUN kfctl build -V -f "../setup/kfctl_k8s_istio.0.7.1.yaml"
-WORKDIR "/"
+RUN mv /setup/kfctl_k8s_istio.0.7.1.yaml /kfapp/kfctl_k8s_istio.0.7.1.yaml
+RUN kfctl build -V -f "/kfapp/kfctl_k8s_istio.0.7.1.yaml"
 
 ###########################################################################################
 # RUN TIME

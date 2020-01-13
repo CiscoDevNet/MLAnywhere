@@ -8,6 +8,7 @@ $(document).ready(function(){
         
         var formData = new FormData();
         formData.append('file', $('#file')[0].files[0]);
+        formData.append('clusterName', $('#clusterName').val());
         
         //Check cluster name does not already exist - on success deploy the cluster
         $.ajax({
