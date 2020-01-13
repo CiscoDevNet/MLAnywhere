@@ -15,16 +15,10 @@ kubectl get pods --all-namespaces
 helm install stable/nfs-server-provisioner --generate-name --set=persistence.enabled=true --set=persistence.storageClass=standard --set=persistence.size=200Gi
 
 #####################################
-# WORKAROUND FOR FAILED KF INSTALL
-#####################################
-# NOTE: This is a temporary workaround and will no longer be needed after Kubeflow fixes their issues!
-python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('https://github.com/kubeflow/manifests/archive/c0e81bedec9a4df8acf568cc5ccacc4bc05a3b38.tar.gz','https://codeload.github.com/kubeflow/manifests/tar.gz/c0e81bedec9a4df8acf568cc5ccacc4bc05a3b38'))" < ./kfapp/kfctl_k8s_istio.0.7.0.yaml > ./kfapp/kfctl_k8s_istio.0.7.0.yaml
-
-#####################################
 # KUBEFLOW SETUP PART 2
 #####################################
 echo -------------- Setting up Kubeflow --------------
-kfctl apply -V -f kfapp/kfctl_k8s_istio.0.7.0.yaml
+kfctl apply -V -f /kfapp/kfctl_k8s_istio.0.7.1.yaml
 
 #####################################
 # ASSURE PODS ARE READY

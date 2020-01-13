@@ -65,50 +65,52 @@ def index():
 @app.route("/clusters", methods = ['GET'])
 def view_Clusters():
     kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-    kubeConfigs = []
     
-    kubeConfigs = [f for f in os.listdir(kubeConfigDir) if os.path.isfile(os.path.join(kubeConfigDir, f))]
-    logging.warn(kubeConfig)
+    files = [f for f in os.listdir(kubeConfigDir) if os.path.isfile(os.path.join(kubeConfigDir, f))]
+    
+    kubeConfigs = []
+    for file in files:
+        kubeConfigs.append(file[4:])
     
     return render_template('clusters.html', clusters=kubeConfigs)
     
-##################################
-# PICK EXISTING OR NEW CLUSTER
-##################################
 
-
-
-    
 ##################################
 # REGISTER EXISTING CLUSTER
 ##################################
 
-@app.route("/stage0", methods = ['POST', 'GET'])
-def run_stage0():
-
+@app.route("/uploadCluster", methods = ['POST', 'GET'])
+def uploadCluster():
     if request.method == 'GET':
-        return render_template('stage0b.html')
-    
-    
-@app.route("/uploadCluster", methods = ['POST'])
-def uploadCluster():   
-    session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
-    session['customCluster'] = True
-    
-    if 'file' not in request.files:
-        return '', 400
-    
-    file = request.files['file']
-    
-    if file.filename == '':
-        return '', 400
-    
-    if file:
-        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-        filename = 'k8s_' + str(session['sessionUUID'])
-        file.save(os.path.join(kubeConfigDir, filename)) #SessionID is used as filename
-        deploy_mla(session["sessionUUID"])
-        return jsonify(dict(redirectURL='/stage4'))
+        return render_template('uploadCluster.html')
+    else:
+        session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+        session['customCluster'] = True
+
+        if 'file' not in request.files:
+            return 'No file provided', 400
+        
+        if 'clusterName' not in request.form:
+            return 'Cluster name not defined', 400
+
+        file = request.files['file']
+        clusterName = request.form['clusterName']
+
+        if file.filename == '':
+            return 'No file provided', 400
+        
+        if clusterName == '':
+            return 'Cluster name not defined', 400
+
+        if file:
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            
+            clusterName = clusterName.replace(' ', '_')
+            filename = 'k8s_' + clusterName
+            
+            file.save(os.path.join(kubeConfigDir, filename))
+            deploy_mla(filename)
+            return jsonify(dict(redirectURL='/stage4'))
 
 
 ##################################
