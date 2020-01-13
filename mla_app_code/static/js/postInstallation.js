@@ -16,11 +16,11 @@ $(document).ready(function(){
 
 row_template = 
     `
-    <div class="row">
+    <div class="row resultrow">
         <div class="col-md-7">
             <div>
-                <div class="alert alert--info">
-                    <div class="alert__icon "></div>
+                <div class="alert alert--{replace-done}">
+                    <div class="alert__icon icon-check-outline"></div>
                     <div class="alert__message">{replace-text}</div>
                 </div>
             </div>
@@ -28,45 +28,70 @@ row_template =
     </div>
     `
 
-//        <div class="col-md-2">
-//            <input type="submit" class="btn btn--primary stage4btn1" value="BUTTONTEXT">
-//        </div>
+button_template =
+    `
+    <input type="submit" class="btn btn--primary stage4btn1" value="Go to KubeFlow" onclick="window.open('http://{replace-ip}')">
+    `
 
 function verifyPostInstall() {
     $.ajax({
         type: "GET",
         url:"/mladeploymentstatus",
         success: function (response) {
-            var logs = JSON.parse(response)
-            
-            steps = []
-            for(var i=0;i<logs.length;i++) {
-                if(/-------------- [A-Z a-z ]* --------------/.test(logs[i])) {
-                    steps.push({
-                        'name': logs[i].replace('-------------- ', '').replace(' --------------', ''),
-                        'entries': []
-                    })
-                } else {
-                    steps[steps.length-1]['entries'].push(logs[i])
+            if(response == 'Pod not reachable yet') {
+                $('#installprogress').html('Waiting for Pods to become ready')
+            } else {
+                var logs = JSON.parse(response)
+
+                steps = []
+                for(var i=0;i<logs.length;i++) {
+                    if(/-------------- [A-Z a-z ]* --------------/.test(logs[i])) {
+                        steps.push({
+                            'name': logs[i].replace('-------------- ', '').replace(' --------------', ''),
+                            'entries': []
+                        })
+                    } else {
+                        steps[steps.length-1]['entries'].push(logs[i])
+                    }
                 }
-            }
-            
-            $('#installprogress').html('')
-            
-            for(var i=0;i<steps.length;i++) {
-                if(i==steps.length-1) {
-                    last = true
-                } else {
-                    last = false
+
+                $('#installprogress').html('')
+
+                for(var i=0;i<steps.length;i++) {
+                    if(i==steps.length-1) {
+                        last = true
+                    } else {
+                        last = false
+                    }
+
+                    row = row_template.replace(
+                        /{replace-text}/g,
+                        steps[i]['name']
+                    )
+
+                    if(last) {
+                        if(steps[i]['name'].startsWith("Done")) {
+                            button = button_template.replace(
+                                /{replace-ip}/g,
+                                steps[i]['entries'][0]
+                            )
+                            
+                            $('#installprogress').append(button)
+                        } else {
+                            row = row.replace(
+                                /{replace-done}/g,
+                                'info'
+                            )   
+                            $('#installprogress').append(row)
+                        }
+                    } else {
+                        row_template = row_template.replace(
+                            /{replace-done}/g,
+                            'success'
+                        )
+                        $('#installprogress').append(row)
+                    }
                 }
-                
-                console.log(steps[i])
-                console.log(last)
-                row = row_template.replace(
-                    /{replace-text}/g,
-                    steps[i]['name']
-                )
-                $('#installprogress').append(row)
             }
         },
         error: function(error) {

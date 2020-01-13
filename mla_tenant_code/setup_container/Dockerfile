@@ -8,8 +8,8 @@ FROM ubuntu:18.04
 #####################################
 # INSTALL DEPENDENCIES
 #####################################
-RUN apt-get update
 RUN apt-get upgrade
+RUN apt-get update
 RUN apt-get -y install curl
 RUN apt-get -y install tar
 RUN apt-get -y install python3-pip
@@ -25,7 +25,7 @@ RUN mv ./kubectl /usr/local/bin/kubectl
 #####################################
 # SETUP KUBEFLOW
 #####################################
-RUN curl -L https://github.com/kubeflow/kubeflow/releases/download/v0.7.0/kfctl_v0.7.0_linux.tar.gz > kfctl.tar.gz
+RUN curl -L https://github.com/kubeflow/kubeflow/releases/download/v0.7.1/kfctl_v0.7.1-2-g55f9b2a_linux.tar.gz > kfctl.tar.gz
 RUN tar xvf kfctl.tar.gz
 RUN rm kfctl.tar.gz
 RUN chmod +x ./kfctl
@@ -47,17 +47,17 @@ RUN mv ./helm /usr/local/bin/helm
 #RUN kubectl version > ../install.log
 
 #####################################
+# COPY SETUP FILE TO CONTAINER
+#####################################
+COPY ./setup ./setup
+
+#####################################
 # KUBEFLOW SETUP PART 1
 #####################################
 RUN mkdir kfapp
 WORKDIR "/kfapp"
-RUN kfctl build -V -f "https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.0.7.0.yaml"
+RUN kfctl build -V -f "../setup/kfctl_k8s_istio.0.7.1.yaml"
 WORKDIR "/"
-
-#####################################
-# COPY SETUP FILE TO CONTAINER
-#####################################
-COPY ./setup ./setup
 
 ###########################################################################################
 # RUN TIME
