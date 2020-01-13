@@ -58,7 +58,19 @@ def index():
     if request.method == 'GET':
         return render_template('stageTitle.html')
 
+
+##################################
+# Overview of existing Clusters
+##################################
+@app.route("/clusters", methods = ['GET'])
+def view_Clusters():
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    kubeConfigs = []
     
+    kubeConfigs = [f for f in os.listdir(kubeConfigDir) if os.path.isfile(os.path.join(kubeConfigDir, f))]
+    logging.warn(kubeConfig)
+    
+    return render_template('clusters.html', clusters=kubeConfigs)
     
 ##################################
 # PICK EXISTING OR NEW CLUSTER
@@ -93,10 +105,8 @@ def uploadCluster():
     
     if file:
         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-        if not os.path.exists(kubeConfigDir):
-            os.mkdir(kubeConfigDir)
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(kubeConfigDir, str(session['sessionUUID']))) #SessionID is used as filename
+        filename = 'k8s_' + str(session['sessionUUID'])
+        file.save(os.path.join(kubeConfigDir, filename)) #SessionID is used as filename
         deploy_mla(session["sessionUUID"])
         return jsonify(dict(redirectURL='/stage4'))
 
@@ -328,7 +338,7 @@ def run_stage2():
                                 raise
 
                     
-                    with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
+                    with open("{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])), "w") as f:
                         f.write(kubeConfig.text)
                 else:
                     socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
@@ -439,7 +449,8 @@ def run_stage3():
     if request.method == 'POST':
         if "ccpToken" in session and "x-auth-token" in session:
             
-            deploy_mla(session["sessionUUID"])
+            filename = 'k8s_' + str(session['sessionUUID'])
+            deploy_mla(filename)
             
             return jsonify(dict(redirectURL='/stage4'))
         else:
@@ -471,9 +482,10 @@ def run_stage4():
 @app.route("/mladeploymentstatus", methods = ['GET'])
 def mladeploymentstatus():
     if "mla_endpoint" not in session:
+        
         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
         kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
-        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
 
         api_instance = kubernetes.client.CoreV1Api()
         
@@ -489,9 +501,17 @@ def mladeploymentstatus():
                 node_port = service.spec.ports[0].node_port
         
         session["mla_endpoint"] = str(node_ip) + ':' + str(node_port)
-      
-    status = requests.get("http://{}/status".format(session["mla_endpoint"]))
-    return status.text, 200
+    
+    try:
+        status = requests.get("http://{}/status".format(session["mla_endpoint"]))
+        logging.warn(status.status_code)
+    except:
+        return 'Pod not reachable yet', 200
+    
+    if status.status_code == 200:
+        return status.text, 200
+    else:
+        return 'Pod not reachable yet', 200
 
 
 ##################################
@@ -691,11 +711,10 @@ def run_viewPods():
         
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])),"KFAPP":config.KFAPP}
             #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
-            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-            #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
+            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
 
             api_instance = kubernetes.client.CoreV1Api()
 
@@ -716,7 +735,7 @@ def run_toggleIngress():
             
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])),"KFAPP":config.KFAPP}
             #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
@@ -785,11 +804,11 @@ def getIngressDetails():
     if "ccpToken" in session and "x-auth-token" in session:
 
         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-        kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+        kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])),"KFAPP":config.KFAPP}
 
         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
         
-        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
         #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
 
         api_instance = kubernetes.client.ExtensionsV1beta1Api()
@@ -836,7 +855,7 @@ def downloadKubeconfig(filename):
         if "ccpToken" in session and "x-auth-token" in session:
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            return send_file("{}/{}".format(kubeConfigDir,session['sessionUUID']))
+            return send_file("{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
         else:
             return render_template('stage1.html')
 
@@ -856,5 +875,10 @@ def make_session_permanent():
 
 if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
+    
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    if not os.path.exists(kubeConfigDir):
+        os.mkdir(kubeConfigDir)
+    
     app.run(host='0.0.0.0', port=5000)
     socketio.run(app)
