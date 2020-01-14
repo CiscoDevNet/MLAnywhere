@@ -4,11 +4,6 @@ $(document).ready(function(){
     
     $('#consoleLog').append(localStorage.getItem('consoleLog'));
 
-    $('#viewPods').on('click', function(event) {
-        event.preventDefault();      
-        viewPods();
-    });
-
     verifyPostInstall()
     setInterval(verifyPostInstall,5000);
 });
@@ -34,9 +29,18 @@ button_template =
     `
 
 function verifyPostInstall() {
+    let searchParams = new URLSearchParams(window.location.search)
+    if(searchParams.has('cluster')) {
+        cluster = searchParams.get('cluster')
+    } else {
+        cluster == ''
+    }
+    
+    
     $.ajax({
         type: "GET",
         url:"/mladeploymentstatus",
+        data: {cluster : cluster},
         success: function (response) {
             if(response == 'Pod not reachable yet') {
                 $('#installprogress').html('Waiting for Pods to become ready')

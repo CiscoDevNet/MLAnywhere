@@ -110,7 +110,7 @@ def uploadCluster():
             
             file.save(os.path.join(kubeConfigDir, filename))
             deploy_mla(filename)
-            return jsonify(dict(redirectURL='/stage4'))
+            return jsonify(dict(redirectURL='/stage4?cluster=' + filename))
 
 
 ##################################
@@ -426,6 +426,10 @@ def run_stage2():
 # DEPLOY KUBEFLOW
 ##################################
 
+@app.route("/deploy", methods = ['POST'])
+def deploy():
+    deploy_mla('asdf')
+
 def deploy_mla(kubeconfig_name):
     kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
     kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir, kubeconfig_name)}
@@ -470,24 +474,30 @@ def run_stage3():
 # POST INSTALL VIEW
 ##################################
             
-@app.route("/stage4")
+@app.route("/stage4", methods = ['GET'])
 def run_stage4():
-
-    if request.method == 'GET':
-
-        if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+    cluster = request.args.get('cluster')
+    if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+        if cluster != '' and cluster != None:
             return render_template('stage4.html')
         else:
-            return render_template('stage1.html')
+            return render_template('stage4.html')
+    else:
+        return render_template('stage1.html')
         
 
 @app.route("/mladeploymentstatus", methods = ['GET'])
 def mladeploymentstatus():
     if "mla_endpoint" not in session:
+        cluster = request.args.get('cluster')
+        logging.warn(cluster)
+        
+        if cluster == '' or cluster == None:
+            cluster = 'k8s_' + str(session["sessionUUID"])
         
         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
         kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
-        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
+        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,cluster))
 
         api_instance = kubernetes.client.CoreV1Api()
         
