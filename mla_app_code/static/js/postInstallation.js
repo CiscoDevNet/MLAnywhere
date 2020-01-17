@@ -3,6 +3,8 @@ post_install_stage = 1
 $(document).ready(function(){
     
     $('#consoleLog').append(localStorage.getItem('consoleLog'));
+    
+    setUpPage()
 
     verifyPostInstall()
     setInterval(verifyPostInstall,5000);
@@ -14,8 +16,8 @@ row_template =
     <div class="row resultrow">
         <div class="col-md-7">
             <div>
-                <div class="alert alert--{replace-done}">
-                    <div class="alert__icon icon-check-outline"></div>
+                <div class="alert alert--info">
+                    <div class="alert__icon"></div>
                     <div class="alert__message">{replace-text}</div>
                 </div>
             </div>
@@ -27,6 +29,34 @@ button_template =
     `
     <input type="submit" class="btn btn--primary stage4btn1" value="Go to KubeFlow" onclick="window.open('http://{replace-ip}')">
     `
+
+function setUpPage() {
+    stages = [
+        "Waiting for MLA pod to be deployed",
+        "Upgrading Helm",
+        "Setting up NFS server",
+        "Setting up Kubeflow",
+        "Waiting for all Pods to be ready",
+        "Changing the default Storage Class",
+        "Creating PVC",
+        "Getting IP and port for Kubeflow dashboard",
+        "Creating the demo namespace",
+        "Creating notebook server",
+        "Waiting for notebook server to be ready",
+        "Uploading demos to notebook server",
+        "Installing additional modules for notebook server",
+        "Giving full permissions to namespace"
+    ]
+    
+    for(var i=0;i<stages.length;i++) {
+        row = row_template.replace(
+            /{replace-text}/g,
+            stages[i]
+        )
+        
+        $('#installprogress').append(row)
+    }
+}
 
 function verifyPostInstall() {
     let searchParams = new URLSearchParams(window.location.search)
@@ -42,9 +72,8 @@ function verifyPostInstall() {
         url:"/mladeploymentstatus",
         data: {cluster : cluster},
         success: function (response) {
-            if(response == 'Pod not reachable yet') {
-                $('#installprogress').html('Waiting for Pods to become ready')
-            } else {
+            steps.push({'name': "Waiting for MLA pod to be deployed", 'entries': []})
+            if(response != 'Pod not reachable yet') {
                 var logs = JSON.parse(response)
 
                 steps = []
@@ -58,44 +87,15 @@ function verifyPostInstall() {
                         steps[steps.length-1]['entries'].push(logs[i])
                     }
                 }
+            }
+            console.log(steps[steps.length-1])
 
-                $('#installprogress').html('')
-
-                for(var i=0;i<steps.length;i++) {
-                    if(i==steps.length-1) {
-                        last = true
-                    } else {
-                        last = false
-                    }
-
-                    row = row_template.replace(
-                        /{replace-text}/g,
-                        steps[i]['name']
-                    )
-
-                    if(last) {
-                        if(steps[i]['name'].startsWith("Done")) {
-                            button = button_template.replace(
-                                /{replace-ip}/g,
-                                steps[i]['entries'][0]
-                            )
-                            
-                            $('#installprogress').append(button)
-                        } else {
-                            row = row.replace(
-                                /{replace-done}/g,
-                                'info'
-                            )   
-                            $('#installprogress').append(row)
-                        }
-                    } else {
-                        row_template = row_template.replace(
-                            /{replace-done}/g,
-                            'success'
-                        )
-                        $('#installprogress').append(row)
-                    }
-                }
+            for(var i=0;i<steps.length;i++) {
+                if(i==steps.length-1) {
+                    last = true
+                } else {
+                    last = false
+                }        
             }
         },
         error: function(error) {
