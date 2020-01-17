@@ -26,6 +26,7 @@
     <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
 
     <script src="{{ url_for('static', filename='js/titleModal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/clusterOverview.js') }}"></script>
 
     
 </head>
@@ -68,67 +69,79 @@
                     <div class="section">
                         <div class="text-center">
 
-                            <div class="row">
+                                <div class="row">
 
-                                <div class="col-md-12">
-                                    <div class="ui-steps">
-                                        <div class="ui-step active">
-                                            <div class="step__icon">1</div>
-
-                                            <div class="step__label">Capture CCP Info</div>
+                                        <div class="col-md-12">
+                                            <div class="ui-steps">
+                                                <div class="ui-step active">
+                                                    <div class="step__icon ">1</div>
+                                                    <div class="step__label">Select Cluster</div>
+                                                </div>
+                                                <div class="ui-step">
+                                                    <div class="step__icon">2</div>
+                                                    <div class="step__label">Deploy KubeFlow</div>
+                                                </div>
+                                                <div class="ui-step">
+                                                    <div class="step__icon">3</div>
+                                                    <div class="step__label">Access Kubeflow</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="ui-step">
-                                            <div class="step__icon">2</div>
-                                            <div class="step__label">Launch K8 Cluster</div>
-                                        </div>
-                                        <div class="ui-step">
-                                            <div class="step__icon">3</div>
-                                            <div class="step__label">Deploy KubeFlow</div>
-                                        </div>
-                                        <div class="ui-step">
-                                            <div class="step__icon">4</div>
-                                            <div class="step__label">Done!</div>
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
 
                         </div>
-                        <div id="alertBox"></div>
-
-                        <form id="ccpLoginForm">
-                            <div class="col-md-12">
-                                <div class="section row">
-                                    <div class="col offset-4 ">
-                                        <div class="form-group col-6">
-                                            <div class="form-group__text">
-                                                <input name="ipAddress" id="ipAddress" type="text" required>
-                                                <label for="ipAddress">CCP IP Address</label>
+                        <div class="content">
+                                <div class="container" style="margin-top: 25px;">
+                                        <div class="text-center">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p></p>
+                                                    <p></p>
+                                                </div>
                                             </div>
-                                        </div>
-                                
-                                        <div class="form-group col-6">
-                                            <div class="form-group__text">
-                                                <input name="username" id="username" type="text" required>
-                                                <label for="username">Username</label>
+                                            <div class="row">
+                                                    <div class="col-md-12">
+                                                        <input id="stage1a" type="submit" class="btn btn--primary" value="Create new Cluster" style="right: 305px;">
+                                                        <input id="stage1b" type="submit" class="btn btn--primary" value="Upload existing Cluster" style="right: 40px;">
+                                                    </div>
                                             </div>
+                                            <div class="row" style="margin-top: 25px;" >
+                                                    <div class="col-md-12">
+                                                        <p></p>
+                                                        <p></p>
+                                                    </div>
+                                                </div>
                                         </div>
-                                
-                                        <div class="form-group col-6">
-                                            <div class="form-group__text">
-                                                <input name="password" id="password" type="password" required>
-                                                <label for="password">Password</label>
-                                            </div>
-                                        </div>
-                                
-                                        <div class="form-group col-2">
-                                            <input id="connect" type="submit" class="btn btn--primary" value="Connect">
+                                    </div>
+                               
+                                <!--
+                                <div class="container" style="margin-bottom:40px; max-width:900px;">
+                                    <div class="text-center">
+                                        <div class="row" style="margin-top: 15px;">
+                                            {% for cluster in clusters %}
+                                                <div style="border: 2px solid rgba(0,0,0,0.15);width: 100%; position: relative;">
+                                                    <div style="float: left;line-height:50px;padding-left:25px;">
+                                                        {{ cluster }}
+                                                    </div>
+                                                    <div style="position: absolute; right:25px;">
+                                                        <div class="btn-group">
+                                                            <a class="btn dropdown-toggle clusterAction" data-toggle="dropdown" href="#" style="">
+                                                                Action 
+                                                                <span class="caret" style="margin-left: 5px;"></span>
+                                                            </a>
+                                                            <ul class="dropdown-menu">
+                                                                <a href="#">Go to Dashboard</a>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-                        </form>
+
+                            -->
 
                     </div>
                 </div>

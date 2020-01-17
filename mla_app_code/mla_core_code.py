@@ -62,8 +62,8 @@ def index():
 ##################################
 # Overview of existing Clusters
 ##################################
-@app.route("/clusters", methods = ['GET'])
-def view_Clusters():
+@app.route("/stage0", methods = ['GET'])
+def stage0():
     kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
     
     files = [f for f in os.listdir(kubeConfigDir) if os.path.isfile(os.path.join(kubeConfigDir, f))]
@@ -72,17 +72,17 @@ def view_Clusters():
     for file in files:
         kubeConfigs.append(file[4:])
     
-    return render_template('clusters.html', clusters=kubeConfigs)
+    return render_template('stage0.html', clusters=kubeConfigs)
     
 
 ##################################
 # REGISTER EXISTING CLUSTER
 ##################################
 
-@app.route("/uploadCluster", methods = ['POST', 'GET'])
-def uploadCluster():
+@app.route("/stage1b", methods = ['POST', 'GET'])
+def stage1b():
     if request.method == 'GET':
-        return render_template('uploadCluster.html')
+        return render_template('stage1b.html')
     else:
         session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
         session['customCluster'] = True
@@ -117,8 +117,8 @@ def uploadCluster():
 # LOGIN TO CCP
 ##################################
 
-@app.route("/stage1")
-def run_stage1():
+@app.route("/stage1a")
+def run_stage1a():
 
     if request.method == 'POST':
 
@@ -129,7 +129,7 @@ def run_stage1():
 
         if not loginV2 and not loginV3:
             print ("There was an issue with login: " + login.text)
-            return render_template('stage1.html')
+            return render_template('stage1a.html')
         else:
             session['ccpURL'] = "https://" + request.form['IP Address']
             session['ccpToken'] = loginV2.cookies.get_dict()
@@ -137,7 +137,7 @@ def run_stage1():
 
             return render_template('stage2.html')
 
-    return render_template('stage1.html')
+    return render_template('stage1a.html')
 
 
 @app.route("/testConnection", methods = ['POST', 'GET'])
@@ -167,7 +167,7 @@ def run_testConnection():
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CCP_LOGIN })
             return jsonify(dict(redirectURL='/stage2'))
     
-    return render_template('stage1.html')
+    return render_template('stage1b.html')
 
 
 ##################################
