@@ -1,11 +1,11 @@
 $(document).ready(function(){
-    $('#stage1b').on('click', function(event) {
+    $('#existingClusterUpload').on('click', function(event) {
         event.preventDefault();
-        window.location.href = "../stage1b";
+        window.location.href = "../existingClusterUpload";
     });
 
-    $('#stage1a').on('click', function(event) {
+    $('#ccpLogin').on('click', function(event) {
         event.preventDefault();
-        window.location.href = "../stage1a";
+        window.location.href = "../ccpLogin";
     });
 });

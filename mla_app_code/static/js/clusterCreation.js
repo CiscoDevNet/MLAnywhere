@@ -109,7 +109,7 @@ $(document).ready(function(){
         
                 
                 $.ajax({
-                    url: "/stage2",
+                    url: "/ccpClusterCreation",
                     type : "POST",
                     contentType: 'application/json',
                     dataType : 'json',
