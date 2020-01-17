@@ -698,27 +698,30 @@ def run_clusterConfigTemplate():
 
 @app.route("/viewPods", methods = ['POST', 'GET'])
 def run_viewPods():
-    
     if request.method == 'GET':
-
-        if "ccpToken" in session and "x-auth-token" in session:
+        if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
             ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
-        
+            logging.warn('A')
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])),"KFAPP":config.KFAPP}
-            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
+            logging.warn('B')
+                
             kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
 
+            logging.warn('C')    
+            
             api_instance = kubernetes.client.CoreV1Api()
-
-
             api_response = api_instance.list_pod_for_all_namespaces( watch=False)
+            
+            logging.warn(api_response)
             
             podsToReturn = []
             for i in api_response.items:
                 podsToReturn.append({"NAMESPACE":  i.metadata.namespace, "NAME":i.metadata.name, "STATUS":i.status.phase})
+            
+            loggong.warn(podsToReturn)
             
             return jsonify(podsToReturn)
 

@@ -4,6 +4,18 @@ $(document).ready(function(){
     
     $('#consoleLog').append(localStorage.getItem('consoleLog'));
     
+    $("#gotokf").prop("disabled", true);
+    
+    $('#viewpods').on('click', function(event) {
+        event.preventDefault();      
+        viewPods();
+    })
+                      
+    $('#gotokf').on('click', function(event) {
+        event.preventDefault();      
+        viewPods();
+    })
+    
     setUpPage()
 
     verifyPostInstall()
@@ -14,7 +26,7 @@ $(document).ready(function(){
 row_template = 
     `
     <div class="row resultrow">
-        <div class="col-md-7">
+        <div class="col-md-7" style="margin: 0 auto;">
             <div>
                 <div class="alert alert--info">
                     <div class="alert__icon"></div>
@@ -161,3 +173,4 @@ function viewPods() {
         }
     });
 }
+
