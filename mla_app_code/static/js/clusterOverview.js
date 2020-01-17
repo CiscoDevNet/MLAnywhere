@@ -1,11 +1,11 @@
 $(document).ready(function(){
-    $('#uploadCluster').on('click', function(event) {
+    $('#stage1b').on('click', function(event) {
         event.preventDefault();
-        window.location.href = "../uploadCluster";
+        window.location.href = "../stage1b";
     });
 
-    $('#createCluster').on('click', function(event) {
+    $('#stage1a').on('click', function(event) {
         event.preventDefault();
-        window.location.href = "../stage1";
+        window.location.href = "../stage1a";
     });
 });
