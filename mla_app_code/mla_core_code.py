@@ -90,11 +90,12 @@ def existingClusterUpload():
         if 'file' not in request.files:
             return 'No file provided', 400
         
-        if 'clusterName' not in request.form:
-            return 'Cluster name not defined', 400
+        #if 'clusterName' not in request.form:
+            #return 'Cluster name not defined', 400
 
         file = request.files['file']
-        clusterName = request.form['clusterName']
+        #clusterName = request.form['clusterName']
+        clusterName = str(session['sessionUUID'])
 
         if file.filename == '':
             return 'No file provided', 400
@@ -109,8 +110,7 @@ def existingClusterUpload():
             filename = 'k8s_' + clusterName
             
             file.save(os.path.join(kubeConfigDir, filename))
-            deploy_mla(filename)
-            return jsonify(dict(redirectURL='/postInstallTasks?cluster=' + filename))
+            return jsonify(dict(redirectURL='/deployKubeflow?cluster=' + filename))
 
 
 ##################################
@@ -453,10 +453,9 @@ def deploy_mla(kubeconfig_name):
 def run_deployKubeflow():
     
     if request.method == 'POST':
-        if "ccpToken" in session and "x-auth-token" in session:
-            
-            filename = 'k8s_' + str(session['sessionUUID'])
-            deploy_mla(filename)
+        if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+
+            deploy_mla('k8s_' + str(session["sessionUUID"]))
             
             return jsonify(dict(redirectURL='/postInstallTasks'))
         else:
@@ -464,7 +463,7 @@ def run_deployKubeflow():
     
     elif request.method == 'GET':
 
-            if "ccpToken" in session and "x-auth-token" in session:
+            if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
                 return render_template('deployKubeflow.html')
             else:
                 return render_template('clusterOverview.html')
@@ -490,7 +489,6 @@ def run_postInstallTasks():
 def mladeploymentstatus():
     if "mla_endpoint" not in session:
         cluster = request.args.get('cluster')
-        logging.warn(cluster)
         
         if cluster == '' or cluster == None:
             cluster = 'k8s_' + str(session["sessionUUID"])
