@@ -72,19 +72,19 @@ function setUpPage() {
 
 function verifyPostInstall() {
     let searchParams = new URLSearchParams(window.location.search)
-    if(searchParams.has('cluster')) {
-        cluster = searchParams.get('cluster')
-    } else {
-        cluster == ''
-    }
+//    if(searchParams.has('cluster')) {
+//        cluster = searchParams.get('cluster')
+//    } else {
+//        cluster == ''
+//    }
     
     
     $.ajax({
         type: "GET",
         url:"/mladeploymentstatus",
-        data: {cluster : cluster},
+        //data: {cluster : cluster},
         success: function (response) {
-            steps.push({'name': "Waiting for MLA pod to be deployed", 'entries': []})
+            steps = [{'name': "Waiting for MLA pod to be deployed", 'entries': []}]
             if(response != 'Pod not reachable yet') {
                 var logs = JSON.parse(response)
 
@@ -100,15 +100,16 @@ function verifyPostInstall() {
                     }
                 }
             }
-            console.log(steps[steps.length-1])
-
-            for(var i=0;i<steps.length;i++) {
-                if(i==steps.length-1) {
-                    last = true
+            for(var i=0;i<steps.length;i++){
+                if(i == steps.length-1) {
+                    console.log('LAST ELEMENT!')
                 } else {
-                    last = false
-                }        
-            }
+                    console.log('FINISHED ELEMENT!')
+                }
+                console.log($('#installprogress').children()[i].children[0].children[0].children[0])
+            } 
+            
+            console.log(steps[steps.length-1])
         },
         error: function(error) {
             $("#alertBox").html(
