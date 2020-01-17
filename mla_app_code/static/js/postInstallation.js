@@ -1,4 +1,4 @@
-post_install_stage = 1
+var kflink = ""
 
 $(document).ready(function(){
     
@@ -12,8 +12,9 @@ $(document).ready(function(){
     })
                       
     $('#gotokf').on('click', function(event) {
-        event.preventDefault();      
-        viewPods();
+        event.preventDefault();
+        link = 'http://' + kflink
+        window.open(link, '_blank')
     })
     
     setUpPage()
@@ -29,7 +30,7 @@ row_template =
         <div class="col-md-7" style="margin: 0 auto;">
             <div>
                 <div class="alert alert--info">
-                    <div class="alert__icon"></div>
+                    <div class="alert__icon icon-no-outline"></div>
                     <div class="alert__message">{replace-text}</div>
                 </div>
             </div>
@@ -88,7 +89,6 @@ function verifyPostInstall() {
             if(response != 'Pod not reachable yet') {
                 var logs = JSON.parse(response)
 
-                steps = []
                 for(var i=0;i<logs.length;i++) {
                     if(/-------------- [A-Z a-z ]* --------------/.test(logs[i])) {
                         steps.push({
@@ -100,16 +100,23 @@ function verifyPostInstall() {
                     }
                 }
             }
+            
             for(var i=0;i<steps.length;i++){
                 if(i == steps.length-1) {
-                    console.log('LAST ELEMENT!')
+                    if(steps[i]['name'].startsWith('Done')) {
+                        kflink = steps[i]['entries'][0].replace(/(\r\n|\n|\r)/gm, "");
+                        $("#gotokf").prop("disabled", false);
+                    } else {
+                        $('#installprogress').children()[i].children[0].children[0].children[0].classList.replace("alert--info", "alert--warning");
+                        $('#installprogress').children()[i].children[0].children[0].children[0].children[0].classList.replace("icon-no-outline", "icon-error-outline");
+                    }
                 } else {
-                    console.log('FINISHED ELEMENT!')
+                    $('#installprogress').children()[i].children[0].children[0].children[0].classList.replace("alert--info", "alert--success");
+                    $('#installprogress').children()[i].children[0].children[0].children[0].classList.replace("alert--warning", "alert--success");
+                    $('#installprogress').children()[i].children[0].children[0].children[0].children[0].classList.replace("icon-no-outline", "icon-check-outline");
+                    $('#installprogress').children()[i].children[0].children[0].children[0].children[0].classList.replace("icon-error-outline", "icon-check-outline");
                 }
-                console.log($('#installprogress').children()[i].children[0].children[0].children[0])
             } 
-            
-            console.log(steps[steps.length-1])
         },
         error: function(error) {
             $("#alertBox").html(
