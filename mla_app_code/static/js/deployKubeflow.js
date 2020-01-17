@@ -9,7 +9,7 @@ $(document).ready(function(){
         event.preventDefault();
         
         $.ajax({
-            url: "/stage3",
+            url: "/deployKubeflow",
             type : "POST",
             contentType: 'application/json',
     

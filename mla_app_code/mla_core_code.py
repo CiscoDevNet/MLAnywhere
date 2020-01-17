@@ -56,14 +56,14 @@ API_VERSION = 3
 @app.route("/")
 def index():
     if request.method == 'GET':
-        return render_template('stageTitle.html')
+        return render_template('splashScreen.html')
 
 
 ##################################
 # Overview of existing Clusters
 ##################################
-@app.route("/stage0", methods = ['GET'])
-def stage0():
+@app.route("/clusterOverview", methods = ['GET'])
+def clusterOverview():
     kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
     
     files = [f for f in os.listdir(kubeConfigDir) if os.path.isfile(os.path.join(kubeConfigDir, f))]
@@ -72,17 +72,17 @@ def stage0():
     for file in files:
         kubeConfigs.append(file[4:])
     
-    return render_template('stage0.html', clusters=kubeConfigs)
+    return render_template('clusterOverview.html', clusters=kubeConfigs)
     
 
 ##################################
 # REGISTER EXISTING CLUSTER
 ##################################
 
-@app.route("/stage1b", methods = ['POST', 'GET'])
-def stage1b():
+@app.route("/existingClusterUpload", methods = ['POST', 'GET'])
+def existingClusterUpload():
     if request.method == 'GET':
-        return render_template('stage1b.html')
+        return render_template('existingClusterUpload.html')
     else:
         session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
         session['customCluster'] = True
@@ -110,15 +110,15 @@ def stage1b():
             
             file.save(os.path.join(kubeConfigDir, filename))
             deploy_mla(filename)
-            return jsonify(dict(redirectURL='/stage4?cluster=' + filename))
+            return jsonify(dict(redirectURL='/postInstallTasks?cluster=' + filename))
 
 
 ##################################
 # LOGIN TO CCP
 ##################################
 
-@app.route("/stage1a")
-def run_stage1a():
+@app.route("/ccpLogin")
+def run_ccpLogin():
 
     if request.method == 'POST':
 
@@ -129,15 +129,15 @@ def run_stage1a():
 
         if not loginV2 and not loginV3:
             print ("There was an issue with login: " + login.text)
-            return render_template('stage1a.html')
+            return render_template('ccpLogin.html')
         else:
             session['ccpURL'] = "https://" + request.form['IP Address']
             session['ccpToken'] = loginV2.cookies.get_dict()
             session['x-auth-token'] = loginV3
 
-            return render_template('stage2.html')
+            return render_template('ccpClusterCreation.html')
 
-    return render_template('stage1a.html')
+    return render_template('ccpLogin.html')
 
 
 @app.route("/testConnection", methods = ['POST', 'GET'])
@@ -165,9 +165,9 @@ def run_testConnection():
             session['x-auth-token'] = loginV3
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CCP_LOGIN })
-            return jsonify(dict(redirectURL='/stage2'))
+            return jsonify(dict(redirectURL='/ccpClusterCreation'))
     
-    return render_template('stage1b.html')
+    return render_template('ccpLogin.html')
 
 
 ##################################
@@ -193,15 +193,15 @@ def checkClusterAlreadyExists():
                 return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
 
-@app.route("/stage2", methods = ['POST', 'GET'])
-def run_stage2():
+@app.route("/ccpClusterCreation", methods = ['POST', 'GET'])
+def run_ccpClusterCreation():
 
         if request.method == 'POST':
 
             uuid = ""
 
             if "ccpToken" not in session or "x-auth-token" not in session:
-                return render_template('stage1a.html')
+                return render_template('ccpLogin.html')
 
             ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
 
@@ -412,14 +412,14 @@ def run_stage2():
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE})
 
-            return jsonify(dict(redirectURL='/stage3'))
+            return jsonify(dict(redirectURL='/deployKubeflow'))
 
         elif request.method == 'GET':
 
             if "ccpToken" in session:
-                return render_template('stage2.html')
+                return render_template('ccpClusterCreation.html')
             else:
-                return render_template('stage1a.html')
+                return render_template('ccpLogin.html')
 
             
 ##################################
@@ -449,8 +449,8 @@ def deploy_mla(kubeconfig_name):
     return
 
 
-@app.route("/stage3", methods = ['POST', 'GET'])
-def run_stage3():
+@app.route("/deployKubeflow", methods = ['POST', 'GET'])
+def run_deployKubeflow():
     
     if request.method == 'POST':
         if "ccpToken" in session and "x-auth-token" in session:
@@ -458,32 +458,32 @@ def run_stage3():
             filename = 'k8s_' + str(session['sessionUUID'])
             deploy_mla(filename)
             
-            return jsonify(dict(redirectURL='/stage4'))
+            return jsonify(dict(redirectURL='/postInstallTasks'))
         else:
-            return jsonify(dict(redirectURL='/stage1a'))
+            return jsonify(dict(redirectURL='/clusterOverview'))
     
     elif request.method == 'GET':
 
             if "ccpToken" in session and "x-auth-token" in session:
-                return render_template('stage3.html')
+                return render_template('deployKubeflow.html')
             else:
-                return render_template('stage0.html')
+                return render_template('clusterOverview.html')
 
 
 ##################################
 # POST INSTALL VIEW
 ##################################
             
-@app.route("/stage4", methods = ['GET'])
-def run_stage4():
+@app.route("/postInstallTasks", methods = ['GET'])
+def run_postInstallTasks():
     cluster = request.args.get('cluster')
     if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
         if cluster != '' and cluster != None:
-            return render_template('stage4.html')
+            return render_template('postInstallTasks.html')
         else:
-            return render_template('stage4.html')
+            return render_template('postInstallTasks.html')
     else:
-        return render_template('stage0.html')
+        return render_template('clusterOverview.html')
         
 
 @app.route("/mladeploymentstatus", methods = ['GET'])
@@ -854,7 +854,7 @@ def downloadKubeconfig(filename):
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
             return send_file("{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
         else:
-            return render_template('stage1.html')
+            return render_template('clusterOverview.html')
 
 
 def allowed_file(filename):
