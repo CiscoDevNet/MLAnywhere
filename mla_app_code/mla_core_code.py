@@ -64,6 +64,8 @@ def index():
 ##################################
 @app.route("/clusterOverview", methods = ['GET'])
 def clusterOverview():
+    session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+    
     kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
     
     files = [f for f in os.listdir(kubeConfigDir) if os.path.isfile(os.path.join(kubeConfigDir, f))]
@@ -487,34 +489,32 @@ def run_postInstallTasks():
 
 @app.route("/mladeploymentstatus", methods = ['GET'])
 def mladeploymentstatus():
-    if "mla_endpoint" not in session:
-        cluster = request.args.get('cluster')
-        
-        if cluster == '' or cluster == None:
-            cluster = 'k8s_' + str(session["sessionUUID"])
-        
-        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-        kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
-        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,cluster))
+    cluster = request.args.get('cluster')
 
-        api_instance = kubernetes.client.CoreV1Api()
-        
-        nodes = api_instance.list_node(watch=False)
-        for node in nodes.items:
-            for address in node.status.addresses:
-                if address.type == 'ExternalIP':
-                    node_ip = address.address
-            
-        services = api_instance.list_namespaced_service('default')
-        for service in services.items:
-            if service.metadata.name == 'mla-svc':
-                node_port = service.spec.ports[0].node_port
-        
-        session["mla_endpoint"] = str(node_ip) + ':' + str(node_port)
+    if cluster == '' or cluster == None:
+        cluster = 'k8s_' + str(session["sessionUUID"])
+
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
+    kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,cluster))
+
+    api_instance = kubernetes.client.CoreV1Api()
+
+    nodes = api_instance.list_node(watch=False)
+    for node in nodes.items:
+        for address in node.status.addresses:
+            if address.type == 'ExternalIP':
+                node_ip = address.address
+
+    services = api_instance.list_namespaced_service('default')
+    for service in services.items:
+        if service.metadata.name == 'mla-svc':
+            node_port = service.spec.ports[0].node_port
+
+    session["mla_endpoint"] = str(node_ip) + ':' + str(node_port)
     
     try:
         status = requests.get("http://{}/status".format(session["mla_endpoint"]))
-        logging.warn(status.status_code)
     except:
         return 'Pod not reachable yet', 200
     
@@ -528,17 +528,17 @@ def mladeploymentstatus():
 def run_vsphereProviders():
     
     if request.method == 'GET':
-
+        
         if "ccpToken" in session and "x-auth-token" in session:
 
             ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
             response = ccp.getProviderClientConfigs()
-
+            
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_PROVIDERS })
                 return jsonify(response)
             else:
-                return [config.ERROR_VSPHERE_PROVIDERS]
+                return config.ERROR_VSPHERE_PROVIDERS, 400
 
 @app.route("/vsphereDatacenters", methods = ['POST', 'GET'])
 def run_vsphereDatacenters():
@@ -835,17 +835,14 @@ def getIngressDetails():
                 return jsonify({"ACCESSTYPE":  "NodePort", "IP":"{}:{}".format(workerAddress,workerPort)})
 
 
-@app.route('/downloadKubeconfig/<filename>', defaults={'filename': 'kubeconfig.yaml'}, methods=['GET', 'POST'])
+@app.route('/downloadKubeconfig/<filename>', defaults={'filename': None}, methods=['GET'])
 def downloadKubeconfig(filename):
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session and "x-auth-token" in session:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
-            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            return send_file("{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
-        else:
-            return render_template('clusterOverview.html')
+    if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
+        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+        return send_file("{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
+    else:
+        return "Not found", 400
 
 
 def allowed_file(filename):
