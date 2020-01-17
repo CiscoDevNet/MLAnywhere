@@ -201,7 +201,7 @@ def run_stage2():
             uuid = ""
 
             if "ccpToken" not in session or "x-auth-token" not in session:
-                return render_template('stage1.html')
+                return render_template('stage1a.html')
 
             ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
 
@@ -419,7 +419,7 @@ def run_stage2():
             if "ccpToken" in session:
                 return render_template('stage2.html')
             else:
-                return render_template('stage1.html')
+                return render_template('stage1a.html')
 
             
 ##################################
@@ -460,14 +460,14 @@ def run_stage3():
             
             return jsonify(dict(redirectURL='/stage4'))
         else:
-            return jsonify(dict(redirectURL='/stage1'))
+            return jsonify(dict(redirectURL='/stage1a'))
     
     elif request.method == 'GET':
 
             if "ccpToken" in session and "x-auth-token" in session:
                 return render_template('stage3.html')
             else:
-                return render_template('stage1.html')
+                return render_template('stage0.html')
 
 
 ##################################
@@ -483,7 +483,7 @@ def run_stage4():
         else:
             return render_template('stage4.html')
     else:
-        return render_template('stage1.html')
+        return render_template('stage0.html')
         
 
 @app.route("/mladeploymentstatus", methods = ['GET'])
@@ -524,21 +524,6 @@ def mladeploymentstatus():
         return status.text, 200
     else:
         return 'Pod not reachable yet', 200
-
-
-##################################
-# OTHER
-##################################
-        
-@app.route("/stage5", methods = ['POST', 'GET'])
-def run_stage5():
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session and "x-auth-token" in session:
-            return render_template('stage5.html')
-        else:
-            return render_template('stage1.html')
 
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
