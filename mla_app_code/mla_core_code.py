@@ -456,8 +456,10 @@ def run_deployKubeflow():
     
     if request.method == 'POST':
         if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
-
-            deploy_mla('k8s_' + str(session["sessionUUID"]))
+	    if "customCluster" in session:
+                deploy_mla('k8s_' + str(session["sessionUUID"]))
+	    else:
+		deploy_mla(str(session["sessionUUID"]))
             
             return jsonify(dict(redirectURL='/postInstallTasks'))
         else:
