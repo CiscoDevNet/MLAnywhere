@@ -456,12 +456,12 @@ def run_deployKubeflow():
     
     if request.method == 'POST':
         if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
-	    if "customCluster" in session:
+            if "customCluster" in session:
                 deploy_mla('k8s_' + str(session["sessionUUID"]))
-	    else:
-		deploy_mla(str(session["sessionUUID"]))
-            
-            return jsonify(dict(redirectURL='/postInstallTasks'))
+            else:
+                deploy_mla(str(session["sessionUUID"]))
+                
+                return jsonify(dict(redirectURL='/postInstallTasks'))
         else:
             return jsonify(dict(redirectURL='/clusterOverview'))
     
@@ -496,7 +496,7 @@ def mladeploymentstatus():
     if "customCluster" in session:
         cluster = 'k8s_' + str(session["sessionUUID"])
     else:
-	cluster = str(session["sessionUUID"])
+        cluster = str(session["sessionUUID"])
 
     kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
     kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
