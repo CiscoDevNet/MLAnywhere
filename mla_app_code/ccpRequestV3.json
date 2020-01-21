@@ -16,8 +16,8 @@
             "subnet_id": "",
             "node_groups": [{
                 "name": "node-group",
-                "size": 1,
-                "vcpus": 2,
+                "size": 2,
+                "vcpus": 8,
                 "memory_mb": 16384,
                 "gpus": [],
                 "template": "ccp-tenant-image-1.14.8-ubuntu18-5.1.0",
@@ -28,7 +28,7 @@
             "master_group": {
                 "name": "master-group",
                 "size": 1,
-                "vcpus": 2,
+                "vcpus": 8,
                 "memory_mb": 16384,
                 "gpus": [],
                 "template": "ccp-tenant-image-1.14.8-ubuntu18-5.1.0",
