@@ -493,8 +493,10 @@ def run_postInstallTasks():
 def mladeploymentstatus():
     cluster = request.args.get('cluster')
 
-    if cluster == '' or cluster == None:
+    if "customCluster" in session:
         cluster = 'k8s_' + str(session["sessionUUID"])
+    else:
+	cluster = str(session["sessionUUID"])
 
     kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
     kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
