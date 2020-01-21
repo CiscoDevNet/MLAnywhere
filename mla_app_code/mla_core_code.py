@@ -705,10 +705,15 @@ def run_viewPods():
     if request.method == 'GET':
         if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
 
+            if "customCluster" in session:
+                cluster = 'k8s_' + str(session["sessionUUID"])
+            else:
+                cluster = str(session["sessionUUID"])
+
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])),"KFAPP":config.KFAPP}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,cluster),"KFAPP":config.KFAPP}
                 
-            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))   
+            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,cluster))   
             
             api_instance = kubernetes.client.CoreV1Api()
             api_response = api_instance.list_pod_for_all_namespaces( watch=False)
@@ -719,6 +724,8 @@ def run_viewPods():
             
             return jsonify(podsToReturn)
 
+# No longer need to toggle the ingress since Kubeflow is using Istio for ingress
+'''
 @app.route("/toggleIngress", methods = ['POST', 'GET'])
 def run_toggleIngress():
     
@@ -760,6 +767,7 @@ def run_toggleIngress():
 
         return getIngressDetails()
 
+'''
 
 @app.route("/checkIngress", methods = ['POST', 'GET'])
 def run_checkIngress():
@@ -791,6 +799,8 @@ def run_checkKubeflowDashboardReachability():
 
     return json.dumps({'success':False,"errorCode":"ERROR_KUBEFLOW_DASHBOARD_REACHABILITY","errorMessage":config.ERROR_KUBEFLOW_DASHBOARD_REACHABILITY}), 400, {'ContentType':'application/json'}
 
+# Don't need this since the details come from the Istio Ingress
+'''
 def getIngressDetails():
     
     if "ccpToken" in session and "x-auth-token" in session:
@@ -837,14 +847,19 @@ def getIngressDetails():
 
             if workerAddress and workerPort:
                 return jsonify({"ACCESSTYPE":  "NodePort", "IP":"{}:{}".format(workerAddress,workerPort)})
-
+'''
 
 @app.route('/downloadKubeconfig/<filename>', defaults={'filename': None}, methods=['GET'])
 def downloadKubeconfig(filename):
     if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-        return send_file("{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
+        if "customCluster" in session:
+            cluster = 'k8s_' + str(session["sessionUUID"])
+        else:
+            cluster = str(session["sessionUUID"])
+
+        return send_file("{}/{}".format(kubeConfigDir,cluster))
     else:
         return "Not found", 400
 
