@@ -25,17 +25,21 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class CCP:
-    def __init__(self, url=None, username=None,password=None,cookie=None):
+    def __init__(self, url=None, username=None,password=None,cookie=None, token=None, apiVersion = 3):
         self.url = url
         self.username = username
         self.password = password
         self.cookie = cookie
+        self.token = token
+        self.apiVersion = apiVersion
 
-    def login(self):
+    def loginV2(self):
 
         headers = {
             'content-type': 'application/json',
         }
+
+        # vip pools UUID still requires the v2 API so you need to login for both the v2 and v3 API
 
         response = requests.request("POST", self.url + "/2/system/login?username=" + self.username + "&password=" + self.password,  headers=headers, verify=False)
 
@@ -43,35 +47,107 @@ class CCP:
             self.cookie = response.cookies
 
         return response
+
+
+    def loginV3(self):
+
+        headers = {
+            'content-type': 'application/json',
+        }
+
+        # vip pools UUID still requires the v2 API so you need to login for both the v2 and v3 API
+
+        data = {"username":self.username,"password":self.password}
+            
+        response = requests.request("POST", self.url + "/v3/system/login",data=json.dumps(data),  headers=headers, verify=False)
+            
+        if "X-Auth-Token" in response.headers:
+            self.token = response.headers["X-Auth-Token"]
+            return response.headers["X-Auth-Token"]
     
+        return None
+
+
     def getConfig(self, uuid):
 
-        response = requests.request("GET", self.url + "/2/clusters/" + uuid + "/env", cookies=self.cookie, verify=False)
-        
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/clusters/" + uuid + "/env", cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/clusters/" + uuid ,headers=headers, verify=False)
+    
         return response
+        
+        
 
 
     def getClusters(self):
 
-        response = requests.request("GET", self.url + "/2/clusters",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/clusters",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/clusters",headers=headers,  verify=False)
+
         return response
     
     def getCluster(self,name):
 
-        response = requests.request("GET", self.url + "/2/clusters/"+name,cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/clusters/"+name,cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/clusters/"+name,headers=headers, verify=False)
 
         return response
 
     
     def getProviderClientConfigs(self):
 
-        response = requests.request("GET", self.url + "/2/providerclientconfigs",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
 
-        return response
+        # the v2 API had a "uuid" attribute while the v3 API has renamed this to "id". for the v3 API I'm adding a "uuid" key to the response (newProvidersList)
+        # so that we don't have to update the front end calls as it's expecting "uuid", not "id"
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/providerclientconfigs",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/providers",headers=headers, verify=False)
+            if response:
+                newProviderList = []
+                for provider in response.json():
+                    provider["uuid"] = provider["id"]
+                    newProviderList.append(provider)
+                return newProviderList
+
+        return response.text
     
     def getProviderVsphereDatacenters(self,providerClientUUID):
 
-        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/providers/" + providerClientUUID + "/datacenters",headers=headers, verify=False)
 
         response = response.json()
 
@@ -82,8 +158,17 @@ class CCP:
 
     def getProviderVsphereClusters(self,providerClientUUID,datacenterName):
 
-        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/cluster",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
 
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/cluster",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/providers/" + providerClientUUID + "/clusters?datacenter="+datacenterName,headers=headers, verify=False)
+
+        
         response = response.json()
 
         if "Clusters" in response:
@@ -93,7 +178,15 @@ class CCP:
     
     def getProviderVsphereNetworks(self,providerClientUUID,datacenterName):
 
-        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/network",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/network",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/providers/" + providerClientUUID + "/networks?datacenter="+datacenterName,headers=headers, verify=False)
 
         response = response.json()
 
@@ -104,7 +197,15 @@ class CCP:
     
     def getProviderVsphereVMs(self,providerClientUUID,datacenterName):
 
-        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/vm",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/vm",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/providers/" + providerClientUUID + "/vms?datacenter="+datacenterName,headers=headers, verify=False)
 
         response = response.json()
 
@@ -115,7 +216,15 @@ class CCP:
 
     def getProviderVsphereDatastores(self,providerClientUUID,datacenterName):
 
-        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/datastore",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/datastore",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/providers/" + providerClientUUID + "/datastores?datacenter="+datacenterName,headers=headers, verify=False)
 
         response = response.json()
 
@@ -126,7 +235,15 @@ class CCP:
 
     def getProviderVsphereResourcePools(self,providerClientUUID,datacenterName,clusterName):
 
-        response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/cluster/" + clusterName + "/pool",cookies=self.cookie, verify=False)
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 2:
+            response = requests.request("GET", self.url + "/2/providerclientconfigs/" + providerClientUUID + "/vsphere/datacenter/" + datacenterName + "/cluster/" + clusterName + "/pool",cookies=self.cookie, verify=False)
+        else:
+            response = requests.request("GET", self.url + "/v3/providers/" + providerClientUUID + "/resource-pools?datacenter="+datacenterName,headers=headers, verify=False)
 
         response = response.json()
 
@@ -138,7 +255,7 @@ class CCP:
     def getVIPPools(self):
 
         response = requests.request("GET", self.url + "/2/network_service/subnets",cookies=self.cookie, verify=False)
-
+        
         response = response.json()
 
         if "Pools" in response:
@@ -150,9 +267,20 @@ class CCP:
 
         headers = {
             'content-type': 'application/json',
+            'x-auth-token': self.token,
         }
 
-        response = requests.request("POST", self.url + "/2/clusters", json=newClusterDetails,cookies=self.cookie, headers=headers, verify=False)
+        if self.apiVersion == 2:
+            headers = {
+                'content-type': 'application/json',
+            }
+            response = requests.request("POST", self.url + "/2/clusters", json=newClusterDetails,cookies=self.cookie, headers=headers, verify=False)
+        else:
+            headers = {
+                'content-type': 'application/json',
+                'x-auth-token': self.token,
+            }
+            response = requests.request("POST", self.url + "/v3/clusters/", json=newClusterDetails, headers=headers, verify=False)
 
         return response
 

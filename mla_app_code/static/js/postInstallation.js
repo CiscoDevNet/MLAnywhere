@@ -1,391 +1,137 @@
-post_install_stage = 1
+var kflink = ""
 
 $(document).ready(function(){
     
     $('#consoleLog').append(localStorage.getItem('consoleLog'));
-
-    $("#toggleIngress").prop("disabled", true);
-    $("#kubeflowDashboard").prop("disabled", true);
-    $("#createNotebook").prop("disabled", true);
-
-    $('#viewPods').on('click', function(event) {
+    
+    $("#gotokf").prop("disabled", true);
+    
+    $('#viewpods').on('click', function(event) {
         event.preventDefault();      
         viewPods();
-    });
-
-    $('#toggleIngress').on('click', function(event) {
-        event.preventDefault();      
-        toggleIngress();
-    });
-
-    $('#kubeflowDashboard').on('click', function(event) {
-        event.preventDefault();      
-        kubeflowDashboard();
-    });
-
-    $('#createNotebook').on('click', function(event) {
-        event.preventDefault();      
-        openNotebookServer();
-    });
+    })
+                      
+    $('#gotokf').on('click', function(event) {
+        event.preventDefault();
+        link = 'http://' + kflink
+        window.open(link, '_blank')
+    })
+    
+    setUpPage()
 
     verifyPostInstall()
     setInterval(verifyPostInstall,5000);
 });
 
-function verifyK8sServices() {
 
+row_template = 
+    `
+    <div class="row resultrow">
+        <div class="col-md-7" style="margin: 0 auto;">
+            <div>
+                <div class="alert alert--info">
+                    <div class="alert__icon icon-no-outline"></div>
+                    <div class="alert__message">{replace-text}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `
+
+button_template =
+    `
+    <input type="submit" class="btn btn--primary stage4btn1" value="Go to KubeFlow" onclick="window.open('http://{replace-ip}')">
+    `
+
+function setUpPage() {
+    stages = [
+        "Waiting for MLA pod to be deployed",
+        "Upgrading Helm",
+        "Setting up NFS server",
+        "Setting up Kubeflow",
+        "Waiting for all Pods to be ready",
+        "Changing the default Storage Class",
+        "Creating PVC",
+        "Getting IP and port for Kubeflow dashboard",
+        "Creating the demo namespace",
+        "Creating notebook server",
+        "Waiting for notebook server to be ready",
+        "Uploading demos to notebook server",
+        "Installing additional modules for notebook server",
+        "Giving full permissions to namespace"
+    ]
+    
+    for(var i=0;i<stages.length;i++) {
+        row = row_template.replace(
+            /{replace-text}/g,
+            stages[i]
+        )
+        
+        $('#installprogress').append(row)
+    }
+}
+
+function verifyPostInstall() {
+    let searchParams = new URLSearchParams(window.location.search)
+//    if(searchParams.has('cluster')) {
+//        cluster = searchParams.get('cluster')
+//    } else {
+//        cluster == ''
+//    }
+    
+    
     $.ajax({
         type: "GET",
-        url:"/viewPods",
-        dataType: "json",
-        success: function (jsonToDisplay) {
-            
-            success = true;
-            
-            $.each(jsonToDisplay, function(index, value){
-               
-                if (!(value.STATUS == "Running" || value.STATUS == "Succeeded"))
-                {
-                    success = false
+        url:"/mladeploymentstatus",
+        //data: {cluster : cluster},
+        success: function (response) {
+            steps = [{'name': "Waiting for MLA pod to be deployed", 'entries': []}]
+            if(response != 'Pod not reachable yet') {
+                var logs = JSON.parse(response)
+
+                for(var i=0;i<logs.length;i++) {
+                    if(/-------------- [A-Z a-z ]* --------------/.test(logs[i])) {
+                        steps.push({
+                            'name': logs[i].replace('-------------- ', '').replace(' --------------', ''),
+                            'entries': []
+                        })
+                    } else {
+                        steps[steps.length-1]['entries'].push(logs[i])
+                    }
                 }
-
-            });
-
-            alertClass = "alert alert--danger"
-
-            if (success)
-            {
-                alertClass = "alert alert--success"
-                statusMsg = "Kubernetes pods running"
-                $("#kubernetesPodAlert").empty().html(
-                    `
-                    <div class="` + alertClass +`">
-                        <div class="alert__icon icon-check-outline"></div>
-                        <div class="alert__message">` + statusMsg +`</div>
-                    </div>
-                    ` 
-                )
-                post_install_stage = 2
             }
-            else
-            {
-                alertClass = "alert alert--warning"
-                statusMsg = "Waiting for Kubernetes pods to start"
-                $("#kubernetesPodAlert").empty().html(
-                    `
-                    <div class="` + alertClass +`">
-                        <div class="alert__icon icon-error-outline"></div>
-                        <div class="alert__message">` + statusMsg +`</div>
-                    </div>
-                    ` 
-                )
-            }
+            
+            for(var i=0;i<steps.length;i++){
+                if(i == steps.length-1) {
+                    if(steps[i]['name'].startsWith('Done')) {
+                        kflink = steps[i]['entries'][0].replace(/(\r\n|\n|\r)/gm, "");
+                        $("#gotokf").prop("disabled", false);
+                    } else {
+                        $('#installprogress').children()[i].children[0].children[0].children[0].classList.replace("alert--info", "alert--warning");
+                        $('#installprogress').children()[i].children[0].children[0].children[0].children[0].classList.replace("icon-no-outline", "icon-error-outline");
+                    }
+                } else {
+                    $('#installprogress').children()[i].children[0].children[0].children[0].classList.replace("alert--info", "alert--success");
+                    $('#installprogress').children()[i].children[0].children[0].children[0].classList.replace("alert--warning", "alert--success");
+                    $('#installprogress').children()[i].children[0].children[0].children[0].children[0].classList.replace("icon-no-outline", "icon-check-outline");
+                    $('#installprogress').children()[i].children[0].children[0].children[0].children[0].classList.replace("icon-error-outline", "icon-check-outline");
+                }
+            } 
         },
         error: function(error) {
-
-            $("#viewPods").prop("disabled", true);
-
-            $("#postInstallChecklist").empty().append(
+            $("#alertBox").html(
                 `
-                <div class="alert alert--danger">
+                <div class="alert alert--danger alert-dismissible fade in ">
                     <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Error running post install check</div>
+                    <strong>Issue retrieving MLA setup details</strong>
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
                 </div>
-                ` 
-            )
+                `
+            );
         }
     });
 }
 
-function toggleIngress() {
-
-    $("#toggleIngress").prop("disabled", true);
-
-    $.ajax({
-        url: "/toggleIngress",
-        type : "POST",
-        contentType: 'application/json',
-
-        success: function(jsonToDisplay) {
-            
-            $("#toggleIngress").prop("disabled", false);
-
-            $("#ingressAlert").empty().html(
-                `
-                <div class="alert alert--success">
-                    <div class="alert__icon icon-check-outline"></div>
-                    <div class="alert__message">Cluster access configured as ` + jsonToDisplay.ACCESSTYPE +` on address ` + jsonToDisplay.IP +`</div>
-                </div>
-                ` 
-            )  
-
-        },
-        error: function(error) {
-
-            $("#toggleIngress").prop("disabled", false);
-
-            $("#ingressAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                    <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Issue retrieving ingress details</div>
-                </div>
-                `
-            );
-        }
-    })
-}
-
-function createNotebookServer() {
-
-    $("#createNotebook").prop("disabled", true);
-
-    $("#notebookAlert").empty().html(
-        `
-        <div class="alert alert--warning">
-            <div class="alert__icon icon-check-outline"></div>
-            <div class="alert__message">Creating Notebook Server</div>
-        </div>
-        ` 
-    )  
-
-    $.ajax({
-        url: "/createNotebookServer",
-        type : "POST",
-        contentType: 'application/json',
-
-        success: function(response) {
-            
-            $("#createNotebook").prop("disabled", true);
-
-            $("#notebookAlert").empty().html(
-                `
-                <div class="alert alert--warning">
-                    <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Creating Notebook Server</div>
-                </div>
-                ` 
-            )  
-
-        },
-        error: function(error) {
-
-            $("#createNotebook").prop("disabled", true);
-
-            $("#notebookAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                    <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Issue creating Notebook Server</div>
-                </div>
-                `
-            );
-        }
-    })
-}
-
-function verifyNotebooks() {
-
-    $.ajax({
-        url: "/verifyNotebooks",
-        type : "GET",
-        contentType: 'application/json',
-
-        success: function(response) {
-
-            if (typeof Object.keys(response) !== 'undefined' && Object.keys(response).length > 0) {
-                console.log(Object.keys(response.status))
-                
-                if("running" == Object.keys(response.status)[0]) {
-                    $("#createNotebook").prop("disabled", false);
-                    $("#notebookAlert").empty().html(
-                        `
-                        <div class="alert alert--success">
-                            <div class="alert__icon icon-check-outline"></div>
-                            <div class="alert__message">Notebook created</div>
-                        </div>
-                        ` 
-                    )
-                    $("#createNotebook").prop("disabled", false);
-                    post_install_stage = 5
-                    uploadFiletoJupyter()
-                } else {
-                    $("#createNotebook").prop("disabled", false);
-                    $("#notebookAlert").empty().html(
-                        `
-                        <div class="alert alert--warning">
-                            <div class="alert__icon icon-error-outline"></div>
-                            <div class="alert__message">Waiting for Notebook Server creation</div>
-                        </div>
-                        ` 
-                    )
-                    $("#createNotebook").prop("disabled", true);
-                }
-            }
-            else {
-                $("#notebookAlert").empty().html(
-                    `
-                    <div class="alert alert--danger">
-                        <div class="alert__icon icon-error-outline"></div>
-                        <div class="alert__message">Error during Notebook Server creation</div>
-                    </div>
-                    ` 
-                )  
-            }
-            
-            
-
-        },
-        error: function(error) {
-
-            $("#notebookAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                    <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">There was a problem verifying the notebooks</div>
-                </div>
-                `
-            );
-        }
-    })
-}
-
-
-
-function uploadFiletoJupyter() {
-
-    var fd = new FormData();
-
-    $.ajax({
-        url: "/uploadFiletoJupyter",
-        type : "POST",
-        processData: false,
-        contentType: false, 
-        data:{},
-        success: function(response) {
-
-            $("#notebookFileAlert").empty().html(
-                `
-                <div class="alert alert--success">
-                    <div class="alert__icon icon-check-outline"></div>
-                    <div class="alert__message">Demos created on Notebook Server</div>
-                </div>
-                ` 
-            )  
-
-        },
-        error: function(error) {
-
-            $("#notebookFileAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                    <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Issue creating demos on Notebook Server</div>
-                </div>
-                `
-            );
-        }
-    })
-}
-
-function checkIngress() {
-
-    $.ajax({
-        url: "/checkIngress",
-        type : "GET",
-        contentType: 'application/json',
-
-        success: function(jsonToDisplay) {
-
-            $("#ingressAlert").empty().html(
-                `
-                <div class="alert alert--success">
-                    <div class="alert__icon icon-check-outline"></div>
-                    <div class="alert__message">Cluster access configured as ` + jsonToDisplay.ACCESSTYPE +` on address ` + jsonToDisplay.IP +`</div>
-                </div>
-                ` 
-            )
-            $("#toggleIngress").prop("disabled", false);
-            post_install_stage = 3
-        },
-        error: function(error) {
-
-            $("#toggleIngress").prop("disabled", true);
-
-            $("#ingressAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                <div class="alert__icon icon-error-outline"></div>
-                <div class="alert__message">Issue retrieving ingress details</div>
-            </div>
-                `
-            );
-        }
-    })
-}
-
-function checkKubeflowDashboardReachability() {
-
-    $.ajax({
-        url: "/checkKubeflowDashboardReachability",
-        type : "GET",
-        contentType: 'application/json',
-
-        success: function(jsonToDisplay) {
-            $("#kubeflowDashboardAlert").empty().html(
-                `
-                <div class="alert alert--success">
-                    <div class="alert__icon icon-check-outline"></div>
-                    <div class="alert__message">Kubeflow dashboard is available</div>
-                </div>
-                ` 
-            )
-            $("#kubeflowDashboard").prop("disabled", false);
-            createNotebookServer()
-            post_install_stage = 4
-        },
-        error: function(error) {
-
-            $("#kubeflowDashboard").prop("disabled", true);
-
-            $("#kubeflowDashboardAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                    <div class="alert__icon icon-error-outline"></div>
-                    <div class="alert__message">Kubeflow dashboard is not available</div>
-                </div>
-                `
-            );
-        }
-    })
-}
-
-function kubeflowDashboard() {
-
-    $.ajax({
-        url: "/checkIngress",
-        type : "GET",
-        contentType: 'application/json',
-
-        success: function(jsonToDisplay) {
-            
-            url = "http://" + jsonToDisplay.IP
-            window.open(url)
-
-        },
-        error: function(error) {
-
-            $("#ingressAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                <div class="alert__icon icon-error-outline"></div>
-                <div class="alert__message">Issue retrieving Kubeflow Dashboard details</div>
-            </div>
-                `
-            );
-        }
-    })
-}
 
 function viewPods() {
 
@@ -436,40 +182,3 @@ function viewPods() {
     });
 }
 
-function openNotebookServer() {
-    $.ajax({
-        url: "/checkIngress",
-        type : "GET",
-        contentType: 'application/json',
-
-        success: function(jsonToDisplay) {
-            
-            url = "http://" + jsonToDisplay.IP + '/notebook/kubeflow/mla-notebook'
-            window.open(url)
-
-        },
-        error: function(error) {
-
-            $("#ingressAlert").empty().html(
-                `
-                <div class="alert alert--danger">
-                <div class="alert__icon icon-error-outline"></div>
-                <div class="alert__message">Issue retrieving Notebook Server Dashboard details</div>
-            </div>
-                `
-            );
-        }
-    }) 
-}
-
-function verifyPostInstall() {
-    if(post_install_stage == 1) {
-        verifyK8sServices();
-    } else if(post_install_stage == 2) {
-        checkIngress();
-    } else if(post_install_stage == 3) {
-        checkKubeflowDashboardReachability();
-    } else if(post_install_stage == 4) {
-        verifyNotebooks();
-    }
-}

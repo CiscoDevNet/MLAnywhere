@@ -22,25 +22,20 @@ $(document).ready(function(){
 
                 $(form).each(function(i, field){
                     formData[field.name] = field.value;
-                });
+                })
 
-
-                jsonToDisplay["provider_client_config_uuid"] = formData["vsphereProviders"]
+                jsonToDisplay["provider"] = formData["vsphereProviders"]
                 jsonToDisplay["name"] = formData["clusterName"]
-                jsonToDisplay["datacenter"] = formData["vsphereDatacenters"]
-                jsonToDisplay["cluster"] = formData["vsphereClusters"]
-                jsonToDisplay["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
-                jsonToDisplay["datastore"] = formData["vsphereDatastores"] 
-                jsonToDisplay["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
-                jsonToDisplay["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
-                jsonToDisplay["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
-                jsonToDisplay["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
-                jsonToDisplay["ingress_vip_pool_id"] = formData["vipPools"] 
-                jsonToDisplay["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
-                jsonToDisplay["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
-                jsonToDisplay["node_ip_pool_uuid"] = formData["vipPools"] 
+                jsonToDisplay["vsphere_infra"]["datacenter"] = formData["vsphereDatacenters"]
+                jsonToDisplay["vsphere_infra"]["cluster"] = formData["vsphereClusters"]
+                jsonToDisplay["vsphere_infra"]["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
+                jsonToDisplay["vsphere_infra"]["datastore"] = formData["vsphereDatastores"] 
+                jsonToDisplay["vsphere_infra"]["networks"] = formData["vsphereNetworks"] 
+                jsonToDisplay["subnet_id"] = formData["vipPools"] 
+                jsonToDisplay["master_group"]["template"] = formData["tenantImageTemplate"] 
+                jsonToDisplay["node_groups"]["template"] = formData["tenantImageTemplate"] 
                 jsonToDisplay["ssh_key"] = formData["sshKey"] 
-                jsonToDisplay["networks"] = formData["vsphereNetworks"] 
+                
 
                 $('#jsonModal').find('.modal-body').append('<code><pre style="text-align:justify;">'+JSON.stringify(jsonToDisplay, undefined, 2)+'</pre></code>');
             }
@@ -114,7 +109,7 @@ $(document).ready(function(){
         
                 
                 $.ajax({
-                    url: "/stage2",
+                    url: "/ccpClusterCreation",
                     type : "POST",
                     contentType: 'application/json',
                     dataType : 'json',
