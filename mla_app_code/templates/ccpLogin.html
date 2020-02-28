@@ -24,9 +24,6 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/mla-logging.js') }}"></script>
-
-    <script src="{{ url_for('static', filename='js/titleModal.js') }}"></script>
-
     
 </head>
 
@@ -68,30 +65,25 @@
                     <div class="section">
                         <div class="text-center">
 
-                            <div class="row">
+                                <div class="row">
 
-                                <div class="col-md-12">
-                                    <div class="ui-steps">
-                                        <div class="ui-step active">
-                                            <div class="step__icon">1</div>
-
-                                            <div class="step__label">Capture CCP Info</div>
+                                        <div class="col-md-12">
+                                            <div class="ui-steps">
+                                                <div class="ui-step active">
+                                                    <div class="step__icon ">1</div>
+                                                    <div class="step__label">Select Kubernetes Cluster</div>
+                                                </div>
+                                                <div class="ui-step">
+                                                    <div class="step__icon">2</div>
+                                                    <div class="step__label">Deploy KubeFlow</div>
+                                                </div>
+                                                <div class="ui-step">
+                                                    <div class="step__icon">3</div>
+                                                    <div class="step__label">Access Kubeflow</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="ui-step">
-                                            <div class="step__icon">2</div>
-                                            <div class="step__label">Launch K8 Cluster</div>
-                                        </div>
-                                        <div class="ui-step">
-                                            <div class="step__icon">3</div>
-                                            <div class="step__label">Deploy KubeFlow</div>
-                                        </div>
-                                        <div class="ui-step">
-                                            <div class="step__icon">4</div>
-                                            <div class="step__label">Done!</div>
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
 
                         </div>
                         <div id="alertBox"></div>
@@ -133,8 +125,6 @@
                     </div>
                 </div>
             </div>
-
-            
             <footer class="footer footer--basic">
                 <div class="footer__links">
                     <ul class="list">
@@ -149,25 +139,8 @@
                     </ul>
                 </div>
             </footer>
-
-            
         </main>
     </div>
-
-    <div id="titleModal" class="modal fade" tabindex="-1">
-            <div class="modal-dialog" >
-                <div class="modal-content">
-                    
-                    <div class="modal-body">
-                            <img src="static/images/mla_dark_final_transparent.png" >
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Get Started</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 </body>
 
 </html>

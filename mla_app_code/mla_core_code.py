@@ -13,7 +13,8 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 '''
 
-from flask import Flask, json, render_template, request, session, Response, jsonify, send_file, redirect
+from flask import Flask, json, render_template, request, session, Response, jsonify, send_file, redirect, url_for
+from werkzeug.utils import secure_filename
 from kubernetes import client, utils
 import kubernetes.utils
 from kubernetes.client.rest import ApiException
@@ -28,6 +29,8 @@ import requests
 from flask_socketio import SocketIO, emit
 import subprocess
 from datetime import timedelta
+
+import time
 
 import uuid
 import secrets
@@ -48,11 +51,95 @@ socketio = SocketIO(app)
 
 ALLOWED_EXTENSIONS = set(['py'])
 
+API_VERSION = 3
 
 @app.route("/")
 def index():
     if request.method == 'GET':
-        return render_template('stageTitle.html')
+        return render_template('splashScreen.html')
+
+
+##################################
+# Overview of existing Clusters
+##################################
+@app.route("/clusterOverview", methods = ['GET'])
+def clusterOverview():
+    session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+    
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    
+    files = [f for f in os.listdir(kubeConfigDir) if os.path.isfile(os.path.join(kubeConfigDir, f))]
+    
+    kubeConfigs = []
+    for file in files:
+        kubeConfigs.append(file[4:])
+    
+    return render_template('clusterOverview.html', clusters=kubeConfigs)
+    
+
+##################################
+# REGISTER EXISTING CLUSTER
+##################################
+
+@app.route("/existingClusterUpload", methods = ['POST', 'GET'])
+def existingClusterUpload():
+    if request.method == 'GET':
+        return render_template('existingClusterUpload.html')
+    else:
+        session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+        session['customCluster'] = True
+
+        if 'file' not in request.files:
+            return 'No file provided', 400
+        
+        #if 'clusterName' not in request.form:
+            #return 'Cluster name not defined', 400
+
+        file = request.files['file']
+        #clusterName = request.form['clusterName']
+        clusterName = str(session['sessionUUID'])
+
+        if file.filename == '':
+            return 'No file provided', 400
+        
+        if clusterName == '':
+            return 'Cluster name not defined', 400
+
+        if file:
+            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+            
+            clusterName = clusterName.replace(' ', '_')
+            filename = 'k8s_' + clusterName
+            
+            file.save(os.path.join(kubeConfigDir, filename))
+            return jsonify(dict(redirectURL='/deployKubeflow?cluster=' + filename))
+
+
+##################################
+# LOGIN TO CCP
+##################################
+
+@app.route("/ccpLogin")
+def run_ccpLogin():
+
+    if request.method == 'POST':
+
+        ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
+                
+        loginV2 = ccp.loginV2()
+        loginV3 = ccp.loginV3()
+
+        if not loginV2 and not loginV3:
+            print ("There was an issue with login: " + login.text)
+            return render_template('ccpLogin.html')
+        else:
+            session['ccpURL'] = "https://" + request.form['IP Address']
+            session['ccpToken'] = loginV2.cookies.get_dict()
+            session['x-auth-token'] = loginV3
+
+            return render_template('ccpClusterCreation.html')
+
+    return render_template('ccpLogin.html')
 
 
 @app.route("/testConnection", methods = ['POST', 'GET'])
@@ -63,60 +150,73 @@ def run_testConnection():
         jsonData = request.get_json()
         
         ccp = CCP("https://" + jsonData['ipAddress'],jsonData['username'],jsonData['password'])
-                
-        login = ccp.login()
 
-        if not login:
+        
+        # vip pools UUID still requires the v2 API so you need to login for both the v2 and v3 API until the vip pools has been moved to v3
+               
+        loginV2 = ccp.loginV2()
+        loginV3 = ccp.loginV3()
+
+        if not loginV2 and not loginV3:
             socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_CCP_LOGIN })
             return json.dumps({'success':False}), 401, {'ContentType':'application/json'} 
         else:
             session['ccpURL'] = "https://" + jsonData['ipAddress']
-            session['ccpToken'] = login.cookies.get_dict()
+            session['ccpToken'] = loginV2.cookies.get_dict()
             session['sessionUUID'] =  uuid.UUID(bytes=secrets.token_bytes(16))
+            session['x-auth-token'] = loginV3
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CCP_LOGIN })
-            return jsonify(dict(redirectURL='/stage2'))
+            return jsonify(dict(redirectURL='/ccpClusterCreation'))
     
-    return render_template('stage1.html')
+    return render_template('ccpLogin.html')
+
+
+##################################
+# CREATE CCP CLUSTER
+##################################
+
+@app.route('/checkClusterAlreadyExists', methods=['GET', 'POST'])
+def checkClusterAlreadyExists():
+
+    if request.method == 'GET':
+
+        if "ccpToken" in session and "x-auth-token" in session:
+
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
-@app.route("/stage1")
-def run_stage1():
+            jsonData = request.args.to_dict()
 
-    if request.method == 'POST':
+            clusterName = jsonData["clusterName"]
 
-        ccp = CCP("https://" + request.form['IP Address'],request.form['Username'],request.form['Password'])
-                
-        login = ccp.login()
+            if not ccp.checkClusterAlreadyExists(clusterName):
+                return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+            else:
+                return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
-        if not login:
-            print ("There was an issue with login: " + login.text)
-            return render_template('stage1.html')
-        else:
-            session['ccpURL'] = "https://" + request.form['IP Address']
-            session['ccpToken'] = login.cookies.get_dict()
-            return render_template('stage2.html')
 
-    return render_template('stage1.html')
-
-@app.route("/stage2", methods = ['POST', 'GET'])
-def run_stage2():
+@app.route("/ccpClusterCreation", methods = ['POST', 'GET'])
+def run_ccpClusterCreation():
 
         if request.method == 'POST':
 
             uuid = ""
 
-            if "ccpToken" not in session:
-                return render_template('stage1.html')
+            if "ccpToken" not in session or "x-auth-token" not in session:
+                return render_template('ccpLogin.html')
 
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
 
             formData = request.get_json()
             
             try:
-                with open("ccpRequest.json") as json_data:
-                    
-                    clusterData = json.load(json_data)
-            
+                if API_VERSION == 2:
+                    with open("ccpRequestV2.json") as json_data:
+                        clusterData = json.load(json_data)
+                        print(clusterData)
+                else:
+                    with open("ccpRequestV3.json") as json_data:
+                        clusterData = json.load(json_data)
             except IOError as e:
                 
                 socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED})
@@ -170,59 +270,121 @@ def run_stage2():
             else:
                 clusterData["ssh_key"] = formData["sshKey"] 
             
-                
-            clusterData["name"] = formData["clusterName"]
-            clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
-            clusterData["name"] = formData["clusterName"]
-            clusterData["datacenter"] = formData["vsphereDatacenters"]
-            clusterData["cluster"] = formData["vsphereClusters"]
-            clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
-            clusterData["datastore"] = formData["vsphereDatastores"] 
-            clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
-            clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
-            clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
-            clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
-            clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
-            clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
-            clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
-            clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
-            
-            clusterData["networks"] = [formData["vsphereNetworks"] ]
+            if "vsphereResourcePools" not in formData:
+                formData["vsphereResourcePools"] = ""
+
+            if API_VERSION == 2:
+                clusterData["name"] = formData["clusterName"]
+                clusterData["datacenter"] = formData["vsphereDatacenters"]
+                clusterData["cluster"] = formData["vsphereClusters"]
+                clusterData["resource_pool"] = formData["vsphereClusters"] + "/" + formData["vsphereResourcePools"]
+                clusterData["datastore"] = formData["vsphereDatastores"] 
+                clusterData["ingress_vip_pool_id"] = formData["vipPools"] 
+                clusterData["master_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["worker_node_pool"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["node_ip_pool_uuid"] = formData["vipPools"] 
+                clusterData["networks"] = [formData["vsphereNetworks"] ]
+                clusterData["provider_client_config_uuid"] = formData["vsphereProviders"]
+                clusterData["deployer"]["provider"]["vsphere_client_config_uuid"] = formData["vsphereProviders"] 
+                clusterData["deployer"]["provider"]["vsphere_datacenter"] = formData["vsphereDatacenters"] 
+                clusterData["deployer"]["provider"]["vsphere_datastore"] = formData["vsphereDatastores"] 
+                clusterData["deployer"]["provider"]["vsphere_working_dir"] = "/" + formData["vsphereDatacenters"] + "/vm"
+            else:
+                clusterData["name"] = formData["clusterName"]
+                clusterData["subnet_id"] = formData["vipPools"] 
+                clusterData["master_group"]["template"] = formData["tenantImageTemplate"] 
+                clusterData["node_groups"][0]["template"] = formData["tenantImageTemplate"] 
+                clusterData["provider"] = formData["vsphereProviders"]
+                clusterData["vsphere_infra"]["datacenter"] = formData["vsphereDatacenters"] 
+                clusterData["vsphere_infra"]["datastore"] = formData["vsphereDatastores"] 
+                clusterData["vsphere_infra"]["networks"] = [ formData["vsphereNetworks"] ]
+                clusterData["vsphere_infra"]["cluster"] = formData["vsphereClusters"] 
+                clusterData["vsphere_infra"]["resource_pool"] = formData["vsphereResourcePools"]
+                clusterData["node_groups"][0]["ssh_key"] = clusterData["ssh_key"]
+                clusterData["master_group"]["ssh_key"] = clusterData["ssh_key"]
+                clusterData.pop('ssh_key', None)
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
-            
+
             response = ccp.deployCluster(clusterData)
 
-            if (response.status_code == 200) or (response.status_code == 201) :
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
-            
-            if "uuid" not in response.json():
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
-                return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+            if API_VERSION == 2 :
 
-            uuid = response.json()["uuid"]
+                if (response.status_code == 200) or (response.status_code == 201) :
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
+            
+                if "uuid" not in response.json():
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                    return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+
+                uuid = response.json()["uuid"]
+            else:
+                if "id" not in response.json():
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                    return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+
+                uuid = response.json()["id"]
 
             kubeConfig = ccp.getConfig(uuid)
 
-            if "apiVersion" in kubeConfig.text:
+            if API_VERSION == 2 :
 
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
+                if "apiVersion" in kubeConfig.text:
 
-                kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-                if not os.path.exists(kubeConfigDir):
-                    try:
-                        os.makedirs(kubeConfigDir)
-                    except OSError as e:
-                        if e.errno != errno.EEXIST:
-                            raise
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
 
-                
-                with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
-                    f.write(kubeConfig.text)
+                    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+                    if not os.path.exists(kubeConfigDir):
+                        try:
+                            os.makedirs(kubeConfigDir)
+                        except OSError as e:
+                            if e.errno != errno.EEXIST:
+                                raise
+
+                    
+                    with open("{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])), "w") as f:
+                        f.write(kubeConfig.text)
+                else:
+                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
+                    return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
+
             else:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
-                return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
 
+                # it looks like the CCP V3 API has made the cluster creation async so we get back a response straight away however
+                # theres a status field which shows "CREATING". Will need to wait until this is "READY"
+
+                if "status" in kubeConfig.text:
+                    while kubeConfig.json()["status"] == "CREATING":
+                        kubeConfig = ccp.getConfig(uuid)
+                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
+                        time.sleep(30)
+
+                    if kubeConfig.json()["status"] != "READY":
+                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_DEPLOY_CLUSTER_FAILED })
+                        return json.dumps({'success':False,"errorCode":"ERROR_DEPLOY_CLUSTER_FAILED","errorMessage":config.ERROR_DEPLOY_CLUSTER_FAILED,"errorMessageExtended":response.text}), 400, {'ContentType':'application/json'}
+
+                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE })
+
+                    if "kubeconfig" in kubeConfig.text:
+
+                        kubeConfig = kubeConfig.json()["kubeconfig"]
+
+                        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_CREATING_KUBE_CONFIG })
+
+                        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+                        if not os.path.exists(kubeConfigDir):
+                            try:
+                                os.makedirs(kubeConfigDir)
+                            except OSError as e:
+                                if e.errno != errno.EEXIST:
+                                    raise
+
+                        
+                        with open("{}/{}".format(kubeConfigDir,session["sessionUUID"]), "w") as f:
+                            f.write(kubeConfig)
+                    else:
+                        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_KUBECONFIG_MISSING})
+                        return json.dumps({'success':False,"errorCode":"ERROR_KUBECONFIG_MISSING","errorMessage":config.ERROR_KUBECONFIG_MISSING}), 400, {'ContentType':'application/json'}
 
             # if a proxy is required then we need to insert his once the worker nodes have been deployed
 
@@ -252,247 +414,135 @@ def run_stage2():
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER_COMPLETE})
 
-            return jsonify(dict(redirectURL='/stage3'))
+            return jsonify(dict(redirectURL='/deployKubeflow'))
 
         elif request.method == 'GET':
 
             if "ccpToken" in session:
-                return render_template('stage2.html')
+                return render_template('ccpClusterCreation.html')
             else:
-                return render_template('stage1.html')
+                return render_template('ccpLogin.html')
 
-@app.route("/stage3", methods = ['POST', 'GET'])
-def run_stage3():
+            
+##################################
+# DEPLOY KUBEFLOW
+##################################
+
+@app.route("/deploy", methods = ['POST'])
+def deploy():
+    deploy_mla('asdf')
+
+def deploy_mla(kubeconfig_name):
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir, kubeconfig_name)}
+    
+    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
+    
+    proc = subprocess.Popen(["kubectl","apply","-f","mla_tenant.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
+    proc.wait()
+    (stdout, stderr) = proc.communicate()
+    
+    if proc.returncode != 0:
+        socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MLA_YAML,stderr.decode("utf-8") )})
+        return json.dumps({'success':False,"errorCode": "ERROR_KUBEFLOW_YAML","errorMessage":config.ERROR_MLA_YAML}), 400, {'ContentType':'application/json'}
+    else:
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MLA_YAML)})
+    
+    return
+
+
+@app.route("/deployKubeflow", methods = ['POST', 'GET'])
+def run_deployKubeflow():
     
     if request.method == 'POST':
-        if "ccpToken" in session:
-
-            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-           
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_STARTING_INSTALL)})
-
-            proc = subprocess.Popen(["kubectl","apply","-f","https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/master/nvidia-device-plugin.yml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NVIDIA_YAML,stderr.decode("utf-8") )})
-                return json.dumps({'success':False,"errorCode":"ERROR_KUBECTL_NVIDIA_YAML","errorMessage":config.ERROR_KUBECTL_NVIDIA_YAML}), 400, {'ContentType':'application/json'}
+        if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+            if "customCluster" in session:
+                deploy_mla('k8s_' + str(session["sessionUUID"]))
             else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_NVIDIA_YAML)})
-
-            proc = subprocess.Popen(["helm","init", "--upgrade"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-            
-            
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
-                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
-            else:
-                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM_SERVER)})
-            
-            
-            # Update Helm
-            proc = subprocess.Popen(["helm","repo","update"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-            
-            
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_HELM,stderr.decode("utf-8"))})
-                return json.dumps({'success': False, "errorCode": "ERROR_HELM","errorMessage": config.ERROR_HELM}), 400, {'ContentType': 'application/json'}
-            else:
-                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_HELM_CLIENT)})
+                deploy_mla(str(session["sessionUUID"]))
                 
-            # Make sure all Pods are ready
-            helm_wait = True
-            while helm_wait:
-                helm_change = True
-                
-                ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-
-                kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-                kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-
-                kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-
-                api_instance = kubernetes.client.CoreV1Api()
-                api_response = api_instance.list_pod_for_all_namespaces(watch=False)
-                
-                for i in api_response.items:
-                    if i.status.phase != "Running" and i.status.phase != "Succeeded":
-                        helm_change = False
-                        
-                if helm_change == True:
-                    helm_wait = False
-                    time.sleep(8)
-            
-            # Deploy NFS Server Provisioner
-            proc = subprocess.Popen(["helm","install","stable/nfs-server-provisioner","--name","kf-nfs","--set=persistence.enabled=true,persistence.storageClass=standard,persistence.size=200Gi"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-            
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_NFS_SERVER,stderr.decode("utf-8"))})
-                return json.dumps({'success': False, "errorCode": "ERROR_NFS_SERVER","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
-            else:
-                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_NFS_SERVER)})
-                
-            # Change default storage class
-            try:
-                configuration = kubernetes.client.Configuration()
-                storage_api = kubernetes.client.StorageV1Api(kubernetes.client.ApiClient(configuration))
-                body = {
-                    'metadata': {
-                        'annotations': {
-                            'storageclass.beta.kubernetes.io/is-default-class': 'false'
-                        }
-                    }
-                }
-                resp = storage_api.patch_storage_class('standard', body)
-                logging.warn(api_response)
-            except ApiException as e:
-                logging.warn("Exception when calling StorageV1Api->patch_storage_class: %s\n" % e)
-                
-            try:
-                configuration = kubernetes.client.Configuration()
-                storage_api = kubernetes.client.StorageV1Api(kubernetes.client.ApiClient(configuration))
-                body = {
-                    'metadata': {
-                        'annotations': {
-                            'storageclass.kubernetes.io/is-default-class': 'true'
-                        }
-                    }
-                }
-                resp = storage_api.patch_storage_class('nfs', body)
-                logging.warn(api_response)
-            except ApiException as e:
-                logging.warn("Exception when calling StorageV1Api->patch_storage_class: %s\n" % e)
-            
-
-            # Deploy PVC for RWX
-#            proc = subprocess.Popen(["kubectl", "apply", "-f","nfs.yaml"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-#            proc.wait()
-#            (stdout, stderr) = proc.communicate()
-#            
-#            
-#            if proc.returncode != 0:
-#                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KUBECTL_NFS_PVC,stderr.decode("utf-8"))})
-#                return json.dumps({'success': False, "errorCode": "ERROR_KUBECTL_NFS_PVC","errorMessage": config.ERROR_KUBECTL_NFS_PVC}), 400, {'ContentType': 'application/json'}
-#            else:
-#                socketio.emit('consoleLog',{'loggingType': 'INFO', 'loggingMessage': "{}".format(config.INFO_KUBECTL_NFS_PVC)})
-
-
-            proc = subprocess.Popen(["export","KFAPP=","{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True, env=kubeSessionEnv)
-
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_EXPORT_KFAPP,stderr.decode("utf-8") )})
-                return json.dumps({'success':False,"errorCode":"ERROR_EXPORT_KFAPP","errorMessage":config.ERROR_EXPORT_KFAPP}), 400, {'ContentType':'application/json'}
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_EXPORT_KFAPP)})
-
-
-            if not os.path.isdir("{}".format(config.KFAPP)):
-                proc = subprocess.Popen(["mkdir {}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=kubeSessionEnv)
-                proc.wait()
-                (stdout, stderr) = proc.communicate()
-
-                if proc.returncode != 0:
-                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_MKDIR_KFAPP,stderr.decode("utf-8") )})
-                else:
-                    socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_MKDIR_KFAPP)})
-
-
-
-            proc = subprocess.Popen(["kfctl","init", "{}".format(config.KFAPP)],stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_INIT,stderr.decode("utf-8") )})
-                return json.dumps({'success':False,"errorCode":"ERROR_KFCTL_INIT","errorMessage":config.ERROR_KFCTL_INIT}), 400, {'ContentType':'application/json'}
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_INIT)})
-
-
-
-            proc = subprocess.Popen(["kfctl","generate","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP), env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_GENERATE_ALL,stderr.decode("utf-8") )})
-                return json.dumps({'success':False,"errorCode":"ERROR_KFCTL_GENERATE_ALL","errorMessage":config.ERROR_KFCTL_GENERATE_ALL}), 400, {'ContentType':'application/json'}
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_GENERATE_ALL)})
-
-
-
-            proc = subprocess.Popen(["kfctl","apply","all", "-V"],stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd="{}".format(config.KFAPP), env=kubeSessionEnv)
-            proc.wait()
-            (stdout, stderr) = proc.communicate()
-
-            if proc.returncode != 0:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_KFCTL_APPLY_ALL,stderr.decode("utf-8") )})
-                return json.dumps({'success':False,"errorCode":"ERROR_KFCTL_APPLY_ALL","errorMessage":config.ERROR_KFCTL_APPLY_ALL}), 400, {'ContentType':'application/json'}
-            else:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KFCTL_APPLY_ALL)})
-            
-
-            
-            return jsonify(dict(redirectURL='/stage4'))
+                return jsonify(dict(redirectURL='/postInstallTasks'))
         else:
-            return jsonify(dict(redirectURL='/stage1'))
+            return jsonify(dict(redirectURL='/clusterOverview'))
     
     elif request.method == 'GET':
 
-            if "ccpToken" in session:
-                return render_template('stage3.html')
+            if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+                return render_template('deployKubeflow.html')
             else:
-                return render_template('stage1.html')
+                return render_template('clusterOverview.html')
 
+
+##################################
+# POST INSTALL VIEW
+##################################
+            
+@app.route("/postInstallTasks", methods = ['GET'])
+def run_postInstallTasks():
+    cluster = request.args.get('cluster')
+    if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+        if cluster != '' and cluster != None:
+            return render_template('postInstallTasks.html')
+        else:
+            return render_template('postInstallTasks.html')
+    else:
+        return render_template('clusterOverview.html')
+        
+
+@app.route("/mladeploymentstatus", methods = ['GET'])
+def mladeploymentstatus():
+    cluster = request.args.get('cluster')
+
+    if "customCluster" in session:
+        cluster = 'k8s_' + str(session["sessionUUID"])
+    else:
+        cluster = str(session["sessionUUID"])
+
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"])}
+    kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,cluster))
+
+    api_instance = kubernetes.client.CoreV1Api()
+
+    nodes = api_instance.list_node(watch=False)
+    for node in nodes.items:
+        for address in node.status.addresses:
+            if address.type == 'ExternalIP':
+                node_ip = address.address
+
+    services = api_instance.list_namespaced_service('default')
+    for service in services.items:
+        if service.metadata.name == 'mla-svc':
+            node_port = service.spec.ports[0].node_port
+
+    session["mla_endpoint"] = str(node_ip) + ':' + str(node_port)
     
-@app.route("/stage4")
-def run_stage4():
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session:
-            return render_template('stage4.html')
-        else:
-            return render_template('stage1.html')
-
-@app.route("/stage5", methods = ['POST', 'GET'])
-def run_stage5():
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session:
-            return render_template('stage5.html')
-        else:
-            return render_template('stage1.html')
+    try:
+        status = requests.get("http://{}/status".format(session["mla_endpoint"]))
+    except:
+        return 'Pod not reachable yet', 200
+    
+    if status.status_code == 200:
+        return status.text, 200
+    else:
+        return 'Pod not reachable yet', 200
 
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
 def run_vsphereProviders():
     
     if request.method == 'GET':
+        
+        if "ccpToken" in session and "x-auth-token" in session:
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
             response = ccp.getProviderClientConfigs()
             
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_PROVIDERS })
-                return response.text
+                return jsonify(response)
             else:
-                return [config.ERROR_VSPHERE_PROVIDERS]
+                return config.ERROR_VSPHERE_PROVIDERS, 400
 
 @app.route("/vsphereDatacenters", methods = ['POST', 'GET'])
 def run_vsphereDatacenters():
@@ -500,8 +550,8 @@ def run_vsphereDatacenters():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
     
@@ -519,8 +569,8 @@ def run_vsphereClusters():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -530,7 +580,7 @@ def run_vsphereClusters():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_CLUSTERS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereResourcePools", methods = ['POST', 'GET'])
 def run_vsphereResourcePools():
@@ -538,9 +588,8 @@ def run_vsphereResourcePools():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -548,9 +597,10 @@ def run_vsphereResourcePools():
 
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_RESOURCE_POOLS })
+                
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereNetworks", methods = ['POST', 'GET'])
 def run_vsphereNetworks():
@@ -558,9 +608,8 @@ def run_vsphereNetworks():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -570,7 +619,7 @@ def run_vsphereNetworks():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_NETWORKS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereDatastores", methods = ['POST', 'GET'])
 def run_vsphereDatastores():
@@ -578,9 +627,8 @@ def run_vsphereDatastores():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -590,7 +638,7 @@ def run_vsphereDatastores():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATASTORES })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vsphereVMs", methods = ['POST', 'GET'])
 def run_vsphereVMs():
@@ -598,9 +646,8 @@ def run_vsphereVMs():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -610,16 +657,15 @@ def run_vsphereVMs():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_VMS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/vipPools", methods = ['POST', 'GET'])
 def run_vipPools():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             jsonData = request.args.to_dict()
 
@@ -629,45 +675,47 @@ def run_vipPools():
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VIP_POOLS })
                 return jsonify(response)
             else:
-                return []
+                return jsonify("[]")
 
 @app.route("/clusterConfigTemplate", methods = ['POST', 'GET'])
 def run_clusterConfigTemplate():
     
     if request.method == 'GET':
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
         
             try:
-                with open("ccpRequest.json") as json_data:
-                    clusterData = json.load(json_data)
-                    return jsonify(clusterData)
+                
+                if API_VERSION == 2:
+                    with open("ccpRequestV2.json") as json_data:
+                        clusterData = json.load(json_data)
+                        return jsonify(clusterData)
+                else:
+                    with open("ccpRequestV3.json") as json_data:
+                        clusterData = json.load(json_data)
+                        return jsonify(clusterData)
+
 
             except IOError as e:
                 return "I/O error({0}): {1}".format(e.errno, e.strerror)
 
 @app.route("/viewPods", methods = ['POST', 'GET'])
 def run_viewPods():
-    
     if request.method == 'GET':
+        if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
 
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-        
+            if "customCluster" in session:
+                cluster = 'k8s_' + str(session["sessionUUID"])
+            else:
+                cluster = str(session["sessionUUID"])
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-            #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
-
-            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-            #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
-
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,cluster),"KFAPP":config.KFAPP}
+                
+            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,cluster))   
+            
             api_instance = kubernetes.client.CoreV1Api()
-
-
             api_response = api_instance.list_pod_for_all_namespaces( watch=False)
             
             podsToReturn = []
@@ -676,14 +724,17 @@ def run_viewPods():
             
             return jsonify(podsToReturn)
 
+# No longer need to toggle the ingress since Kubeflow is using Istio for ingress
+'''
 @app.route("/toggleIngress", methods = ['POST', 'GET'])
 def run_toggleIngress():
     
     if request.method == 'POST':
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
+            
 
             kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])),"KFAPP":config.KFAPP}
             #kubeSessionEnv = {**os.environ, 'KUBECONFIG': "kubeconfig.yaml","KFAPP":config.KFAPP}
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
@@ -716,19 +767,20 @@ def run_toggleIngress():
 
         return getIngressDetails()
 
+'''
 
 @app.route("/checkIngress", methods = ['POST', 'GET'])
 def run_checkIngress():
 
     if request.method == 'GET':
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             return getIngressDetails()
 
 @app.route("/checkKubeflowDashboardReachability", methods = ['POST', 'GET'])
 def run_checkKubeflowDashboardReachability():
     
     if request.method == 'GET':
-        if "ccpToken" in session:
+        if "ccpToken" in session and "x-auth-token" in session:
             ingress = getIngressDetails()
 
             if ingress == None:
@@ -747,16 +799,18 @@ def run_checkKubeflowDashboardReachability():
 
     return json.dumps({'success':False,"errorCode":"ERROR_KUBEFLOW_DASHBOARD_REACHABILITY","errorMessage":config.ERROR_KUBEFLOW_DASHBOARD_REACHABILITY}), 400, {'ContentType':'application/json'}
 
+# Don't need this since the details come from the Istio Ingress
+'''
 def getIngressDetails():
     
-    if "ccpToken" in session:
+    if "ccpToken" in session and "x-auth-token" in session:
 
         kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-        kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
+        kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])),"KFAPP":config.KFAPP}
 
         socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': "{}".format(config.INFO_KUBECTL_DEPLOY_INGRESS)})
         
-        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
+        kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,'k8s_' + str(session["sessionUUID"])))
         #kubeConfig.load_kube_config(config_file="kubeconfig.yaml")
 
         api_instance = kubernetes.client.ExtensionsV1beta1Api()
@@ -793,217 +847,21 @@ def getIngressDetails():
 
             if workerAddress and workerPort:
                 return jsonify({"ACCESSTYPE":  "NodePort", "IP":"{}:{}".format(workerAddress,workerPort)})
+'''
 
-
-                
-
-@app.route('/downloadKubeconfig', methods=['GET', 'POST'])
-def downloadKubeconfig_redirect():
-
-    return redirect('/downloadKubeconfig/kubeconfig.yaml')
-
-@app.route('/downloadKubeconfig/<filename>', methods=['GET', 'POST'])
+@app.route('/downloadKubeconfig/<filename>', defaults={'filename': None}, methods=['GET'])
 def downloadKubeconfig(filename):
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session:
-            socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
-            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            return send_file("{}/{}".format(kubeConfigDir,session['sessionUUID']))
-            #return send_file("kubeconfig.yaml")
+    if "customCluster" in session or ("ccpToken" in session and "x-auth-token" in session):
+        socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DOWNLOAD_KUBECONFIG })
+        kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+        if "customCluster" in session:
+            cluster = 'k8s_' + str(session["sessionUUID"])
         else:
-            return render_template('stage1.html')
+            cluster = str(session["sessionUUID"])
 
-@app.route('/checkClusterAlreadyExists', methods=['GET', 'POST'])
-def checkClusterAlreadyExists():
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-        
-            jsonData = request.args.to_dict()
-
-            clusterName = jsonData["clusterName"]
-
-            if not ccp.checkClusterAlreadyExists(clusterName):
-                return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
-            else:
-                return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
-
-@app.route('/createNotebookServer', methods=['GET', 'POST'])
-def run_createNotebookServer():
-
-    if request.method == 'POST':
-
-        if "ccpToken" in session:
-
-            ingress = getIngressDetails()
-
-            if ingress == None:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
-            else:
-                ingress = ingress.json
-
-            headers = {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            }
-
-            new_notebooks = [
-                {
-                    'name': config.NOTEBOOK_NAME,
-                    'cpu': config.NOTEBOOK_CPU,
-                    'memory': config.NOTEBOOK_MEMORY 
-                }
-            ]
-            
-            for new_nb in new_notebooks:
-                data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_size=10&ws_access_modes=ReadWriteOnce&ws_type=New&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'
-                #data = 'nm=' + new_nb['name'] + '&ns=kubeflow&imageType=standard&standardImages=gcr.io%2Fkubeflow-images-public%2Ftensorflow-1.13.1-notebook-cpu%3Av0.5.0&customImage=&cpu=' + new_nb['cpu'] + '&memory=' + new_nb['memory'] + '&ws_type=Existing&ws_name=' + new_nb['name'] + '&ws_mount_path=%2Fhome%2Fjovyan&extraResources=%7B%7D'      
-
-                response = requests.post('http://' + ingress["IP"] + '/jupyter/api/namespaces/kubeflow/notebooks', data, headers=headers, verify=False)
-
-            status = response.json()
-
-            if not status["success"]:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["log"] )})
-                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
-
-            ready = False
-            timeout = False
-            counter = 0
-
-            while not (ready or timeout):
-                
-                counter += 1
-                nblist = get_notebooks(ingress["IP"])
-                loop_ready = True
-                for nb in nblist:
-                    if 'running' not in nb['status'].keys():
-                        loop_Ready = False
-                
-                if loop_ready == True:
-                    ready = True
-                
-                if counter > 1000 and ready == False:
-                    timeout = True     
-                
-            if response.status_code == 200:
-                return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
-            else:
-                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
-
-
-        else:
-            return render_template('stage1.html')
-
-@app.route('/uploadFiletoJupyter', methods=['GET', 'POST'])
-def run_uploadFiletoJupyter():
-
-    if request.method == 'POST':
-
-        if "ccpToken" in session:
-            
-            # Read IPYNB and PVC file names
-            path = './demos/ipynb/'
-            ipynb = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-            
-            path = './demos/pvc/'
-            pvcfiles = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-            
-            # Load Kubeconfig
-            kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
-            kubeSessionEnv = {**os.environ, 'KUBECONFIG': "{}/{}".format(kubeConfigDir,session["sessionUUID"]),"KFAPP":config.KFAPP}
-
-            kubeConfig.load_kube_config(config_file="{}/{}".format(kubeConfigDir,session["sessionUUID"]))
-
-            # # Apply PVC
-            client_config = client.Configuration()
-            client_config.verify_ssl = False
-            k8s_client = client.ApiClient(client_config)
-
-            for file in pvcfiles:
-                logging.warning(file)
-                utils.create_from_yaml(
-                    k8s_client = k8s_client,
-                    yaml_file = os.path.join(os.getcwd(),'demos', 'pvc', file),
-                    namespace = "kubeflow"
-                )
-            # Upload file
-            ingress = getIngressDetails()
-
-            if ingress == None:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.UPLOAD_FILE,stderr.decode("utf-8") )})
-            else:
-                ingress = ingress.json
-
-            xsrf = get_jupyter_cookie(ingress["IP"])
-            
-            headers = {
-                'Content-Type': 'application/json',
-                'X-XSRFToken': xsrf
-            }
-            
-            overall_status = True
-            for file in ipynb:
-                file_path = os.path.join(os.getcwd(),'demos', 'ipynb')
-                file_content = json.loads(open(os.path.join(file_path, file)).read())
-
-                data = {'name':file,'path':file,'type':'notebook','format':'json','content':file_content}
-
-                response = requests.put('http://' + ingress["IP"] + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/api/contents/' + file, cookies=dict(_xsrf=xsrf), headers=headers, data=json.dumps(data), verify=False)
-
-                status = response.json()
-
-                if response.status_code == 200 or response.status_code == 201:
-                    pass
-                else:
-                    overall_status = False
-                    socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_JUPYTER_NOTEBOOK,status["message"] )})
-            
-            if overall_status == True:
-                return json.dumps({'success':True,"errorCode":"INFO_JUPYTER_NOTEBOOK","message":config.INFO_JUPYTER_NOTEBOOK}), 200, {'ContentType':'application/json'}
-            else:
-                return json.dumps({'success':False,"errorCode":"ERROR_JUPYTER_NOTEBOOK","message":config.ERROR_JUPYTER_NOTEBOOK}), 400, {'ContentType':'application/json'}
-
-        else:
-            return render_template('stage1.html')
-
-@app.route('/verifyNotebooks', methods=['GET'])
-def verifyNotebooks():
-
-    if request.method == 'GET':
-
-        if "ccpToken" in session:
-
-            ccp = CCP(session['ccpURL'],"","",session['ccpToken'])
-        
-            ingress = getIngressDetails()
-
-            if ingress == None:
-                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': "{} - {}".format(config.ERROR_CONFIGURING_INGRESS,stderr.decode("utf-8") )})
-            else:
-                ingress = ingress.json
-
-            notebooks = get_notebooks(ingress["IP"])
-
-            for notebook in notebooks:
-                if notebook["name"] == config.NOTEBOOK_NAME:
-                    return jsonify(notebook)
-            
-            return jsonify([])  
-
-def get_notebooks(ip):
-    nblist = requests.get('http://' + ip + '/jupyter/api/namespaces/kubeflow/notebooks', verify=False)
-    nblist = json.loads(nblist.content)
-    return nblist['notebooks']
-
-
-def get_jupyter_cookie(ip):
-    req = requests.get('http://' + ip + '/notebook/kubeflow/'+ config.NOTEBOOK_NAME +'/tree?',verify=False)
-    return req.cookies['_xsrf']
+        return send_file("{}/{}".format(kubeConfigDir,cluster))
+    else:
+        return "Not found", 400
 
 
 def allowed_file(filename):
@@ -1021,5 +879,10 @@ def make_session_permanent():
 
 if __name__ == "__main__":
     app.secret_key = "4qDID0dZoQfZOdVh5BzG"
+    
+    kubeConfigDir = os.path.expanduser(config.KUBE_CONFIG_DIR)
+    if not os.path.exists(kubeConfigDir):
+        os.mkdir(kubeConfigDir)
+    
     app.run(host='0.0.0.0', port=5000)
     socketio.run(app)

@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+   name: mla-pvc
+spec:
+   accessModes:
+      - ReadWriteOnce
+   resources:
+      requests:
+         storage: 50M
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mlav2-role
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: mlav2-role
+subjects:
+- kind: ServiceAccount
+  name: mlav2-role
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mlav2
+  labels:
+    app: mla
+spec:
+  serviceAccountName: mlav2-role
+  volumes:
+  - name: mla-pv
+    persistentVolumeClaim:
+      claimName: mla-pvc
+  containers:
+  - name: setup
+    imagePullPolicy: Always
+    image: mimaurer/mlav2setup:test
+    volumeMounts:
+    - name: mla-pv
+      mountPath: /usr/mnt
+  - name: webserver
+    imagePullPolicy: Always
+    image: mimaurer/mlav2web:test
+    volumeMounts:
+    - name: mla-pv
+      mountPath: /usr/mnt
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: mla-svc
+spec:
+    type: NodePort
+    ports:
+    - port: 5000
+      protocol: TCP
+    selector:
+        app: mla

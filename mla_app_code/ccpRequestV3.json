@@ -1,0 +1,48 @@
+        {
+            "network_plugin_profile": {
+                "name": "calico",
+                "details": {
+                    "pod_cidr": "192.168.0.0/16"
+                }
+            },
+            "vsphere_infra": {
+                "datacenter": "",
+                "datastore": "",
+                "networks": [""],
+                "cluster": "",
+                "resource_pool": ""
+            },
+            "load_balancer_num": 1,
+            "subnet_id": "",
+            "node_groups": [{
+                "name": "node-group",
+                "size": 2,
+                "vcpus": 8,
+                "memory_mb": 16384,
+                "gpus": [],
+                "template": "ccp-tenant-image-1.14.8-ubuntu18-5.1.0",
+                "kubernetes_version": "1.14.8",
+                "ssh_user": "ccpuser",
+                "ssh_key": ""
+            }],
+            "master_group": {
+                "name": "master-group",
+                "size": 1,
+                "vcpus": 8,
+                "memory_mb": 16384,
+                "gpus": [],
+                "template": "ccp-tenant-image-1.14.8-ubuntu18-5.1.0",
+                "kubernetes_version": "1.14.8",
+                "ssh_user": "ccpuser",
+                "ssh_key": ""
+            },
+            "kubernetes_version": "1.14.8",
+            "insecure_registries": [],
+            "root_ca_registries": [],
+            "ntp_servers": [],
+            "ntp_pools": [],
+            "ip_allocation_method": "ccpnet",
+            "provider": "",
+            "name": "",
+            "type": "vsphere"
+        }
