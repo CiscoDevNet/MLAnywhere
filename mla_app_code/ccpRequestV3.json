@@ -20,8 +20,8 @@
                 "vcpus": 8,
                 "memory_mb": 16384,
                 "gpus": [],
-                "template": "ccp-tenant-image-1.14.8-ubuntu18-5.1.0",
-                "kubernetes_version": "1.14.8",
+                "template": "ccp-tenant-image-1.16.3-ubuntu18-6.0.0",
+                "kubernetes_version": "1.16.3",
                 "ssh_user": "ccpuser",
                 "ssh_key": ""
             }],
@@ -31,8 +31,8 @@
                 "vcpus": 8,
                 "memory_mb": 16384,
                 "gpus": [],
-                "template": "ccp-tenant-image-1.14.8-ubuntu18-5.1.0",
-                "kubernetes_version": "1.14.8",
+                "template": "ccp-tenant-image-1.16.3-ubuntu18-6.0.0",
+                "kubernetes_version": "1.16.3",
                 "ssh_user": "ccpuser",
                 "ssh_key": ""
             },
