@@ -294,6 +294,7 @@ def run_ccpClusterCreation():
                 clusterData["subnet_id"] = formData["vipPools"] 
                 clusterData["master_group"]["template"] = formData["tenantImageTemplate"] 
                 clusterData["node_groups"][0]["template"] = formData["tenantImageTemplate"] 
+                clusterData["node_groups"][0]["gpus"][0]["type"] = formData["gpus"] 
                 clusterData["provider"] = formData["vsphereProviders"]
                 clusterData["vsphere_infra"]["datacenter"] = formData["vsphereDatacenters"] 
                 clusterData["vsphere_infra"]["datastore"] = formData["vsphereDatastores"] 
@@ -624,7 +625,6 @@ def run_vsphereNetworks():
 @app.route("/vsphereDatastores", methods = ['POST', 'GET'])
 def run_vsphereDatastores():
     
-    
     if request.method == 'GET':
 
         if "ccpToken" in session and "x-auth-token" in session:
@@ -636,6 +636,24 @@ def run_vsphereDatastores():
 
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATASTORES })
+                return jsonify(response)
+            else:
+                return jsonify("[]")
+
+@app.route("/gpus", methods = ['POST', 'GET'])
+def run_gpus():
+
+    if request.method == 'GET':
+
+        if "ccpToken" in session and "x-auth-token" in session:
+            ccp = CCP(session['ccpURL'],"","",session['ccpToken'],session['x-auth-token'])
+        
+            jsonData = request.args.to_dict()
+
+            response = ccp.getGPUs(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+
+            if response:
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_GPUs })
                 return jsonify(response)
             else:
                 return jsonify("[]")

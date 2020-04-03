@@ -97,6 +97,25 @@ function dropdownDatastores(uuid,datacenter) {
   });
 }
 
+function dropdownGPUs(uuid,datacenter) {
+  $.ajax({
+    type: "GET",
+    url:"/gpus?"+ $.param({ "vsphereProviderUUID":uuid,"vsphereProviderDatacenter":datacenter  }),
+    dataType: "json",
+    success: function (data) {
+      if ($.isArray(data)){  
+        $('#gpus').empty()
+        $.each(data,function(i,obj)
+        {
+              $('#gpus').append($("<option></option>").attr("value",obj).text(obj))
+        });
+
+      }
+     
+    }
+  });
+}
+
 function dropdownTemplates(uuid,datacenter) {
   $.ajax({
     type: "GET",
@@ -194,6 +213,8 @@ $(document).ready(function(){
     dropdownNetworks($('#vsphereProviders').val(),$('#vsphereDatacenters').val())
 
     dropdownDatastores($('#vsphereProviders').val(),$('#vsphereDatacenters').val())
+
+    dropdownGPUs($('#vsphereProviders').val(),$('#vsphereDatacenters').val())
 
     dropdownTemplates($('#vsphereProviders').val(),$('#vsphereDatacenters').val())
 
