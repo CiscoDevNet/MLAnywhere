@@ -294,7 +294,7 @@ def run_ccpClusterCreation():
                 clusterData["subnet_id"] = formData["vipPools"] 
                 clusterData["master_group"]["template"] = formData["tenantImageTemplate"] 
                 clusterData["node_groups"][0]["template"] = formData["tenantImageTemplate"] 
-                clusterData["node_groups"][0]["gpus"][0]["type"] = formData["gpus"] 
+                clusterData["node_groups"][0]["gpus"] = formData["gpus"] 
                 clusterData["provider"] = formData["vsphereProviders"]
                 clusterData["vsphere_infra"]["datacenter"] = formData["vsphereDatacenters"] 
                 clusterData["vsphere_infra"]["datastore"] = formData["vsphereDatastores"] 
@@ -634,6 +634,7 @@ def run_vsphereDatastores():
 
             response = ccp.getProviderVsphereDatastores(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
 
+
             if response:
                 socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_DATASTORES })
                 return jsonify(response)
@@ -650,12 +651,13 @@ def run_gpus():
         
             jsonData = request.args.to_dict()
 
-            response = ccp.getGPUs(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"])
+            response = ccp.getGPUs(jsonData["vsphereProviderUUID"],jsonData["vsphereProviderDatacenter"],jsonData["vsphereProviderCluster"])
 
             if response:
-                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_GPUs })
+                socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_VSPHERE_GPUS })
                 return jsonify(response)
             else:
+                socketio.emit('consoleLog', {'loggingType': 'ERROR','loggingMessage': config.ERROR_VSPHERE_GPUS })
                 return jsonify("[]")
 
 @app.route("/vsphereVMs", methods = ['POST', 'GET'])
