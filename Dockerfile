@@ -39,5 +39,5 @@ WORKDIR /app/mla_app_code
 
 
 # Run amla_core_code.py when the container launches
-CMD python "./mla_core_code.py" 
 
+ENTRYPOINT ["python", "-u","./mla_core_code.py" ]
