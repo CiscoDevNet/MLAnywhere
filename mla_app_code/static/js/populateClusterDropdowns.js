@@ -12,8 +12,9 @@ function dropdownProviders() {
     url:"/vsphereProviders",
     dataType: "json",
     success: function (data) {
+      $('#vsphereProviders').empty()
       if ($.isArray(data)){  
-        $('#vsphereProviders').empty()
+        
         $.each(data,function(i,obj)
         {
               $('#vsphereProviders').append($("<option></option>").attr("value",obj["uuid"]).text(obj["name"]))
@@ -30,8 +31,9 @@ function dropdownDatacenters(uuid) {
     url:"/vsphereDatacenters?"+ $.param({ "vsphereProviderUUID":uuid  }),
     dataType: "json",
     success: function (data) {
+      $('#vsphereDatacenters').empty()
       if ($.isArray(data)){  
-        $('#vsphereDatacenters').empty()
+        
         $.each(data,function(i,obj)
         {
               $('#vsphereDatacenters').append($("<option></option>").attr("value",obj).text(obj))
@@ -48,8 +50,9 @@ function dropdownClusters(uuid,datacenter) {
     url:"/vsphereClusters?"+ $.param({ "vsphereProviderUUID":uuid,"vsphereProviderDatacenter":datacenter  }),
     dataType: "json",
     success: function (data) {
+      $('#vsphereClusters').empty()
       if ($.isArray(data)){  
-        $('#vsphereClusters').empty()
+       
         $.each(data,function(i,obj)
         {
               $('#vsphereClusters').append($("<option></option>").attr("value",obj).text(obj))
@@ -66,8 +69,9 @@ function dropdownNetworks(uuid,datacenter) {
     url:"/vsphereNetworks?"+ $.param({ "vsphereProviderUUID":uuid,"vsphereProviderDatacenter":datacenter  }),
     dataType: "json",
     success: function (data) {
+      $('#vsphereNetworks').empty()  
       if ($.isArray(data)){     
-        $('#vsphereNetworks').empty()   
+         
         $.each(data,function(i,obj)
         {
               $('#vsphereNetworks').append($("<option></option>").attr("value",obj).text(obj))
@@ -84,8 +88,9 @@ function dropdownDatastores(uuid,datacenter) {
     url:"/vsphereDatastores?"+ $.param({ "vsphereProviderUUID":uuid,"vsphereProviderDatacenter":datacenter  }),
     dataType: "json",
     success: function (data) {
+      $('#vsphereDatastores').empty()
       if ($.isArray(data)){  
-        $('#vsphereDatastores').empty()
+        
         $.each(data,function(i,obj)
         {
               $('#vsphereDatastores').append($("<option></option>").attr("value",obj).text(obj))
@@ -103,10 +108,9 @@ function dropdownGPUs(uuid,datacenter,cluster) {
     url:"/gpus?"+ $.param({ "vsphereProviderUUID":uuid,"vsphereProviderDatacenter":datacenter, "vsphereProviderCluster":cluster  }),
     dataType: "json",
     success: function (data) {
-      console.log(data)
       $('#gpus').empty()
       if ($.isArray(data)){  
-        $('#gpus').empty()
+       
         $.each(data,function(i,obj)
         {
               $('#gpus').append($("<option></option>").attr("value",obj).text(obj))
@@ -124,13 +128,15 @@ function dropdownGPUs(uuid,datacenter,cluster) {
 }
 
 function dropdownTemplates(uuid,datacenter) {
+
   $.ajax({
     type: "GET",
     url:"/vsphereVMs?"+ $.param({ "vsphereProviderUUID":uuid,"vsphereProviderDatacenter":datacenter  }),
     dataType: "json",
     success: function (data) {
+      $('#tenantImageTemplate').empty()
       if ($.isArray(data)){  
-        $('#tenantImageTemplate').empty()
+       
         $.each(data,function(i,obj)
         {
               $('#tenantImageTemplate').append($("<option></option>").attr("value",obj).text(obj))
@@ -147,8 +153,8 @@ function dropdownResourcePools(uuid,datacenter,cluster) {
     url:"/vsphereResourcePools?"+ $.param({ "vsphereProviderUUID":uuid,"vsphereProviderDatacenter":datacenter,"vsphereProviderCluster":cluster  }),
     dataType: "json",
     success: function (data) {
+      $('#vsphereResourcePools').empty()
       if ($.isArray(data)){  
-        $('#vsphereResourcePools').empty()
         $.each(data,function(i,obj)
         {
               $('#vsphereResourcePools').append($("<option></option>").attr("value",obj).text(obj))
@@ -165,8 +171,10 @@ function dropdownVIPPools(uuid,datacenter,cluster) {
     url:"/vipPools",
     dataType: "json",
     success: function (data) {
+
+      $('#vipPools').empty()
       if ($.isArray(data)){  
-        $('#vipPools').empty()
+       
         $.each(data,function(i,obj)
         {
               $('#vipPools').append($("<option></option>").attr("value",obj["uuid"]).text(obj["name"] + " ("+ obj["free_ips"] + " free IPs in pool)"))

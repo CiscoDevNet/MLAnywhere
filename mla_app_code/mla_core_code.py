@@ -141,7 +141,7 @@ def run_ccpLogin():
 
     return render_template('ccpLogin.html')
 
-
+# Used when logging into CCP to confirm that the connection works and also to authenticate and receive the token
 @app.route("/testConnection", methods = ['POST', 'GET'])
 def run_testConnection():
     
@@ -195,6 +195,10 @@ def checkClusterAlreadyExists():
                 return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
 
+# Called from clusterCreation.js when you press the "deployCluster" button
+
+# The CCP API v2 and v3 are different and use a different JSON structure. By default you will be using v3
+
 @app.route("/ccpClusterCreation", methods = ['POST', 'GET'])
 def run_ccpClusterCreation():
 
@@ -213,7 +217,6 @@ def run_ccpClusterCreation():
                 if API_VERSION == 2:
                     with open("ccpRequestV2.json") as json_data:
                         clusterData = json.load(json_data)
-                        print(clusterData)
                 else:
                     with open("ccpRequestV3.json") as json_data:
                         clusterData = json.load(json_data)
@@ -273,6 +276,10 @@ def run_ccpClusterCreation():
             if "vsphereResourcePools" not in formData:
                 formData["vsphereResourcePools"] = ""
 
+            # The CCP API v2 and v3 are different and use a different JSON structure. By default you will be using v3
+
+            # This gets all the data the user provided in the form and then inserts it into the template found in ccpRequestV3.json
+
             if API_VERSION == 2:
                 clusterData["name"] = formData["clusterName"]
                 clusterData["datacenter"] = formData["vsphereDatacenters"]
@@ -294,7 +301,7 @@ def run_ccpClusterCreation():
                 clusterData["subnet_id"] = formData["vipPools"] 
                 clusterData["master_group"]["template"] = formData["tenantImageTemplate"] 
                 clusterData["node_groups"][0]["template"] = formData["tenantImageTemplate"] 
-                clusterData["node_groups"][0]["gpus"] = formData["gpus"] 
+                
                 clusterData["provider"] = formData["vsphereProviders"]
                 clusterData["vsphere_infra"]["datacenter"] = formData["vsphereDatacenters"] 
                 clusterData["vsphere_infra"]["datastore"] = formData["vsphereDatastores"] 
@@ -305,10 +312,14 @@ def run_ccpClusterCreation():
                 clusterData["master_group"]["ssh_key"] = clusterData["ssh_key"]
                 clusterData.pop('ssh_key', None)
 
+                if "gpus" in formData:
+                    gpus = [{"type":formData["gpus"],"count":1}]
+                    clusterData["node_groups"][0]["gpus"] = gpus
+
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
 
             response = ccp.deployCluster(clusterData)
-
+            
             if API_VERSION == 2 :
 
                 if (response.status_code == 200) or (response.status_code == 201) :
@@ -528,6 +539,9 @@ def mladeploymentstatus():
     else:
         return 'Pod not reachable yet', 200
 
+##################################
+# THESE NEXT FEW FUNCTIONS ARE USED BY populateClusterDropdown.js TO RETRIEVE THE VALUES FOR EACH DROPDOWN FIELD
+##################################
 
 @app.route("/vsphereProviders", methods = ['POST', 'GET'])
 def run_vsphereProviders():
@@ -696,6 +710,9 @@ def run_vipPools():
                 return jsonify(response)
             else:
                 return jsonify("[]")
+
+
+# Called when you click the displayJson button before deploying a cluster. Called from clusterCreation.js
 
 @app.route("/clusterConfigTemplate", methods = ['POST', 'GET'])
 def run_clusterConfigTemplate():
