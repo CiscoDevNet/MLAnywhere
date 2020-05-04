@@ -110,7 +110,8 @@ function dropdownGPUs(uuid,datacenter,cluster) {
     success: function (data) {
       $('#gpus').empty()
       if ($.isArray(data)){  
-       
+        
+        $("#gpus").prepend("<option value='No GPU Selected' selected='selected'>No GPU Selected</option>");
         $.each(data,function(i,obj)
         {
               $('#gpus').append($("<option></option>").attr("value",obj).text(obj))

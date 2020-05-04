@@ -312,9 +312,9 @@ def run_ccpClusterCreation():
                 clusterData["master_group"]["ssh_key"] = clusterData["ssh_key"]
                 clusterData.pop('ssh_key', None)
 
-                if "gpus" in formData:
-                    gpus = [{"type":formData["gpus"],"count":1}]
-                    clusterData["node_groups"][0]["gpus"] = gpus
+                if "gpus" in formData and formData["gpus"] != "No GPU Selected":
+                        gpus = [{"type":formData["gpus"],"count":1}]
+                        clusterData["node_groups"][0]["gpus"] = gpus
 
             socketio.emit('consoleLog', {'loggingType': 'INFO','loggingMessage': config.INFO_DEPLOY_CLUSTER })
 
