@@ -14,11 +14,12 @@
             },
             "load_balancer_num": 1,
             "subnet_id": "",
+            "aws_iam_enabled": false,
             "node_groups": [{
                 "name": "node-group",
-                "size": 2,
+                "size": 1,
                 "vcpus": 8,
-                "memory_mb": 16384,
+                "memory_mb": 32768,
                 "gpus": [],
                 "template": "ccp-tenant-image-1.16.3-ubuntu18-6.0.0",
                 "kubernetes_version": "1.16.3",
@@ -36,13 +37,15 @@
                 "ssh_user": "ccpuser",
                 "ssh_key": ""
             },
-            "kubernetes_version": "1.14.8",
+            "docker_no_proxy": [],
+            "kubernetes_version": "1.16.3",
             "insecure_registries": [],
             "root_ca_registries": [],
             "ntp_servers": [],
             "ntp_pools": [],
             "ip_allocation_method": "ccpnet",
             "provider": "",
+            "description": "",
             "name": "",
             "type": "vsphere"
         }

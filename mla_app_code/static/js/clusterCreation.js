@@ -34,6 +34,7 @@ $(document).ready(function(){
                 jsonToDisplay["subnet_id"] = formData["vipPools"] 
                 jsonToDisplay["master_group"]["template"] = formData["tenantImageTemplate"] 
                 jsonToDisplay["node_groups"]["template"] = formData["tenantImageTemplate"] 
+                jsonToDisplay["node_groups"]["gpus"]["type"] = formData["gpus"] 
                 jsonToDisplay["ssh_key"] = formData["sshKey"] 
                 
 

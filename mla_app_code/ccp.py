@@ -156,6 +156,36 @@ class CCP:
         else:
             return response
 
+    def getGPUs(self,providerClientUUID,datacenterName, clusterName):
+
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
+
+        if self.apiVersion == 3:
+            response = requests.request("GET", self.url + "/v3/providers/" + providerClientUUID + "/gpus/?datacenter=" + datacenterName + "&cluster=" + clusterName,headers=headers, verify=False)
+
+        response = response.json()
+
+        print("gpu_type" in response["gpus"])
+        print(len(response["gpus"]) > 0)
+        print("gpu_type" in response)
+        print(response)
+        if "gpus" in response:
+            if len(response["gpus"]) > 0:
+                gpus = []
+                for gpu in response["gpus"]:
+                    gpus.append(gpu["gpu_type"])
+
+                return gpus
+
+            else:
+                return []
+        else:
+            return response
+
+
     def getProviderVsphereClusters(self,providerClientUUID,datacenterName):
 
         headers = {
