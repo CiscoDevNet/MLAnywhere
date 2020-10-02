@@ -283,8 +283,13 @@ class CCP:
             return response
     
     def getVIPPools(self):
+      
+        headers = {
+            'content-type': 'application/json',
+            'x-auth-token': self.token,
+        }
 
-        response = requests.request("GET", self.url + "/2/network_service/subnets",cookies=self.cookie, verify=False)
+        response = requests.request("GET", self.url + "/2/network_service/subnets",headers=headers,cookies=self.cookie, verify=False)
         
         response = response.json()
 
