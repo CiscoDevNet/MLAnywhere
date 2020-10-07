@@ -413,9 +413,13 @@ If we look at the Kubeflow dashboard, we can see at the top we can get to choose
 ![MLA Stage 3_Kubeflow_Namespace](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_namespace.png)
 
 
+
+
 Once this is chosen, select the **Bolts Demo** from the available **NoteBooks**.
 
 ![MLA Stage 3_Kubeflow_Bolts_Demo](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo.png)
+
+
 
 
 Once this opens, you should see something like the following graphic
@@ -423,26 +427,65 @@ Once this opens, you should see something like the following graphic
 ![MLA Stage 3_Kubeflow_Bolts_Details](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_details.png)
 
 
+
+
 From here, select **Run All Below**
 
 ![MLA Stage 3_Kubeflow_Run_Bolts_Notebook](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_notebook.png)
 
 
-Then go to the bottom of the Notebook and select **run** as per the following graphic.
+
+
+Then go to the bottom of the Notebook and select **Run link here** as per the following graphic.
 
 ![MLA Stage 3_Kubeflow_Run_Bolts_Pipeline](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_pipeline.png)
 
 
+
+
 It should start to build out the **Pipeline** from which we can run workloads on.
-
-![MLA Stage 3_Kubeflow_Run_Pipeline](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_pipeline.png)
-
 
 When the Pipeline is built, it should look like the following.......
 
-![MLA Stage 3_Kubeflow_Run_Pipeline](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_pipeline_complete.png)
+![MLA Stage 3_Kubeflow_Run_Pipeline_Complete](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_pipeline_complete.png)
 
 So let's start to use it!
+
+
+At this stage a Kubeflow environment is built out with a **model** built and placed in 'production' with supporting components.
+Typically, an application would be pointed at the model for it to consume and bring an actual usable outcome but for the sake of simplicity, we will use another Jupyter NoteBook as a **client** (rather than a customer built application) in order to exercise the model.
+
+In fact, this client will use some of the images of bolts which were imported, stored and served out during the pipeline configuration stage which we have already done.
+It will compare these images to what the model has beed designed and tuned to do, which is to distinguished between if these and determine are 'imperial' or 'metric' based.
+
+
+So let's run the next notebook to do this!
+
+
+Go back to the Kubeflow Dashboard page and now select the **Demo Client" notebook.
+
+![MLA Stage 3_Demo_Client](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo_client.png)
+
+
+Once it loads, it should look like the following so go ahead and run it: -
+
+![MLA Stage 3_Demo_Client_Loaded](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo_client_loaded.png)
+
+Well, congratulations as we have got to the end as you will be able to see that the experiment has given un an accuracy score on the likelihood of the bolt being of a metric type (in my e.g. its 97% and 82% 'certain')!
+
+![MLA Stage 3_Demo_Client_Complete](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo_client_complete.png)
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Troubleshooting
 
