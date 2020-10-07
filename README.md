@@ -9,6 +9,7 @@ Table of Contents
 =================
 
   * [MLAnywhere](#mlanywhere)
+      * [Important Notice](#important-notice)
       * [Kubeflow Resource Requirements](#kubeflow-resource-requirements)
       * [Compatibility](#compatibility)
       * [Installation](#installation)
@@ -22,7 +23,7 @@ Table of Contents
          * [stage2](#stage-2)
          * [stage3](#stage-3)
       * [Additional Information](#additional-information)
-         * [Using a Corporate Proxy](#using-a-corporate-proxy)
+         * [Using a Corporate Proxy](#when-using-a-corporate-proxy)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
 
@@ -30,11 +31,21 @@ Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 [![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/CiscoDevNet/MLAnywhere)
 
+## Important Notice
+
+This code is based on the Cisco Container Platform v6.0 and no further development will be done as our focus will now be on the Cisco Kubeflow Starter Pack https://developer.cisco.com/kubeflow/
+
+
 ## Kubeflow Resource Requirements
 
-In order to provide the best experience, MLAnywhere will provision three worker nodes to run the Kubeflow pods. Each worker node will use two vCPUS and 16GB memory.
+In order to provide the an acceptable experience, MLAnywhere will provision two nodes to run the Kubeflow pods. Each worker node will use two vCPUS and 16GB memory (though more worker nodes would be even better!).
+
 
 ## Compatibility
+
+Cisco Container Platform version 5.x - 6.00
+
+
 
 ## Installation
 
@@ -44,8 +55,7 @@ In order to provide the best experience, MLAnywhere will provision three worker 
 * Login to the CCP deployment where the new Kubeflow cluster will be created
 * Fill in the cluster form and wait for it to be deployed
 * Deploy Kubeflow in the newly created cluster
-* Download the Kubeconfig for the cluster
-* Start developing ML magic!
+* Run the included real world based demo and build out your ML skills!
 
 
 
@@ -72,7 +82,7 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 3. Build Docker image and tag appropriately
 
-   `docker build -t <your_repo>/mlanywhere:mlanywhere-beta-v1-app . --no-cache`
+   `docker build -t <your_repo>/mlanywhere:mlanywhere-app . --no-cache`
 
 4. Login to Docker hub or the repository of your choice
 
@@ -84,11 +94,11 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 5. Push image into repository
 
-   `docker push <your_repo>/mlanywhere:mlanywhere-beta-v1-app`
+   `docker push <your_repo>/mlanywhere:mlanywhere-app`
 
 
 
-### Installing MLAnywhere into a Kubernetes cluster (steps 3 + 4)  
+### Installing MLAnywhere into a Kubernetes cluster (step 3)  
 
 The following assumes you already have a Kubernetes cluster running in which to deploy the MLAnywhere Installation Wizard.
 
@@ -111,29 +121,31 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 
 4. Deploy the MLAnywhere Installation Wizard
 
-   `kubectl apply -f mlanywhere-all-in-one.yml
+   ```kubectl apply -f mlanywhere-all-in-one.yml```
 
-   Note: Make sure you update the location of the image to the one you created in the earlier stage
+   Note: Make sure you update the location of the image that will be used to the one you created in the earlier stage
 
 5. Check the pod has been deployed correctly
 
-   `kubectl get pods`
+   ```kubectl get pods```
 
 6. Determine the IP address of the worker nodes to which the pod has been deployed
 
-   `kubectl get nodes -o wide`
+   ``kubectl get nodes -o wide```
 
 7. Open a browser and navigate to the IP Address of one of the nodes, remembing to include the port. e.g. http://10.1.1.21:30003
 
 
 
+
 ## Using MLAnywhere
 
-There are currently 4 simple stages to MLAnywhere which are all built into the tool which lead to the creation of a kubeflow environment.
+There are currently 3 simple stages to MLAnywhere, which are all built into the tool which lead to the creation of a kubeflow environment and a valuable real world demo.
+
 
 ### Stage 1
 
-Access the IP address hosting K8s worker node VM as we are using a NodePort ServiceType, and port that has been defined in the K8s manifest file mlanywhere-svc.yml.
+Access the IP address hosting K8s worker node VM (as guided above) as we are using a NodePort ServiceType, and port that has been defined in the K8s manifest file mlanywhere-svc.yml.
 
 In this example it is port 30003 as per the service description: -
 ```
@@ -153,15 +165,15 @@ spec:
     app: mlanywhere
 ```
 
-So with the example of http://1x.9x.8x.2x:30003/stage1 you should get the following web page presented to you: -
+So with the example of http://1x.9x.8x.2x:30003 you should get the following web page presented to you: -
 
 ![MLA Stage 1](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage1.png)
 
-In this stage you add the connection details of the underlying container management platform which in this case is the Cisco Container Platform <a href="https://www.cisco.com/c/en/us/products/cloud-systems-management/container-platform/index.html" target="target">Details Here</a> as mla needs to create K8s cluster dynamically to host the subsequent Kubeflow envs.
+In this stage you add the connection details of the underlying container management platform which in this case is the Cisco Container Platform (CCP) <a href="https://www.cisco.com/c/en/us/products/cloud-systems-management/container-platform/index.html" target="target">Details Here</a> as mla needs to create K8s cluster dynamically to host the subsequent Kubeflow env.
 
 ### Stage 2
 
-As the contianer management tool is hosted upon vmware vSphere, we get the opportunity in stage 2 to define the following aspects of this supporting infrastructure so we can control exactly how the VMs get created as mla intetacts with the vSphere API to apply these configuration choices: -
+As the container management tool is hosted upon vmware vSphere in this example, we get the opportunity to define the following aspects of this supporting infrastructure so we can control exactly how the VMs get created as mla interacts with the vSphere API to apply these configuration choices: -
 
 - Cluster Name
 - vSphere Provider
@@ -180,39 +192,47 @@ Most of these aspects are obvious but I will expand on a few elements here.
 
 The **vSphere Provider** is a concept with CCP which we are exposing but this should be left as the default "vSphere"
 
-The **CCP Tenant Image Name** is the OVA image that is loaded into vSphere as part of the CCP process but effectively you are chosing the revision of the K8s cluster so in this example it is 1.13.5.
+The **CCP Tenant Image Name** is the OVA image that is loaded into vSphere as part of the CCP process but effectively you are choosing the revision of the K8s cluster so in this example it is 1.13.5.
 
 The **VIP Pool** is again a feature within CCP which is a pool of IP addresses pre entered into CCP from which VIPs will be allocated from.
 
-The **SSH Key** is a public key that you select which will get injected into the supporting VMs in the maintenance or troubleshoot operations so thie key will normally come from your local laptop, or jump host.
+The **SSH Key** is a public key that you select which will get injected into the supporting VMs in the maintenance or troubleshoot operations so this key will normally come from your local laptop, or jump host.
 
 
 
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2.png)
 
 
-Another key value aspect of MLA is it's ability to configure the various **proxy** settings which are needed if your K8s environment is behind a corportate proxy. This is especially key in cloud native and open-source soluitons which need to dynamically contact services such as Docker Hub, GitHub and OS repositories as part of the automated build prcoesses include in tooling around contianer environments.
+Another key value aspect of MLA is it's ability to configure the various **proxy** settings which are needed if your K8s environment is behind a corportate proxy. This is especially important in cloud native and open-source solutions which need to dynamically contact services such as Docker Hub, GitHub and OS repositories as part of the automated build processes included in tooling around container environments.
 
 So it's simply a case of inserting your appropriate proxy address into the provided area and let MLA configure all of the various configuration files that need updated throughout the underlying operating system.
 
 
+
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_proxy.png)
 
+
 Furthermore, once you hit the **Deploy** button, you have the ability to view what is happening under the skin of MLA via the **Logging**.
-We have added this due to aid the process of troubleshooting in case of underlying problems in the infrastruccture etc.
+We have added this due to aid the process of troubleshooting in case of underlying problems in the infrastructure etc.
+
 
 
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_logging.png)
 
 
+
 It's worth noting that MLA will build out automatically the supporting Kubernetes cluster via the targeted container cluster manager
+
+
 
 ![MLA Stage 2_Cluster Build](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage2_cluster_build.png)
 
 
+
+
 ### Stage 3
 
-Well this stage is very easy indeed.....simply press the **Install Kubeflow** button and it does exactly that!
+Well this stage is very easy indeed.....simply click on the **Install Kubeflow** button and it does exactly that!
 
 
 ![MLA Stage 3_Deploy_Kubeflow](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3.png)
@@ -228,17 +248,21 @@ You will have probably noticed that MLAnywhere actually injects a real world ML 
 
 
 
+
+
 ### The Bolts Demo
 
 
-If we look at the Kubeflow dashboard, we can see at the top we can get to choose the **Ciscodemo** namespace.....so lets do that.
+If we look at the Kubeflow dashboard, we can see at the top of the page we get to choose the **Ciscodemo** namespace.....so let's do that!
+
+
 
 ![MLA Stage 3_Kubeflow_Namespace](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_namespace.png)
 
 
 
 
-Once this is chosen, select the **Bolts Demo** from the available **NoteBooks**.
+Once this is chosen, select the **Bolts Demo** from the available **Jupyter NoteBooks**.
 
 ![MLA Stage 3_Kubeflow_Bolts_Demo](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo.png)
 
@@ -266,20 +290,24 @@ Then go to the bottom of the Notebook and select **Run link here** as per the fo
 
 
 
-It should start to build out the **Pipeline** from which we can run workloads on.
+It should start to build out the **Pipeline** from which we can run workloads upon.
 
 When the Pipeline is built, it should look like the following.......
 
 ![MLA Stage 3_Kubeflow_Run_Pipeline_Complete](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_pipeline_complete.png)
 
+
 So let's start to use it!
 
+The demo scenario which we have included is an industrial use case where which compares images of bolts on a production line to make sure the wrong components do not end up on the wrong production lines!
 
-At this stage a Kubeflow environment is built out with a **model** built and placed in 'production' with supporting components.
-Typically, an application would be pointed at the model for it to consume and bring an actual usable outcome but for the sake of simplicity, we will use another Jupyter NoteBook as a **client** (rather than a customer built application) in order to exercise the model.
+So as we have seen thus far, the Kubeflow environment is built out with a **model** defined and placed in 'production' with supporting components via the constructed pipeline.
+
+Typically, an application would be pointed at the model for it to consume and bring an actual usable outcome, but for the sake of simplicity, we will use another Jupyter NoteBook as a **client** (rather than a customer built application) in order to exercise the model.
 
 In fact, this client will use some of the images of bolts which were imported, stored and served out during the pipeline configuration stage which we have already done.
-It will compare these images to what the model has beed designed and tuned to do, which is to distinguished between if these and determine are 'imperial' or 'metric' based.
+
+It will compare these images to what the model has been designed and tuned to do, which effectively to determine if the bolts are 'imperial' or 'metric' thread based.
 
 
 So let's run the next notebook to do this!
@@ -287,12 +315,16 @@ So let's run the next notebook to do this!
 
 Go back to the Kubeflow Dashboard page and now select the **Demo Client** notebook.
 
+
 ![MLA Stage 3_Demo_Client](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo_client.png)
 
 
-Once it loads, it should look like the following so go ahead and run it: -
+
+Once it loads, it should look like the following, so go ahead and run it: -
+
 
 ![MLA Stage 3_Demo_Client_Loaded](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo_client_loaded.png)
+
 
 Well, congratulations as we have got to the end as you will be able to see that the experiment has given un an accuracy score on the likelihood of the bolt being of a metric type (in my e.g. its 97% and 82% 'certain')!
 
