@@ -21,6 +21,8 @@ Table of Contents
          * [stage1](#stage-1)
          * [stage2](#stage-2)
          * [stage3](#stage-3)
+      * [Additional Information](#additional-information)
+         * [Using a Corporate Proxy](#using-a-corporate-proxy)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
 
@@ -283,7 +285,7 @@ It will compare these images to what the model has beed designed and tuned to do
 So let's run the next notebook to do this!
 
 
-Go back to the Kubeflow Dashboard page and now select the **Demo Client" notebook.
+Go back to the Kubeflow Dashboard page and now select the **Demo Client** notebook.
 
 ![MLA Stage 3_Demo_Client](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo_client.png)
 
