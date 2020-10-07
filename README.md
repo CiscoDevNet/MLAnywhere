@@ -168,7 +168,7 @@ So with the example of http://1x.9x.8x.2x:30003 you should get the following web
 
 ![MLA Stage 1](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage1.png)
 
-In this 1st stage you input the connection details of the underlying container management platform which in this case is the Cisco Container Platform (CCP) <a href="https://www.cisco.com/c/en/us/products/cloud-systems-management/container-platform/index.html" target="target">Details Here</a> as mla needs to create K8s clusters dynamically to host the subsequent Kubeflow env.
+In this 1st stage please input the connection details of the underlying container management platform which in this case is the Cisco Container Platform (CCP) <a href="https://www.cisco.com/c/en/us/products/cloud-systems-management/container-platform/index.html" target="target">Details Here</a> as mla needs to create K8s clusters dynamically to host the subsequent Kubeflow env.
 
 ### Stage 2
 
@@ -252,7 +252,7 @@ You will have probably noticed that MLAnywhere actually injects a real world ML 
 ### The Bolts Demo
 
 
-If we look at the Kubeflow dashboard, we can see at the top of the page we get to choose the **ciscodemo** namespace.....so let's do that!
+If we look at the Kubeflow dashboard, we can see at the top of the page we get to choose the **ciscodemo** namespace.....so let's do that to build out the supporting pipelines!
 
 
 
@@ -291,24 +291,24 @@ Once run, go to the bottom of the Notebook and select **Run link here** as per t
 
 
 
-It should start to build out the **Pipeline** from which we can run workloads upon.
+It should start to build out the **Pipeline** from which we can run ML workloads upon.
 
 When the Pipeline is built, it should look like the following.......
 
 ![MLA Stage 3_Kubeflow_Run_Pipeline_Complete](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_pipeline_complete.png)
 
 
-So let's start to use it!
+So let's start to use our fresh kubeflow pipeline!
 
-The demo scenario which we have included is an industrial use case where which compares images of bolts on a production line to make sure the wrong components do not end up on the wrong production lines!
+The demo scenario which we have included is an industrial use case which compares images of bolts on a production line to make sure the wrong components do not end up on the wrong production lines!
 
-So as we have seen thus far, the Kubeflow environment is built out with a **model** defined and placed in 'production' with supporting components via the constructed pipeline.
+So as we have seen thus far, the Kubeflow environment is built out with a **model** defined and placed in 'production' (deploy-on-prem) with supporting components via the constructed pipeline (such as tensorboard etc).
 
-Typically, an application would be pointed at the model for it to consume and bring an actual usable outcome, but for the sake of simplicity, we will use another Jupyter NoteBook as a **client** (rather than a customer built application) in order to exercise the model.
+Typically in production, an application would be pointed at the created model for it to consume in order to bring an actual usable outcome, but for the sake of simplicity, we will use another Jupyter NoteBook as a **client** (rather than a custom built application).
 
 In fact, this client will use some of the images of bolts which were imported, stored and served out during the pipeline configuration stage which we have already done.
 
-It will compare these images to what the model has been designed and tuned to do, which effectively to determine if the bolts are 'imperial' or 'metric' thread based.
+The client will compare these images to what the model has been designed and tuned to do, which effectively is to determine if the bolts are 'imperial' or 'metric' thread based.
 
 
 So let's run the next notebook to do this!
