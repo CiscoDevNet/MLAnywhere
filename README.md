@@ -2,7 +2,7 @@
 
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_dark_final_transparent_small.png)
 
-This is a project to simplify the process of deploying Kubeflow (along with the associated technologies like Tensorflow) onto underlying Kubernetes platforms.
+This is a project to simplify the process of deploying Kubeflow (along with the associated technologies like Tensorflow) onto underlying Kubernetes platforms whilst assisting with the educational jump from traditional DC skills into the cloud native world!
 
 
 Table of Contents
@@ -52,16 +52,16 @@ Cisco Container Platform version 5.x - 6.00
 #### High Level Steps
 
 * Deploy the MLAnywhere installation wizard (see below for deployment options)
-* Login to the CCP deployment where the new Kubeflow cluster will be created
-* Fill in the cluster form and wait for it to be deployed
-* Deploy Kubeflow in the newly created cluster
+* Login to the CCP deployment where the new Kubernetes cluster will be created to support the Kubeflow env
+* Fill in the cluster definition form and wait for it to be deployed
+* Deploy Kubeflow in a fully automated way into the newly created cluster
 * Run the included real world based demo and build out your ML skills!
 
 
 
 ## MLAnywhere Deployment Technique
 
-At a high level the installation flow is as follows
+At a high level the installation flow is as follows: -
 
 
 ![MLA_Installatin_Flow](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_flow_diagram.png)
@@ -70,7 +70,7 @@ At a high level the installation flow is as follows
 
 ### Downloading code and Docker Image Preparation (steps 1 + 2)
 
-If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice. If the image has already been built you can skip steps 3,4,5, and 6. The installation instructions assume you are running Docker on your local machine.
+If you don't currently have a Docker image built for MLAnywhere, use the following steps to build and push your image to Docker hub or the repository of your choice. If the image has already been built you go directly to **Installing MLAnywhere into a Kubernetes cluster Step 3**. The installation instructions assume you are running Docker on your local machine.
 
 1. Clone the MLAnywhere repository to your local machine
 
@@ -100,18 +100,18 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 ### Installing MLAnywhere into a Kubernetes cluster (step 3)  
 
-The following assumes you already have a Kubernetes cluster running in which to deploy the MLAnywhere Installation Wizard.
+The following assumes you now have a Kubernetes cluster available to you in which to deploy the MLAnywhere Installation Wizard.
 
-The MLAnywhere Installation Wizard is deployed to Kubernetes with a `service` and a `deployment`. These files have been created separately, or alternatively you can use the all in one file, `mlanywhere-all-in-one.yml`.
+The MLAnywhere Installation Wizard by default is deployed into Kubernetes cluster with a `service` and a `deployment` construction. These files are created as 2 separate yaml manifests. Alternatively you can use the all in one file, `mlanywhere-all-in-one.yml`.
 
-By default MLAnywhere uses a Kubernetes Nodeport for access running on port 30003. This service can be changed if required.
+Also by default, MLAnywhere uses a Kubernetes Nodeport for access running on port 30003. This service port can be changed if required.
 
 
 1. Install Kubectl and configure KUBECONFIG access to the Kubernetes cluster if not already configured.
 
    [Install and setup Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
-2. Clone the MLAnywhere repository to your local machine
+2. Clone the MLAnywhere repository to your local machine if it has not already been done so.
 
    `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
 
@@ -121,26 +121,25 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 
 4. Deploy the MLAnywhere Installation Wizard
 
-   ```kubectl apply -f mlanywhere-all-in-one.yml```
+   `kubectl apply -f mlanywhere-all-in-one.yml`
 
    Note: Make sure you update the location of the image that will be used to the one you created in the earlier stage
 
 5. Check the pod has been deployed correctly
 
-   ```kubectl get pods```
+   `kubectl get pods`
 
-6. Determine the IP address of the worker nodes to which the pod has been deployed
+6. Determine the IP address of the worker nodes to which the pod has been deployed and make a note of these.
 
-   ``kubectl get nodes -o wide```
+   `kubectl get nodes -o wide`
 
-7. Open a browser and navigate to the IP Address of one of the nodes, remembing to include the port. e.g. http://10.1.1.21:30003
-
-
+7. Open a browser and navigate to the IP Address of one of the worker nodes, remembering to include the port. e.g. http://10.1.1.21:30003
 
 
-## Using MLAnywhere
 
-There are currently 3 simple stages to MLAnywhere, which are all built into the tool which lead to the creation of a kubeflow environment and a valuable real world demo.
+## Using MLAnywhere (mla)
+
+Now MLAnywhere is installed, we can start to understand that there are 3 simple stages included which are all built into the tool which lead to the creation of a kubeflow environment and a valuable real world demo.
 
 
 ### Stage 1
@@ -169,7 +168,7 @@ So with the example of http://1x.9x.8x.2x:30003 you should get the following web
 
 ![MLA Stage 1](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage1.png)
 
-In this stage you add the connection details of the underlying container management platform which in this case is the Cisco Container Platform (CCP) <a href="https://www.cisco.com/c/en/us/products/cloud-systems-management/container-platform/index.html" target="target">Details Here</a> as mla needs to create K8s cluster dynamically to host the subsequent Kubeflow env.
+In this 1st stage you input the connection details of the underlying container management platform which in this case is the Cisco Container Platform (CCP) <a href="https://www.cisco.com/c/en/us/products/cloud-systems-management/container-platform/index.html" target="target">Details Here</a> as mla needs to create K8s clusters dynamically to host the subsequent Kubeflow env.
 
 ### Stage 2
 
@@ -188,7 +187,7 @@ As the container management tool is hosted upon vmware vSphere in this example, 
 - SSH Key
 
 
-Most of these aspects are obvious but I will expand on a few elements here.
+Most of these aspects are obvious but we will expand on a few elements here.
 
 The **vSphere Provider** is a concept with CCP which we are exposing but this should be left as the default "vSphere"
 
@@ -213,7 +212,7 @@ So it's simply a case of inserting your appropriate proxy address into the provi
 
 
 Furthermore, once you hit the **Deploy** button, you have the ability to view what is happening under the skin of MLA via the **Logging**.
-We have added this due to aid the process of troubleshooting in case of underlying problems in the infrastructure etc.
+We have added this due to aid the process of troubleshooting in case of underlying problems in the infrastructure and to also aid the education process!
 
 
 
@@ -244,7 +243,7 @@ Once the process has built out (in a very visually descriptive fashion), you can
 
 ![MLA Stage 3_Kubeflow_Dashboard](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_dashboard.png)
 
-You will have probably noticed that MLAnywhere actually injects a real world ML demo into the environment for you to examine and learn from so let's have a look at that.
+You will have probably noticed that MLAnywhere actually injects a real world ML demo into the environment for you to examine and learn from so let's have a look at that via clicking the **Go to KubeFlow** button.
 
 
 
@@ -253,7 +252,7 @@ You will have probably noticed that MLAnywhere actually injects a real world ML 
 ### The Bolts Demo
 
 
-If we look at the Kubeflow dashboard, we can see at the top of the page we get to choose the **Ciscodemo** namespace.....so let's do that!
+If we look at the Kubeflow dashboard, we can see at the top of the page we get to choose the **ciscodemo** namespace.....so let's do that!
 
 
 
@@ -262,7 +261,7 @@ If we look at the Kubeflow dashboard, we can see at the top of the page we get t
 
 
 
-Once this is chosen, select the **Bolts Demo** from the available **Jupyter NoteBooks**.
+Once this is chosen, select the **bolts demo** from the available **Jupyter NoteBooks**.
 
 ![MLA Stage 3_Kubeflow_Bolts_Demo](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo.png)
 
@@ -278,12 +277,14 @@ Once this opens, you should see something like the following graphic
 
 From here, select **Run All Below**
 
+
+
 ![MLA Stage 3_Kubeflow_Run_Bolts_Notebook](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_notebook.png)
 
 
 
 
-Then go to the bottom of the Notebook and select **Run link here** as per the following graphic.
+Once run, go to the bottom of the Notebook and select **Run link here** as per the following graphic.
 
 ![MLA Stage 3_Kubeflow_Run_Bolts_Pipeline](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_pipeline.png)
 
