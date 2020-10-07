@@ -33,10 +33,10 @@ spec:
     spec:
       containers:
       - name: mlanywhere
-        image: mlanywhere:mlanywhere-beta-v1-app
+        image: micdoher/mlanywhere:easy-kubeflow-8th-Oct
 
-        imagePullPolicy: "IfNotPresent"
-        
+        imagePullPolicy: "Always"
+
         # Uncomment if using a proxy
         #env:
         #- name: https_proxy

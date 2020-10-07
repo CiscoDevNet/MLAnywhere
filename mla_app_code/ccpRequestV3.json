@@ -17,7 +17,7 @@
             "aws_iam_enabled": false,
             "node_groups": [{
                 "name": "node-group",
-                "size": 1,
+                "size": 2,
                 "vcpus": 8,
                 "memory_mb": 32768,
                 "gpus": [],

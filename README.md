@@ -1,4 +1,4 @@
-# MLAnywhere (mla) 
+# MLAnywhere (mla)
 
 ![MLA Stage 2](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_dark_final_transparent_small.png)
 
@@ -57,14 +57,14 @@ At a high level the installation flow is as follows
 
 
 
-### Downloading code and Docker Image Preparation (steps 1 + 2) 
+### Downloading code and Docker Image Preparation (steps 1 + 2)
 
 If you don't currently have a Docker image built, use the following steps to build and push your image to Docker hub or the repository of your choice. If the image has already been built you can skip steps 3,4,5, and 6. The installation instructions assume you are running Docker on your local machine.
 
 1. Clone the MLAnywhere repository to your local machine
 
    `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
-   
+
 2. Change directory to newly created MLAnywhere repository
 
    `cd MLAnywhere`
@@ -72,11 +72,11 @@ If you don't currently have a Docker image built, use the following steps to bui
 3. Build Docker image and tag appropriately
 
    `docker build -t <your_repo>/mlanywhere:mlanywhere-beta-v1-app . --no-cache`
-   
+
 4. Login to Docker hub or the repository of your choice
 
     [Docker hub login instruction](https://docs.docker.com/engine/reference/commandline/login/)
-    
+
    Or....create repository if not already existing
 
    [Creating a Dockerhub repository](https://docs.docker.com/docker-hub/repos/)
@@ -89,9 +89,9 @@ If you don't currently have a Docker image built, use the following steps to bui
 
 ### Installing MLAnywhere into a Kubernetes cluster (steps 3 + 4)  
 
-The following assumes you already have a Kubernetes cluster running in which to deploy the MLAnywhere Installation Wizard. 
+The following assumes you already have a Kubernetes cluster running in which to deploy the MLAnywhere Installation Wizard.
 
-The MLAnywhere Installation Wizard is deployed to Kubernetes with a `service` and a `deployment`. These files have been created separately, or alternatively you can use the all in one file, `mlanywhere-all-in-one.yml`. 
+The MLAnywhere Installation Wizard is deployed to Kubernetes with a `service` and a `deployment`. These files have been created separately, or alternatively you can use the all in one file, `mlanywhere-all-in-one.yml`.
 
 By default MLAnywhere uses a Kubernetes Nodeport for access running on port 30003. This service can be changed if required.
 
@@ -99,7 +99,7 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 1. Install Kubectl and configure KUBECONFIG access to the Kubernetes cluster if not already configured.
 
    [Install and setup Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-   
+
 2. Clone the MLAnywhere repository to your local machine
 
    `git clone https://github.com/CiscoDevNet/MLAnywhere.git`
@@ -107,13 +107,13 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 3. Change directory to newly cloned MLAnywhere folder
 
    `cd MlAnywhere`
- 
+
 4. Deploy the MLAnywhere Installation Wizard
 
-   `kubectl apply -f mlanywhere-all-in-one.yml 
-   
+   `kubectl apply -f mlanywhere-all-in-one.yml
+
    Note: Make sure you update the location of the image to the one you created in the earlier stage
-   
+
 5. Check the pod has been deployed correctly
 
    `kubectl get pods`
@@ -127,7 +127,7 @@ By default MLAnywhere uses a Kubernetes Nodeport for access running on port 3000
 
 ## Using a Corporate Proxy
 
-When using the MLAnywhere Installation Wizard behind a corporate proxy, you may need to configure proxy settings on the MLAnywhere or Kubeflow hosts. 
+When using the MLAnywhere Installation Wizard behind a corporate proxy, you may need to configure proxy settings on the MLAnywhere or Kubeflow hosts.
 
 The following scenarios outline these configurations.
 
@@ -149,33 +149,33 @@ In this scenario you have deployed the MLAnywhere wizard to an environment which
 * Configure the host on which the MLAnywhere wizard is running with the `http_proxy`, `https_proxy`, and `no_proxy settings`
 
    For example
-   
+
    ```
    export http_proxy = http://proxy.mycompany.com:80
    export https_proxy = http://proxy.mycompany.com:80
    export no_proxy = localhost, 127.0.0.1
    ```
-   
+
 * If running the installation wizard in a Docker or Kubernetes environment behind a corporate proxy you will also need to configure the Docker service to use the proxy. If this is not enabled you may not be able to pull down the required images.
 
    On each of the worker nodes where the installation wizard is running:
-   
-   1. Update `/etc/systemd/system/docker.service.d/https-proxy.conf` with the appropriate proxy settings. 
-   
+
+   1. Update `/etc/systemd/system/docker.service.d/https-proxy.conf` with the appropriate proxy settings.
+
    ```
     [Service]
     Environment="HTTPS_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
     ```
-  
-  2. Update `/etc/systemd/system/docker.service.d/http-proxy.conf` with the appropriate proxy settings. 
-    
+
+  2. Update `/etc/systemd/system/docker.service.d/http-proxy.conf` with the appropriate proxy settings.
+
     ```
     [Service]
     Environment="HTTP_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
     ```
-   
+
   3. Restart docker
-  
+
     ```
     sudo systemctl daemon-reload
     sudo systemctl restart docker
@@ -183,10 +183,10 @@ In this scenario you have deployed the MLAnywhere wizard to an environment which
 
 * If running the installation wizard in a Docker or Kubernetes environment behind a corporate proxy you will also need to include the proxy configuration in the containers themselves. This can be achieved by setting the correct environmental variables. Samples have been provided in the Kubernetes `yml` files.
 
-NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of the `no_proxy` configuration. See below for example. 
+NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of the `no_proxy` configuration. See below for example.
 
    Sample deployment file
-   
+
    ```
    apiVersion: extensions/v1beta1
    kind: Deployment
@@ -230,33 +230,33 @@ NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of 
 * Configure the host on which the MLAnywhere wizard is running with the `http_proxy`, `https_proxy`, and `no_proxy settings`
 
    For example
-   
+
    ```
    export http_proxy = http://proxy.mycompany.com:80
    export https_proxy = http://proxy.mycompany.com:80
    export no_proxy = localhost, 127.0.0.1
    ```
-   
+
 * If running the installation wizard in a Docker or Kubernetes environment behind a corporate proxy you will also need to configure the Docker service to use the proxy. If this is not enabled you may not be able to pull down the required images.
 
    On each of the worker nodes where the installation wizard is running:
-   
-   1. Update `/etc/systemd/system/docker.service.d/https-proxy.conf` with the appropriate proxy settings. 
-   
+
+   1. Update `/etc/systemd/system/docker.service.d/https-proxy.conf` with the appropriate proxy settings.
+
    ```
     [Service]
     Environment="HTTPS_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
     ```
-  
-  2. Update `/etc/systemd/system/docker.service.d/http-proxy.conf` with the appropriate proxy settings. 
-    
+
+  2. Update `/etc/systemd/system/docker.service.d/http-proxy.conf` with the appropriate proxy settings.
+
     ```
     [Service]
     Environment="HTTP_PROXY=http://proxy.mycompany.com:80" "NO_PROXY=localhost,127.0.0.1"
     ```
-   
+
   3. Restart docker
-  
+
     ```
     sudo systemctl daemon-reload
     sudo systemctl restart docker
@@ -264,10 +264,10 @@ NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of 
 
 * If running the installation wizard in a Docker or Kubernetes environment behind a corporate proxy you will also need to include the proxy configuration in the containers themselves. This can be achieved by setting the correct environmental variables. Samples have been provided in the Kubernetes `yml` files.
 
-NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of the `no_proxy` configuration. See below for example. 
+NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of the `no_proxy` configuration. See below for example.
 
    Sample deployment file
-   
+
    ```
    apiVersion: extensions/v1beta1
    kind: Deployment
@@ -308,7 +308,7 @@ NOTE: You will need to include the Kubernetes API server, 10.96.0.1, as part of 
 
 There are currently 4 simple stages to MLAnywhere which are all built into the tool which lead to the creation of a kubeflow environment.
 
-### Stage 1 
+### Stage 1
 
 Access the IP address hosting K8s worker node VM as we are using a NodePort ServiceType, and port that has been defined in the K8s manifest file mlanywhere-svc.yml.
 
@@ -340,21 +340,22 @@ In this stage you add the connection details of the underlying container managem
 
 As the contianer management tool is hosted upon vmware vSphere, we get the opportunity in stage 2 to define the following aspects of this supporting infrastructure so we can control exactly how the VMs get created as mla intetacts with the vSphere API to apply these configuration choices: -
 
-- Cluster Name 
-- vSphere Provider 
-- vSphere DataCenter 
+- Cluster Name
+- vSphere Provider
+- vSphere DataCenter
 - vSphere Cluster
-- vSphere Resource Pool 
+- vSphere Resource Pool
 - vSphere Network
 - vSphere DataStore
-- CCP Tenant Image Name 
-- VIP Pool 
-- SSH Key 
+- GPU
+- CCP Tenant Image Name
+- VIP Pool
+- SSH Key
 
 
 Most of these aspects are obvious but I will expand on a few elements here.
 
-The **vSphere Provider** is a concept with CCP which we are exposing but this should be left as the default "vSphere" 
+The **vSphere Provider** is a concept with CCP which we are exposing but this should be left as the default "vSphere"
 
 The **CCP Tenant Image Name** is the OVA image that is loaded into vSphere as part of the CCP process but effectively you are chosing the revision of the K8s cluster so in this example it is 1.13.5.
 
@@ -396,20 +397,52 @@ Well this stage is very easy indeed.....simply press the **Install Kubeflow** bu
 
 Again there is the option to see what is happening under the skin with the **Logging** button if required.
 
+Once the process has built out (in a very visually descriptive fashion), you can access the Kubeflow dashboard via the provided link.
+
+![MLA Stage 3_Kubeflow_Dashboard](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_dashboard.png)
+
+You will have probably noticed that MLAnywhere actually injects a real world ML demo into the environment for you to examine and learn from so let's have a look at that.
 
 
 
+### The Bolts Demo
 
 
-### Stage 4
+If we look at the Kubeflow dashboard, we can see at the top we can get to choose the **Ciscodemo** namespace.....so lets do that.
 
-From the final screen you can download the **KUBECONFIG** file to be able to connect to you Kubernetes cluster using **kubectl**.
-
-*NOTE*: In the next release we will have the links to the Kubeflow Dashboard included in this final page.
+![MLA Stage 3_Kubeflow_Namespace](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_namespace.png)
 
 
-Done.......it was that easy!
+Once this is chosen, select the **Bolts Demo** from the available **NoteBooks**.
 
+![MLA Stage 3_Kubeflow_Bolts_Demo](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_demo.png)
+
+
+Once this opens, you should see something like the following graphic
+
+![MLA Stage 3_Kubeflow_Bolts_Details](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_details.png)
+
+
+From here, select **Run All Below**
+
+![MLA Stage 3_Kubeflow_Run_Bolts_Notebook](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_notebook.png)
+
+
+Then go to the bottom of the Notebook and select **run** as per the following graphic.
+
+![MLA Stage 3_Kubeflow_Run_Bolts_Pipeline](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_run_bolts_pipeline.png)
+
+
+It should start to build out the **Pipeline** from which we can run workloads on.
+
+![MLA Stage 3_Kubeflow_Run_Pipeline](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_pipeline.png)
+
+
+When the Pipeline is built, it should look like the following.......
+
+![MLA Stage 3_Kubeflow_Run_Pipeline](https://github.com/CiscoDevNet/MLAnywhere/blob/master/images/mla_stage3_bolts_pipeline_complete.png)
+
+So let's start to use it!
 
 ## Troubleshooting
 
