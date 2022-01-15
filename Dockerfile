@@ -24,7 +24,7 @@ RUN mv ./kubectl /usr/local/bin/
 
 
 #Upgrade pip
-RUN pip install --upgrade pip
+RUN pip install --no-cache-dir --upgrade pip
 
 
 # Copy the current directory contents into the container at /app
@@ -32,7 +32,7 @@ COPY . /app
 
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
 
 
 WORKDIR /app/mla_app_code
