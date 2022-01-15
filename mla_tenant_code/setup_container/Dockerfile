@@ -13,7 +13,7 @@ RUN apt-get update
 RUN apt-get -y install curl
 RUN apt-get -y install tar
 RUN apt-get -y install python3-pip
-RUN pip3 install kubernetes
+RUN pip3 install --no-cache-dir kubernetes
 
 #####################################
 # COPY SETUP FILE TO CONTAINER
